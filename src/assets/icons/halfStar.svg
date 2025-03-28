@@ -1,0 +1,14 @@
+const HalfStar = ({ activeColor, neutralColor }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-8 h-8">
+    {/* Right Half - Neutral Color */}
+    <path
+      d="M12 1L15.73 7.87L22.57 8.61L18.03 14.96L19.44 21.69L12 17.34V1Z"
+      fill={neutralColor}
+    />
+    {/* Left Half - Active Color */}
+    <path
+      d="M12 1C11.61 1 11.25 1.23 11.09 1.59L8.27 7.87L1.43 8.61C1.04 8.65 0.71 8.92 0.59 9.29C0.47 9.67 0.57 10.08 0.87 10.34L5.97 14.96L4.55 21.69C4.47 22.08 4.63 22.48 4.95 22.71C5.26 22.94 5.69 22.96 6.03 22.77L12 19.34V1Z"
+      fill={activeColor}
+    />
+  </svg>
+);

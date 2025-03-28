@@ -1,0 +1,125 @@
+import { useState, useEffect } from "react";
+import { useAuth } from "../AuthContext";
+import { db } from "../firebaseConfig";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+
+const FullStar = ({ color }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={color} className="w-full h-full">
+    <path d="M12.9121 1.59053C12.7508 1.2312 12.3936 1 11.9997 1C11.6059 1 11.2487 1.2312 11.0874 1.59053L8.27041 7.86702L1.43062 8.60661C1.03903 8.64895 0.708778 8.91721 0.587066 9.2918C0.465355 9.66639 0.574861 10.0775 0.866772 10.342L5.96556 14.9606L4.55534 21.6942C4.4746 22.0797 4.62768 22.4767 4.94632 22.7082C5.26497 22.9397 5.68983 22.9626 6.03151 22.7667L11.9997 19.3447L17.968 22.7667C18.3097 22.9626 18.7345 22.9397 19.0532 22.7082C19.3718 22.4767 19.5249 22.0797 19.4441 21.6942L18.0339 14.9606L23.1327 10.342C23.4246 10.0775 23.5341 9.66639 23.4124 9.2918C23.2907 8.91721 22.9605 8.64895 22.5689 8.60661L15.7291 7.86702L12.9121 1.59053Z" />
+  </svg>
+);
+
+const HalfStar = ({ activeColor, neutralColor }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-full h-full">
+    <defs>
+      <clipPath id="right-half">
+        <rect x="12" y="0" width="12" height="24" />
+      </clipPath>
+      <clipPath id="left-half">
+        <rect x="0" y="0" width="12" height="24" />
+      </clipPath>
+    </defs>
+    <path
+      d="M12.9121 1.59053C12.7508 1.2312 12.3936 1 11.9997 1C11.6059 1 11.2487 1.2312 11.0874 1.59053L8.27041 7.86702L1.43062 8.60661C1.03903 8.64895 0.708778 8.91721 0.587066 9.2918C0.465355 9.66639 0.574861 10.0775 0.866772 10.342L5.96556 14.9606L4.55534 21.6942C4.4746 22.0797 4.62768 22.4767 4.94632 22.7082C5.26497 22.9397 5.68983 22.9626 6.03151 22.7667L11.9997 19.3447L17.968 22.7667C18.3097 22.9626 18.7345 22.9397 19.0532 22.7082C19.3718 22.4767 19.5249 22.0797 19.4441 21.6942L18.0339 14.9606L23.1327 10.342C23.4246 10.0775 23.5341 9.66639 23.4124 9.2918C23.2907 8.91721 22.9605 8.64895 22.5689 8.60661L15.7291 7.86702L12.9121 1.59053Z"
+      fill={neutralColor}
+      clipPath="url(#right-half)"
+    />
+    <path
+      d="M12.9121 1.59053C12.7508 1.2312 12.3936 1 11.9997 1C11.6059 1 11.2487 1.2312 11.0874 1.59053L8.27041 7.86702L1.43062 8.60661C1.03903 8.64895 0.708778 8.91721 0.587066 9.2918C0.465355 9.66639 0.574861 10.0775 0.866772 10.342L5.96556 14.9606L4.55534 21.6942C4.4746 22.0797 4.62768 22.4767 4.94632 22.7082C5.26497 22.9397 5.68983 22.9626 6.03151 22.7667L11.9997 19.3447L17.968 22.7667C18.3097 22.9626 18.7345 22.9397 19.0532 22.7082C19.3718 22.4767 19.5249 22.0797 19.4441 21.6942L18.0339 14.9606L23.1327 10.342C23.4246 10.0775 23.5341 9.66639 23.4124 9.2918C23.2907 8.91721 22.9605 8.64895 22.5689 8.60661L15.7291 7.86702L12.9121 1.59053Z"
+      fill={activeColor}
+      clipPath="url(#left-half)"
+    />
+  </svg>
+);
+
+const saveRatingToFirestore = async (userId, gameId, ratingValue) => {
+  try {
+    await setDoc(
+      doc(db, "users", userId, "gameStatuses", gameId),
+      { rating: ratingValue },
+      { merge: true }
+    );
+  } catch (error) {
+    console.error("Error saving rating:", error);
+  }
+};
+
+const StarRating = ({gameId}) => {
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [starColor] = useState("#FFD700");
+  const neutralColor = "#ffffff";
+
+  const { user } = useAuth();
+
+  useEffect(() => {
+    const loadRating = async () => {
+      if (user && gameId) {
+        try {
+          const docRef = doc(db, "users", user.uid, "gameStatuses", gameId);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            if (data.rating) {
+              setRating(data.rating);
+            }
+          }
+        } catch (error) {
+          console.error("Error loading rating:", error);
+        }
+      }
+    };
+    loadRating();
+  }, [user, gameId]);
+
+  const handleRating = (value) => {
+    setRating(value);
+    if (user) {
+      saveRatingToFirestore(user.uid, gameId, value);
+    } else {
+      console.error("User is not authenticated");
+    }
+  };
+
+  const handleHover = (value) => setHoverRating(value);
+
+  const Star = ({ value }) => {
+    const isFilled = (hoverRating || rating) >= value;
+    const isHalf = (hoverRating || rating) === value - 0.5;
+
+    return (
+      <div
+        className="cursor-pointer"
+        onClick={() => handleRating(value)}
+        onMouseEnter={() => handleHover(value)}
+        onMouseLeave={() => handleHover(0)}
+      >
+        {isHalf ? (
+          <HalfStar activeColor={starColor} neutralColor={neutralColor} />
+        ) : (
+          <FullStar color={isFilled ? starColor : neutralColor} />
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div className="flex flex-col">
+      <div className="flex gap-2">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <div key={star} className="relative">
+            <Star value={star} />
+            <div
+              className="absolute inset-0 w-1/2 left-0"
+              onClick={() => handleRating(star - 0.5)}
+              onMouseEnter={() => handleHover(star - 0.5)}
+              onMouseLeave={() => handleHover(0)}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default StarRating;
