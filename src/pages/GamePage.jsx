@@ -38,7 +38,7 @@ const GamePage = () => {
   const fetchSimilarGames = async (ids) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/similar-games",
+        `${import.meta.env.VITE_API_URL}/api/similar-games`,
         {
           ids,
         }
@@ -63,7 +63,7 @@ const GamePage = () => {
 
   const fetchGameData = async () => {
     try {
-      const gameResponse = await axios.post("http://localhost:5000/api/game", {
+      const gameResponse = await axios.post(`${import.meta.env.VITE_API_URL}/api/game`, {
         id,
       });
 
@@ -83,7 +83,7 @@ const GamePage = () => {
 
       try {
         screenshotsResponse = await axios.post(
-          "http://localhost:5000/api/screenshots",
+          `${import.meta.env.VITE_API_URL}/api/screenshots`,
           { gameId: id }
         );
         sortedScreenshots = [...screenshotsResponse.data].sort((a, b) => {
@@ -95,7 +95,7 @@ const GamePage = () => {
 
       try {
         heroesResponse = await axios.post(
-          "http://localhost:5000/api/steamgriddb/heroes",
+          `${import.meta.env.VITE_API_URL}/api/steamgriddb/heroes`,
           {
             gameName: gameResponse.data.name,
           }
@@ -106,7 +106,7 @@ const GamePage = () => {
 
       try {
         logosResponse = await axios.post(
-          "http://localhost:5000/api/steamgriddb/logos",
+          `${import.meta.env.VITE_API_URL}/api/steamgriddb/logos`,
           {
             gameName: gameResponse.data.name,
           }

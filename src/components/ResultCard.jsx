@@ -20,7 +20,7 @@ const ResultCard = ({ game, imageSize = "cover_big", visualType }) => {
 
   const fetchIcons = async (gameName) => {
     try {
-      const response = await axios.post("http://localhost:5000/api/steamgriddb/icons", {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/steamgriddb/icons`, {
         gameName,
       });
 

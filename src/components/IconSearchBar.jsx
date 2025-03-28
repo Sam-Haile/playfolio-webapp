@@ -41,7 +41,7 @@ const IconSearchBar = ({
     try {
       // POST request to your local API endpoint for icons
       const response = await axios.post(
-        "http://localhost:5000/api/steamgriddb/icons",
+        `${import.meta.env.VITE_API_URL}/api/steamgriddb/icons`,
         { gameName: query }
       );
 

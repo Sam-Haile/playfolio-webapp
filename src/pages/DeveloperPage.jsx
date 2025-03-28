@@ -44,7 +44,7 @@ const DeveloperPage = () => {
 
   const fetchHeaderGames = async (companyId, sorting) => {
     try {
-      const response = await axios.post("http://localhost:5000/api/company", {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/company`, {
         id: companyId,
         sortOption: sorting,
         page: 1,
@@ -68,7 +68,7 @@ const DeveloperPage = () => {
     try {
       setLoading(true);
 
-      const response = await axios.post("http://localhost:5000/api/company", {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/company`, {
         id: companyId,
         sortOption: sorting,
         page: page,

@@ -1,7 +1,7 @@
 export const fetchTrendingGames = async (limit) => {
   try {
     const response = await fetch(
-      `http://localhost:5000/api/trending-games?limit=${limit}`
+      `${import.meta.env.VITE_API_URL}/api/trending-games?limit=${limit}`
     );
     const data = await response.json();
 
@@ -22,7 +22,7 @@ export const fetchTrendingGames = async (limit) => {
 export const fetchEvents = async (limit) => {
   try {
     const response = await fetch(
-      `http://localhost:5000/api/events?limit=${limit}`
+      `${import.meta.env.VITE_API_URL}/api/events?limit=${limit}`
     );
     const data = await response.json();
     if (Array.isArray(data)) {
@@ -49,7 +49,7 @@ export async function fetchScreenshotsCached(gameId) {
   }
 
   try {
-    const response = await axios.post("http://localhost:5000/api/screenshots", { gameId });
+    const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/screenshots`, { gameId });
 
     const sortedScreenshots = response.data.sort((a, b) => a.id - b.id);
 

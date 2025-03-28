@@ -58,7 +58,7 @@ const SearchBar = ({ width = "100%", margin = "0", padding = "0", className = ""
       return;
     }
     try {
-      const response = await axios.post("http://localhost:5000/api/games", {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/games`, {
         searchTerm: query,
       });
       setSuggestions(response.data.slice(0, 5)); // Limit to 5 suggestions

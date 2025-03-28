@@ -29,7 +29,7 @@ const HeroSearchBar = ({ width = "100%", margin = "0", padding = "0", className 
     
         try {
             //HOW TO STOP THE ERROR HERE WHEN IM STARTING TO TYPE A SEARCH
-            const response = await axios.post("http://localhost:5000/api/steamgriddb/heroes", { gameName: query });
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/steamgriddb/heroes`, { gameName: query });
     
             // ✅ Ensure response structure is valid before using it
             if (response?.data?.success && Array.isArray(response.data.heroes)) {

@@ -98,7 +98,7 @@ const HomePage = () => {
       if (!randomGame || !randomGame.id) return;
       try {
         const response = await axios.post(
-          "http://localhost:5000/api/platforms",
+          `${import.meta.env.VITE_API_URL}/api/platforms`,
           {
             gameId: randomGame.id,
           }
@@ -213,7 +213,7 @@ const HomePage = () => {
     setLoading(true);
 
     try {
-      const gameResponse = await axios.post("http://localhost:5000/api/game", {
+      const gameResponse = await axios.post(`${import.meta.env.VITE_API_URL}/api/game`, {
         id: randomGame.id,
       });
 
@@ -228,7 +228,7 @@ const HomePage = () => {
 
       try {
         heroesResponse = await axios.post(
-          "http://localhost:5000/api/steamgriddb/heroes",
+          `${import.meta.env.VITE_API_URL}/api/steamgriddb/heroes`,
           { gameName: gameResponse.data.name }
         );
       } catch (err) {
@@ -237,7 +237,7 @@ const HomePage = () => {
 
       try {
         logosResponse = await axios.post(
-          "http://localhost:5000/api/steamgriddb/logos",
+          `${import.meta.env.VITE_API_URL}/api/steamgriddb/logos`,
           { gameName: gameResponse.data.name }
         );
       } catch (err) {

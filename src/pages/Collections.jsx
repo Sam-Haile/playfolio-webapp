@@ -47,7 +47,7 @@ const Collections = ({ user, showProfile = true }) => {
         try {
             const missingGames = gamesList.filter((game) => !preloadedGames[game.id]);
             if (missingGames.length > 0) {
-                const response = await axios.post("http://localhost:5000/api/gameDetails", {
+                const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/gameDetails`, {
                     ids: missingGames.map((game) => game.id),
                 });
                 const fetchedGames = response.data;

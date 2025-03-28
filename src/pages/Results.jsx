@@ -30,8 +30,10 @@ const Results = () => {
 
   const fetchSearchResults = async (term) => {
     setLoading(true);
+    console.log("API URL:", import.meta.env.VITE_API_URL);
+
     try {
-      const response = await axios.post("http://localhost:5000/api/games", {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/games`, {
         searchTerm: term,
       });
       setResults(response.data);
