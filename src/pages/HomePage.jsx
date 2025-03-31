@@ -332,39 +332,39 @@ const HomePage = () => {
 
           <HorizontalLine width="full" marginBottom="mb-4" marginTop="mt-8" />
 
-          <div className="rounded-md shadow-lg relative ">
+          <div className=" relative ">
             {/* Background Image */}
             {screenshots?.[0] && (
               <div
-                className="absolute inset-0 bg-cover z-0 bg-center bg-no-repeat opacity-50"
+                className="absolute inset-0 bg-cover z-0 bg-center bg-no-repeat opacity-70"
                 style={{ backgroundImage: `url(${screenshots[0].imageUrl})` }}
               />
             )}
-            <h1 className="relative text-2xl font-bold pt-8 pb-2 z-20">
+            <h1 className="relative text-2xl font-bold pt-8 pb-8 z-20">
               Your Backlog Game of the Day
             </h1>
 
             {/* Right Gradient */}
             <div
-              className="absolute top-0 h-full w-full pointer-events-none z-10 right-0"
+              className="absolute top-0 h-full w-[103%] pointer-events-none z-10 right-0"
               style={{
                 background:
-                  "linear-gradient(to left, #121212 20%, transparent 50%)",
+                  "linear-gradient(to left, #121212 5%, transparent 50%)",
               }}
             ></div>
 
             {/* Left Gradient */}
             <div
-              className="absolute top-0 h-full w-full pointer-events-none z-10 left-0"
+              className="absolute top-0 h-full w-[101%] pointer-events-none z-10 left-50"
               style={{
                 background:
-                  "linear-gradient(to right, #121212 0%, transparent 10%)",
+                  "linear-gradient(to right, #121212 50%, transparent 70%)",
               }}
             ></div>
 
             {/* Top Gradient */}
             <div
-              className="absolute top-0 h-[50vh] w-full pointer-events-none z-10"
+              className="absolute top-0 h-[50vh] w-[101%] pointer-events-none z-10"
               style={{
                 background:
                   "linear-gradient(to bottom, #121212 0%, transparent 20%)",
@@ -373,79 +373,34 @@ const HomePage = () => {
 
             {/* Bottom Gradient */}
             <div
-              className="absolute bottom-0 h-[50vh] w-full pointer-events-none z-10"
+              className="absolute bottom-0 h-[50vh] w-[101%] pointer-events-none z-10"
               style={{
                 background:
-                  "linear-gradient(to top, #121212 0%, transparent 15%)",
+                  "linear-gradient(to top,#121212 0%, transparent 20%)",
               }}
             ></div>
 
-            <div className="bg-cover bg-center bg-no-repeat rounded-md shadow-lg relative z-10 pb-10">
+            <div className="bg-cover bg-center bg-no-repeat relative z-10 pb-10">
               <div
-                className="grid grid-cols-[20%_35%_auto] z-10"
+                className="grid grid-cols-[20%_40%_auto] z-10"
                 style={{ height: imgHeight || "auto" }}
               >
                 <div className="relative z-50">
-                    {cover && (
-                      <GameCard
-                        ref={imgRef}
-                        onLoad={() => setImgHeight(imgRef.current.clientHeight)}
-                        src={`https://images.igdb.com/igdb/image/upload/t_1080p/${cover.image_id}.jpg`}
-                        alt={`${name} Logo`}
-                        gameId={randomGame.id}
-                        className="object-contain h-[auto] rounded"
-                      />
-                    )}
-                </div>
-
-                <div
-                  className="flex flex-col pl-2"
-                  style={{ height: imgHeight }}
-                >
-                  {screenshots?.[0] && (
-                    <img
-                      src={screenshots[0].imageUrl}
-                      alt={`${name} Screenshot`}
-                      className="h-[auto] object-contain rounded shadow-md"
+                  {cover && (
+                    <GameCard
+                      ref={imgRef}
+                      onLoad={() => setImgHeight(imgRef.current.clientHeight)}
+                      src={`https://images.igdb.com/igdb/image/upload/t_1080p/${cover.image_id}.jpg`}
+                      alt={`${name} Logo`}
+                      gameId={randomGame.id}
+                      className="object-contain h-[auto] rounded"
                     />
                   )}
-
-                  <div className=" flex h-[23%] w-full justify-between mt-auto">
-                    {screenshots?.[1] && (
-                      <div className="pr-2">
-                        <img
-                          src={screenshots[1].imageUrl}
-                          alt={`${name} Screenshot`}
-                          className=" rounded shadow-md"
-                        />
-                      </div>
-                    )}
-                    {screenshots?.[2] && (
-                      <div className="pr-2">
-                        <img
-                          src={screenshots[2].imageUrl}
-                          alt={`${name} Screenshot`}
-                          className=" rounded shadow-md"
-                        />
-                      </div>
-                    )}
-                    {screenshots?.[3] && (
-                      <div className="relative group cursor-pointer">
-                        <img
-                          src={screenshots[3].imageUrl}
-                          alt={`${name} Screenshot`}
-                          className="rounded shadow-md transition duration-300 group-hover:brightness-50"
-                        />
-                        <p className="opacity-0 group-hover:opacity-100 absolute inset-0 flex justify-center items-center text-sm italic font-semibold text-white transition-opacity duration-300 pointer-events-none">
-                          See More
-                        </p>
-                      </div>
-                    )}
-                  </div>
                 </div>
 
+
                 <div
-                  className="flex flex-col pl-2 "
+                  className="flex flex-col pl-6 "
                   style={{ height: imgHeight }}
                 >
                   <div className="h-[75%] overflow-hidden">
@@ -460,13 +415,13 @@ const HomePage = () => {
                         );
                         if (!mainDeveloper) return null;
                         return (
-                          <ul className="italic font-light text-left">
+                          <ul className="italic font-light text-xl text-left">
                             <li
                               key={mainDeveloper.company.id}
                               className="text-left"
                             >
                               <button
-                                className="italic pb-2 hover:underline hover:text-primaryPurple-500 text-left inline-block whitespace-normal"
+                                className="italic hover:underline hover:text-primaryPurple-500 text-left inline-block whitespace-normal"
                                 onClick={() =>
                                   handleDeveloperClick(mainDeveloper.company.id)
                                 }
@@ -478,34 +433,34 @@ const HomePage = () => {
                         );
                       })()}
 
-                    <p className=" font-semibold">
+                    <p className="pt-2 text-lg font-light ">
                       {genres?.length > 0
                         ? genres.map((genre) => genre.name).join(", ")
                         : "No genres available"}
                     </p>
 
 
-                    <p className=" font-semibold">
+                    <p className=" font-light text-lg">
                       {platforms?.length > 0
                         ? platforms.map((platform) => platform.name).join(", ")
                         : "No genres available"}
                     </p>
 
-{platforms?.length > 0 && (
-  <div className="gap-2 w-auto">
-    {platforms.map((platform, index) => (
-      <img
-        key={index}
-        src={platform.platformIcon}
-        alt={`${platform.name} icon`}
-        className="w-auto h-auto rounded shadow-md transition duration-300 group-hover:brightness-50"
-      />
-    ))}
-  </div>
-)}
+                    {/* {platforms?.length > 0 && (
+                      <div className="gap-2 w-auto">
+                        {platforms.map((platform, index) => (
+                          <img
+                            key={index}
+                            src={platform.platformIcon}
+                            alt={`${platform.name} icon`}
+                            className="w-auto h-auto rounded shadow-md transition duration-300 group-hover:brightness-50"
+                          />
+                        ))}
+                      </div>
+                    )} */}
 
 
-                    <p className="font-light overflow-hidden text-ellipsis line-clamp-3 pr-8 text-md max-w-[75%]">
+                    <p className="pt-4 pr-2 text-xl font-light overflow-hidden text-ellipsis line-clamp-5 text-md max-w-[100%]">
                       {summary}
                     </p>
                   </div>
@@ -521,16 +476,76 @@ const HomePage = () => {
                       </span>
                     </div>
 
-                    <div className="flex ml-auto">
+                    {/* <div className="flex ml-auto">
                       <button
                         onClick={navigateToGamePage}
                         className="bg-primaryPurple-500 rounded-lg w-24 h-6 "
                       >
                         See More
                       </button>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
+
+
+                <div
+                  className="flex flex-col pl-2"
+                  style={{ height: imgHeight }}
+                >
+
+                  <div className="relative h-[80%] overflow-hidden">
+                    {screenshots?.[0] && (
+                      <img
+                        src={screenshots[0].imageUrl}
+                        alt={`${name} Screenshot`}
+                        className="absolute inset-0 pb-2 w-full h-full object-cover object-center rounded"
+                      />
+                    )}
+                  </div>
+
+                  <div className=" flex h-[20%] w-full justify-between mt-auto ">
+                    {screenshots?.[0] && (
+                      <div className="pr-2">
+                        <img
+                          src={screenshots[0].imageUrl}
+                          alt={`${name} Screenshot`}
+                          className="rounded cursor-pointer border-2"
+                        />
+                      </div>
+                    )}
+                    {screenshots?.[1] && (
+                      <div className="pr-2">
+                        <img
+                          src={screenshots[1].imageUrl}
+                          alt={`${name} Screenshot`}
+                          className="rounded cursor-pointer"
+                        />
+                      </div>
+                    )}
+                    {screenshots?.[2] && (
+                      <div className="pr-2">
+                        <img
+                          src={screenshots[2].imageUrl}
+                          alt={`${name} Screenshot`}
+                          className=" rounded cursor-pointer"
+                        />
+                      </div>
+                    )}
+                    {screenshots?.[3] && (
+                      <div className="relative group cursor-pointer">
+                        <img
+                          src={screenshots[3].imageUrl}
+                          alt={`${name} Screenshot`}
+                          className="rounded rounded cursor-pointer"
+                        />                        
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+
+
+
               </div>
             </div>
           </div>
