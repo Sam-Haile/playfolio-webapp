@@ -213,9 +213,12 @@ const HomePage = () => {
     setLoading(true);
 
     try {
-      const gameResponse = await axios.post(`${import.meta.env.VITE_API_URL}/api/game`, {
-        id: randomGame.id,
-      });
+      const gameResponse = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/game`,
+        {
+          id: randomGame.id,
+        }
+      );
 
       setGameDetails(gameResponse.data);
 
@@ -330,7 +333,7 @@ const HomePage = () => {
             <TrendingGames slides={trendingGames} />
           </div>
 
-          <HorizontalLine width="full" marginBottom="mb-4" marginTop="mt-8" />
+          <HorizontalLine width="full" marginBottom="mb-4" marginTop="mt-4" />
 
           <div className=" relative ">
             {/* Background Image */}
@@ -340,7 +343,7 @@ const HomePage = () => {
                 style={{ backgroundImage: `url(${screenshots[0].imageUrl})` }}
               />
             )}
-            <h1 className="relative text-2xl font-bold pt-8 pb-8 z-20">
+            <h1 className="relative text-2xl font-bold pb-4 z-20">
               Your Backlog Game of the Day
             </h1>
 
@@ -398,7 +401,6 @@ const HomePage = () => {
                   )}
                 </div>
 
-
                 <div
                   className="flex flex-col pl-6 "
                   style={{ height: imgHeight }}
@@ -439,7 +441,6 @@ const HomePage = () => {
                         : "No genres available"}
                     </p>
 
-
                     <p className=" font-light text-lg">
                       {platforms?.length > 0
                         ? platforms.map((platform) => platform.name).join(", ")
@@ -458,7 +459,6 @@ const HomePage = () => {
                         ))}
                       </div>
                     )} */}
-
 
                     <p className="pt-4 pr-2 text-xl font-light overflow-hidden text-ellipsis line-clamp-5 text-md max-w-[100%]">
                       {summary}
@@ -487,12 +487,10 @@ const HomePage = () => {
                   </div>
                 </div>
 
-
                 <div
                   className="flex flex-col pl-2"
                   style={{ height: imgHeight }}
                 >
-
                   <div className="relative h-[80%] overflow-hidden">
                     {screenshots?.[0] && (
                       <img
@@ -537,20 +535,16 @@ const HomePage = () => {
                           src={screenshots[3].imageUrl}
                           alt={`${name} Screenshot`}
                           className="rounded rounded cursor-pointer"
-                        />                        
+                        />
                       </div>
                     )}
                   </div>
                 </div>
-
-
-
-
               </div>
             </div>
           </div>
 
-          <HorizontalLine width="full" marginBottom="mb-8" marginTop="mt-4" />
+          <HorizontalLine width="full" marginBottom="mb-4" marginTop="mt-4" />
 
           <div className="min-h-[200px] flex justify-center items-center border border-4 rounded-lg border-dashed border-darkGray">
             <p className="font-bold">
@@ -562,9 +556,25 @@ const HomePage = () => {
             </p>
           </div>
 
-          <HorizontalLine width="full" marginBottom="mb-8" marginTop="mt-8" />
+          <HorizontalLine width="full" marginBottom="mb-4" marginTop="mt-4" />
 
+          <h1 className="relative text-2xl font-bold pb-4 z-20">Events</h1>
           <Event events={currentEvents} />
+
+          <HorizontalLine width="full" marginBottom="mb-4" marginTop="mt-4" />
+
+          <div className="w-full">
+            <h1 className="relative text-2xl font-bold pb-4 z-20">Discover</h1>
+            <p className="font-light text-lg ">
+              View handpicked titles based on your interests,
+              <br />
+              and explore your collection
+            </p>
+
+            
+          </div>
+
+          <HorizontalLine width="full" marginBottom="mb-4" marginTop="mt-4" />
         </div>
       </div>
 

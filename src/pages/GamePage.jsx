@@ -3,8 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Header from "../components/Header";
 import HorizontalLine from "../components/HorizontalLine";
-import EmblaCarousel from "../components/EmblaCarousel";
-import SimilarGamesCarousel from "../components/SimilarGamesCarousel";
 import "../styles/embla.css";
 import { Tilt } from "react-tilt";
 import SkeletonLoading from "../components/SkeletonLoading";
@@ -460,8 +458,6 @@ const GamePage = () => {
               {/* Additional Media */}
               <div className="my-12">
                 <h1 className="text-2xl font-semibold mb-2">Media</h1>
-                {/* EmblaCarousel */}
-                <EmblaCarousel slides={screenshots} options={{ loop: true }} />
               </div>
             </div>
 
@@ -550,25 +546,6 @@ const GamePage = () => {
             </div>
           </div>
 
-          <div className="relative text-white mx-[15%] mt-7">
-            {/* Main Content */}
-            {similarGames && similarGames.length > 0 && (
-              <h1 className="text-2xl font-semibold mb-2">Similar Games</h1>
-            )}
-            <div className="relative z-20">
-              <div className="w-full">
-                <div className="absolute top-0 left-0 h-full w-16 bg-gradient-to-r from-customBlack via-transparent to-transparent z-10 pointer-events-none"></div>
-                <div className="absolute top-0 right-0 h-full w-16 bg-gradient-to-l from-customBlack via-transparent to-transparent z-10 pointer-events-none"></div>
-                {/* Add carousel for similar games */}
-                {similarGames && similarGames.length > 0 && (
-                  <SimilarGamesCarousel
-                    slides={similarGames}
-                    onGameClick={handleSimilarGameClick}
-                  />
-                )}
-              </div>
-            </div>
-          </div>
           <Footer />
         </div>
       </div>
