@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 function CenterMode({ games = [] }) {
   const navigate = useNavigate();
+
   const settings = {
     className: "center",
     centerMode: true,
@@ -25,16 +26,23 @@ function CenterMode({ games = [] }) {
       <Slider {...settings}>
         {games.map((game) => (
           <div key={game.id} className="px-2">
-            <div className="flex flex-cols-[50%_auto]">
-              <div className="flex-cols ">
-                <p className="text-xs text-center text-gray-400 mb-2 line-clamp-2">
-                  {game.genres?.map((genre) => genre.name).join(", ") ||
-                    "No genres"}
-                </p>
-                <p>{game.summary}</p>
-              </div>
+            <div className="flex flex-cols-2 h-auto">
+              <div className="bg-black w-1/2">
+              {game.heroes?.url ? (
+                  <img
+                    src={game.heroes.url}
+                    alt={`${game.name} hero`}
+                    className=""
+                  />
+                ) : (
+                  <div className="text-white p-2">No hero image found</div>
+                )}
 
-              <div>images</div>
+           </div>
+
+              <div className="w-1/2">
+                v
+              </div>
             </div>
           </div>
         ))}
@@ -44,3 +52,4 @@ function CenterMode({ games = [] }) {
 }
 
 export default CenterMode;
+

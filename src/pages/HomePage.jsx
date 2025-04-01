@@ -107,7 +107,8 @@ const HomePage = () => {
           ids: gameIds,
         });
   
-        setRecommendedGames(gameData);
+        console.log("Recommended games:", response.data);
+        setRecommendedGames(response.data);
       } catch (err) {
         console.error("Error loading recommended games:", err.message);
       }
