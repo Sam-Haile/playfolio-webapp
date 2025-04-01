@@ -97,17 +97,16 @@ const HomePage = () => {
   
   useEffect(() => {
     const loadRecommendations = async () => {
-      const gameIds = [7346, 1020, 1234, 4567, 7890]; // Example IDs
+      // Example array of IDs
+      const gameIds = [7346, 1020, 1234, 4567, 7890];
   
       try {
-        const responses = await Promise.all(
-          gameIds.map((id) =>
-            axios.post(`${import.meta.env.VITE_API_URL}/api/game`, { id })
-          )
-        );
+        // Send all IDs together in one request
+        const response = await axios.post(
+          `${import.meta.env.VITE_API_URL}/api/games/ids`, {
+          ids: gameIds,
+        });
   
-        const gameData = responses.map((res) => res.data);
-        console.log("Recommended games:", gameData);
         setRecommendedGames(gameData);
       } catch (err) {
         console.error("Error loading recommended games:", err.message);
@@ -116,6 +115,7 @@ const HomePage = () => {
   
     loadRecommendations();
   }, []);
+  
   
 
   // Fetch random game for the days platforms
