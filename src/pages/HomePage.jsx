@@ -3,6 +3,7 @@ import HorizontalLine from "../components/HorizontalLine";
 import TrendingGames from "../components/TrendingGames";
 import Event from "../components/Events";
 import Footer from "../components/Footer";
+import CenterMode from "../components/CenterMode";
 import {
   fetchTrendingGames,
   fetchEvents,
@@ -70,6 +71,7 @@ function getStoredRandomGame() {
   }
 }
 
+
 function storeRandomGame(game) {
   const today = new Date().toISOString().split("T")[0];
   const payload = { game, dateString: today };
@@ -91,6 +93,30 @@ const HomePage = () => {
   const [imgHeight, setImgHeight] = useState(0);
   const [backlogDate, setBacklogDate] = useState(null);
   const [platforms, setPlatforms] = useState([]);
+  const [recommendedGames, setRecommendedGames] = useState([]);
+  
+  useEffect(() => {
+    const loadRecommendations = async () => {
+      const gameIds = [7346, 1020, 1234, 4567, 7890]; // Example IDs
+  
+      try {
+        const responses = await Promise.all(
+          gameIds.map((id) =>
+            axios.post(`${import.meta.env.VITE_API_URL}/api/game`, { id })
+          )
+        );
+  
+        const gameData = responses.map((res) => res.data);
+        console.log("Recommended games:", gameData);
+        setRecommendedGames(gameData);
+      } catch (err) {
+        console.error("Error loading recommended games:", err.message);
+      }
+    };
+  
+    loadRecommendations();
+  }, []);
+  
 
   // Fetch random game for the days platforms
   useEffect(() => {
@@ -104,7 +130,6 @@ const HomePage = () => {
           }
         );
         setPlatforms(response.data);
-        console.log("Fetched platforms:", response.data);
       } catch (error) {
         console.error("Error fetching platforms:", error);
       }
@@ -566,11 +591,10 @@ const HomePage = () => {
           <div className="w-full">
             <h1 className="relative text-2xl font-bold pb-4 z-20">Discover</h1>
             <p className="font-light text-lg ">
-              View handpicked titles based on your interests,
-              <br />
-              and explore your collection
+              View handpicked titles based on your interests, and explore your collection
             </p>
 
+            <CenterMode games={recommendedGames} />
             
           </div>
 
