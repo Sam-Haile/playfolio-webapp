@@ -117,8 +117,6 @@ const HomePage = () => {
     loadRecommendations();
   }, []);
   
-  
-
   // Fetch random game for the days platforms
   useEffect(() => {
     const fetchPlatforms = async () => {
