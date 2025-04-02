@@ -98,7 +98,7 @@ const HomePage = () => {
   useEffect(() => {
     const loadRecommendations = async () => {
       // Example array of IDs
-      const gameIds = [7346, 1020, 1234, 4567, 7890];
+      const gameIds = [7346, 259252, 1026, 4567, 7599];
   
       try {
         // Send all IDs together in one request
@@ -588,8 +588,8 @@ const HomePage = () => {
           <HorizontalLine width="full" marginBottom="mb-4" marginTop="mt-4" />
 
           <div className="w-full">
-            <h1 className="relative text-2xl font-bold pb-4 z-20">Discover</h1>
-            <p className="font-light text-lg ">
+            <h1 className="relative text-2xl font-bold z-20">Discover</h1>
+            <p className="font-light text-lg pb-4">
               View handpicked titles based on your interests, and explore your collection
             </p>
 
