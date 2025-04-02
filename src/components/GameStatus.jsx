@@ -24,7 +24,6 @@ const GameStatus = ({ gameId }) => {
   // ✅ Load status when component mounts
   useEffect(() => {
     if (user) {
-      console.log("Authenticated user:", user.uid);
       loadGameStatus();
     }
     else {

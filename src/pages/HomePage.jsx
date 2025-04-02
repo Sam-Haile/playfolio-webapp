@@ -71,20 +71,20 @@ function getStoredRandomGame() {
   }
 }
 
-
 function storeRandomGame(game) {
   const today = new Date().toISOString().split("T")[0];
   const payload = { game, dateString: today };
   localStorage.setItem("dailyRandomGame", JSON.stringify(payload));
 }
 
+
 const HomePage = () => {
   const { user } = useAuth();
   const [backlogGames, setBacklogGames] = useState([]);
   const [trendingGames, setTrendingGames] = useState([]);
   const [currentEvents, setEvents] = useState([]);
-  const [randomGame, setRandomGame] = useState(null);
-  const [randomGameDetails, setGameDetails] = useState(null);
+  const [gameOfDayId, setGameOfDayId] = useState(null);
+  const [gameOfDay, setGameOfDay] = useState(null);
   const [screenshots, setScreenshots] = useState([]); // Store artworks separately
   const [loading, setLoading] = useState(true); // Tracks if data is being fetched
   const [heroes, setHeroes] = useState([]); // Store heroes
@@ -94,38 +94,39 @@ const HomePage = () => {
   const [backlogDate, setBacklogDate] = useState(null);
   const [platforms, setPlatforms] = useState([]);
   const [recommendedGames, setRecommendedGames] = useState([]);
-  
+
   useEffect(() => {
     const loadRecommendations = async () => {
       // Example array of IDs
       const gameIds = [7346, 259252, 1026, 4567, 7599];
-  
+
       try {
         // Send all IDs together in one request
         const response = await axios.post(
-          `${import.meta.env.VITE_API_URL}/api/games/ids`, {
-          ids: gameIds,
-        });
-  
-        console.log("Recommended games:", response.data);
+          `${import.meta.env.VITE_API_URL}/api/games/ids`,
+          {
+            ids: gameIds,
+          }
+        );
+
         setRecommendedGames(response.data);
       } catch (err) {
         console.error("Error loading recommended games:", err.message);
       }
     };
-  
+
     loadRecommendations();
   }, []);
-  
+
   // Fetch random game for the days platforms
   useEffect(() => {
     const fetchPlatforms = async () => {
-      if (!randomGame || !randomGame.id) return;
+      if (!gameOfDayId || !gameOfDayId.id) return;
       try {
         const response = await axios.post(
           `${import.meta.env.VITE_API_URL}/api/platforms`,
           {
-            gameId: randomGame.id,
+            gameId: gameOfDayId.id,
           }
         );
         setPlatforms(response.data);
@@ -135,14 +136,13 @@ const HomePage = () => {
     };
 
     fetchPlatforms();
-  }, [randomGame]);
+  }, [gameOfDayId]);
 
   // Fetch trending games and events
   useEffect(() => {
     const fetchGames = async () => {
       try {
         const trendingData = await fetchTrendingGames(20);
-        console.log(trendingData);
         const currentEvents = await fetchEvents(4);
         setTrendingGames(Array.isArray(trendingData) ? trendingData : []);
         setEvents(Array.isArray(currentEvents) ? currentEvents : []);
@@ -176,15 +176,14 @@ const HomePage = () => {
       const storedGame = getStoredRandomGame();
       if (storedGame) {
         // If we already have a random game
-        setRandomGame(storedGame);
+        setGameOfDayId(storedGame);
       } else {
         // Selecting a new random game
         const randomIndex = Math.floor(Math.random() * backlogGames.length);
         const selectedGame = backlogGames[randomIndex];
 
-        console.log("Selected Games Data:" + selectedGame);
         //Update state and store in local storage
-        setRandomGame(selectedGame);
+        setGameOfDayId(selectedGame);
         storeRandomGame(selectedGame);
       }
     }
@@ -192,16 +191,16 @@ const HomePage = () => {
 
   //Fetch the details of the random game
   useEffect(() => {
-    if (!randomGame || !randomGame.id) return;
+    if (!gameOfDayId || !gameOfDayId.id) return;
 
     fetchGameData();
-  }, [randomGame]);
+  }, [gameOfDayId]);
 
   // Fetch date backlog game was added
   useEffect(() => {
     const fetchAddedDate = async () => {
       if (!user) return;
-      if (!randomGame || !randomGame.id) return;
+      if (!gameOfDayId || !gameOfDayId.id) return;
 
       try {
         const userGameRef = doc(
@@ -209,7 +208,7 @@ const HomePage = () => {
           "users",
           user.uid,
           "gameStatuses",
-          randomGame.id
+          gameOfDayId.id
         );
         const docSnap = await getDoc(userGameRef);
 
@@ -230,59 +229,22 @@ const HomePage = () => {
     };
 
     fetchAddedDate();
-  }, [user, randomGame?.id]);
+  }, [user, gameOfDayId?.id]);
 
   // Fetch details of backlog game of the day
   const fetchGameData = async () => {
-    if (!randomGame?.id) return;
+    if (!gameOfDayId?.id) return;
 
     setLoading(true);
 
     try {
       const gameResponse = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/game`,
-        {
-          id: randomGame.id,
-        }
+        `${import.meta.env.VITE_API_URL}/api/games/ids`,
+        { ids: [gameOfDayId.id] }
       );
+      
 
-      setGameDetails(gameResponse.data);
-
-      // Fetch screenshots using the cached function
-      const sortedScreenshots = await fetchScreenshotsCached(randomGame.id);
-
-      // Fetch heroes and logos (keeping your current logic)
-      let heroesResponse = { data: { heroes: [] } };
-      let logosResponse = { data: { logos: [] } };
-
-      try {
-        heroesResponse = await axios.post(
-          `${import.meta.env.VITE_API_URL}/api/steamgriddb/heroes`,
-          { gameName: gameResponse.data.name }
-        );
-      } catch (err) {
-        console.warn("Error fetching heroes:", err.message);
-      }
-
-      try {
-        logosResponse = await axios.post(
-          `${import.meta.env.VITE_API_URL}/api/steamgriddb/logos`,
-          { gameName: gameResponse.data.name }
-        );
-      } catch (err) {
-        console.warn("Error fetching logos:", err.message);
-      }
-
-      // Update states
-      setScreenshots(sortedScreenshots);
-      setHeroes(
-        Array.isArray(heroesResponse.data.heroes)
-          ? heroesResponse.data.heroes
-          : []
-      );
-      setLogos(
-        Array.isArray(logosResponse.data.logos) ? logosResponse.data.logos : []
-      );
+      setGameOfDay(gameResponse.data);
     } catch (err) {
       console.error("Error fetching game data:", err.message);
     } finally {
@@ -293,12 +255,12 @@ const HomePage = () => {
   const navigate = useNavigate();
 
   const navigateToGamePage = () => {
-    if (!randomGame || !randomGame.id) {
+    if (!gameOfDayId || !gameOfDayId.id) {
       console.log("Random game is still loading...");
       return;
     }
 
-    navigate(`/game/${randomGame.id}`);
+    navigate(`/game/${gameOfDayId.id}`);
   };
   const {
     name,
@@ -308,7 +270,7 @@ const HomePage = () => {
     releaseYear,
     involvedCompanies,
     developerLogo,
-  } = randomGameDetails ?? {};
+  } = gameOfDay ?? {};
 
   useEffect(() => {
     const updateHeight = () => {
@@ -419,97 +381,23 @@ const HomePage = () => {
                     <GameCard
                       ref={imgRef}
                       onLoad={() => setImgHeight(imgRef.current.clientHeight)}
-                      src={`https://images.igdb.com/igdb/image/upload/t_1080p/${cover.image_id}.jpg`}
+                      src={gameOfDay.coverUrl}
                       alt={`${name} Logo`}
-                      gameId={randomGame.id}
+                      gameId={gameOfDay.id}
                       className="object-contain h-[auto] rounded"
                     />
                   )}
                 </div>
 
                 <div
-                  className="flex flex-col pl-6 "
+                  className="flex flex-col pl-6 bg-customGray-900/50 rounded ml-2"
                   style={{ height: imgHeight }}
                 >
                   <div className="h-[75%] overflow-hidden">
-                    <h1 className="font-semibold text-2xl">
-                      {name} <span className="italic">({releaseYear})</span>
-                    </h1>
 
-                    {involvedCompanies &&
-                      (() => {
-                        const mainDeveloper = involvedCompanies.find(
-                          (c) => c.developer
-                        );
-                        if (!mainDeveloper) return null;
-                        return (
-                          <ul className="italic font-light text-xl text-left">
-                            <li
-                              key={mainDeveloper.company.id}
-                              className="text-left"
-                            >
-                              <button
-                                className="italic hover:underline hover:text-primaryPurple-500 text-left inline-block whitespace-normal"
-                                onClick={() =>
-                                  handleDeveloperClick(mainDeveloper.company.id)
-                                }
-                              >
-                                {mainDeveloper.company.name}
-                              </button>
-                            </li>
-                          </ul>
-                        );
-                      })()}
 
-                    <p className="pt-2 text-lg font-light ">
-                      {genres?.length > 0
-                        ? genres.map((genre) => genre.name).join(", ")
-                        : "No genres available"}
-                    </p>
 
-                    <p className=" font-light text-lg">
-                      {platforms?.length > 0
-                        ? platforms.map((platform) => platform.name).join(", ")
-                        : "No genres available"}
-                    </p>
 
-                    {/* {platforms?.length > 0 && (
-                      <div className="gap-2 w-auto">
-                        {platforms.map((platform, index) => (
-                          <img
-                            key={index}
-                            src={platform.platformIcon}
-                            alt={`${platform.name} icon`}
-                            className="w-auto h-auto rounded shadow-md transition duration-300 group-hover:brightness-50"
-                          />
-                        ))}
-                      </div>
-                    )} */}
-
-                    <p className="pt-4 pr-2 text-xl font-light overflow-hidden text-ellipsis line-clamp-5 text-md max-w-[100%]">
-                      {summary}
-                    </p>
-                  </div>
-
-                  <div className="h-auto flex mt-auto">
-                    <div className="mt-auto font-light text-xs hidden lg:block">
-                      Added to backlog:{" "}
-                      <span className="italic">
-                        {backlogDate?.toLocaleDateString()}
-                      </span>
-                      <span className="mt-auto ml-4 cursor-pointer font-semibold text-primaryPurple-500">
-                        Remove Title
-                      </span>
-                    </div>
-
-                    {/* <div className="flex ml-auto">
-                      <button
-                        onClick={navigateToGamePage}
-                        className="bg-primaryPurple-500 rounded-lg w-24 h-6 "
-                      >
-                        See More
-                      </button>
-                    </div> */}
                   </div>
                 </div>
 
@@ -592,11 +480,10 @@ const HomePage = () => {
           <div className="w-full">
             <h1 className="relative text-2xl font-bold z-20">Discover</h1>
             <p className="font-light text-lg pb-4">
-              View handpicked titles based on your interests, and explore your collection
+              View handpicked titles based on your interests
             </p>
 
             <CenterMode games={recommendedGames} />
-            
           </div>
 
           <HorizontalLine width="full" marginBottom="mb-4" marginTop="mt-4" />
