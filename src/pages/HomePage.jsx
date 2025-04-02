@@ -141,7 +141,8 @@ const HomePage = () => {
   useEffect(() => {
     const fetchGames = async () => {
       try {
-        const trendingData = await fetchTrendingGames(6);
+        const trendingData = await fetchTrendingGames(20);
+        console.log(trendingData);
         const currentEvents = await fetchEvents(4);
         setTrendingGames(Array.isArray(trendingData) ? trendingData : []);
         setEvents(Array.isArray(currentEvents) ? currentEvents : []);
@@ -181,6 +182,7 @@ const HomePage = () => {
         const randomIndex = Math.floor(Math.random() * backlogGames.length);
         const selectedGame = backlogGames[randomIndex];
 
+        console.log("Selected Games Data:" + selectedGame);
         //Update state and store in local storage
         setRandomGame(selectedGame);
         storeRandomGame(selectedGame);
