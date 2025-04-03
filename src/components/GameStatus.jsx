@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../AuthContext"; // ✅ Get logged-in user
 import { db } from "../firebaseConfig";
-import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import PlayingIcon from "../assets/icons/PlayingIcon";
 import BacklogIcon from "../assets/icons/BacklogIcon";
 import WishlistIcon from "../assets/icons/WishlistIcon";
 import DroppedIcon from "../assets/icons/DroppedIcon";
+import { doc, setDoc, getDoc, serverTimestamp, increment, runTransaction } from "firebase/firestore";
 
 const GameStatus = ({ gameId }) => {
   const { user } = useAuth();
@@ -44,33 +44,57 @@ const GameStatus = ({ gameId }) => {
     }
   };
 
-  // ✅ Save status to Firestore
+
+  // ✅ Save status to Firestore and maintain counts
   const updateGameStatus = async (status) => {
     if (!user) {
-      //FIX: NAVIGATE TO SIGN UP PAGE
       alert("You must be logged in to save your game status!");
       return;
     }
-
+  
+    const userGameRef = doc(db, "users", user.uid, "gameStatuses", gameId);
+    const countsRef = doc(db, "users", user.uid, "statusesCount", "counts");
+  
     try {
-      const userGameRef = doc(db, "users", user.uid, "gameStatuses", gameId);
-
-      if (selectedStatus === status) {
-        // ✅ If already selected, remove from Firestore and reset UI
-        await setDoc(userGameRef, { status: "", updatedAt: serverTimestamp() }); // Set empty status in Firestore
-        setSelectedStatus(null); // Reset UI state
-        console.log(`❌ Removed game status for ${gameId}`);
-      } else {
-        // ✅ Otherwise, update the status
-        await setDoc(userGameRef, { status, updatedAt: serverTimestamp() }); 
-        setSelectedStatus(status);
-        console.log(`✅ Updated game status for ${gameId} to: ${status}`);
-      }
+      await runTransaction(db, async (transaction) => {
+        const gameDoc = await transaction.get(userGameRef);
+        const countsDoc = await transaction.get(countsRef);
+  
+        const previousStatus = gameDoc.exists() ? gameDoc.data().status : null;
+  
+        const updates = { updatedAt: serverTimestamp() };
+  
+        if (previousStatus === status) {
+          // User clicked the same status; remove it
+          updates.status = "";
+          setSelectedStatus(null);
+  
+          if (previousStatus) {
+            transaction.set(countsRef, { [previousStatus]: increment(-1) }, { merge: true });
+          }
+  
+          console.log(`❌ Removed game status for ${gameId}`);
+        } else {
+          updates.status = status;
+          setSelectedStatus(status);
+  
+          if (previousStatus) {
+            // decrement the old status
+            transaction.set(countsRef, { [previousStatus]: increment(-1) }, { merge: true });
+          }
+          // increment new status
+          transaction.set(countsRef, { [status]: increment(1) }, { merge: true });
+  
+          console.log(`✅ Updated game status for ${gameId} to: ${status}`);
+        }
+  
+        transaction.set(userGameRef, updates, { merge: true });
+      });
     } catch (error) {
       console.error("Error saving game status:", error);
     }
   };
-
+  
 
   return (
     <div className="flex flex-col">

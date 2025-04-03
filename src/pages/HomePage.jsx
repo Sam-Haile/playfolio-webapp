@@ -9,14 +9,39 @@ import {
   fetchEvents,
 } from "../services/helperFunctions";
 import { useEffect, useState, useRef } from "react";
+import { useAuth } from "../useAuth";
 import axios from "axios";
-import { Tilt } from "react-tilt";
 import GameOfTheDay from "../components/GameOfTheDay";
+import { getAuth } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth, db } from "../firebaseConfig";
+import { doc, getDoc } from "firebase/firestore";
 
 const HomePage = () => {
   const [trendingGames, setTrendingGames] = useState([]);
   const [currentEvents, setEvents] = useState([]);
   const [recommendedGames, setRecommendedGames] = useState([]);
+  const { user } = useAuth();
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        try {
+          const userDocRef = doc(db, "users", currentUser.uid);
+          const docSnap = await getDoc(userDocRef);
+          if (docSnap.exists()) {
+            setUserData(docSnap.data());
+          }
+        } catch (err) {
+          console.error("Error fetching user doc:", err);
+        }
+      } else {
+        setUserData(null);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const loadRecommendations = async () => {
@@ -72,7 +97,7 @@ const HomePage = () => {
         <div className="mx-[10%]">
           <div className="flex justify-between mt-28">
             <div>
-              <h1 className="text-4xl font-bold">Hello Name, Welcome Back!</h1>
+              <h1 className="text-4xl font-bold">{`Hello ${user?.username}, Welcome Back!`}</h1>
               <p className="font-light text-lg pt-2">
                 Discover trending games, track your progress, <br /> and explore your collection
               </p>
@@ -83,8 +108,8 @@ const HomePage = () => {
 
           <HorizontalLine width="full" marginBottom="0" marginTop="mt-28" />
 
-          <div>
-            <h1 className="text-2xl font-bold py-4">Currently Trending</h1>
+          <div className="pt-8">
+            {/* <h1 className="text-2xl font-bold py-4">Currently Trending</h1> */}
             <TrendingGames slides={trendingGames} />
           </div>
 

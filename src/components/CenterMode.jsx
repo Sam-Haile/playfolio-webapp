@@ -128,7 +128,7 @@ function GameSlide({ game, navigate }) {
               </div>
 
               <div className="flex">
-                <p className="line-clamp-3 text-md font-light w-[80%]">
+                <p className="line-clamp-3 cursor-text select-text text-md font-light w-[80%]">
                   {game.storyline || game.summary || "No summary available."}
                 </p>
                 <div className="flex gap-2 ml-auto pb-2 mr-2 overflow-hidden" onClick={(e) => e.stopPropagation()}>

@@ -87,9 +87,9 @@ const GameOfTheDay = () => {
     genres: ["Shooter"],
     platforms: ["Xbox Series X|S", "PC (Microsoft Windows)", "PlayStation 5"],
     summary:
-      "FragPunk is the new free-to-play 5v5 hero shooter poised to break the rules of combat. What makes FragPunk different is the introduction of Shard Cards that can affect the playing field for all players. Shard Cards are voted on by players before each round and can change the entire playing field – from making player’s heads big to your team into zombies when you are downed. FragPunk has a low barrier entry but a high-level of gunplay mechanics making it a great choice for casual gamers to hardcore FPS fans alike.",
-    totalRating: 76.5, // Added totalRating
-    rating_count: 12, // Added rating_count
+      "FragPunk is the new free-to-play 5v5 hero shooter poised to break the rules of combat. What makes FragPunk different is the introduction of Shard Cards that can affect the playing field for all players...",
+    totalRating: 76.5,
+    rating_count: 12,
     screenshots: [
       "//images.igdb.com/igdb/image/upload/t_1080p/scsoeo.jpg",
       "//images.igdb.com/igdb/image/upload/t_1080p/scsoep.jpg",
@@ -97,7 +97,9 @@ const GameOfTheDay = () => {
       "//images.igdb.com/igdb/image/upload/t_1080p/scsoes.jpg",
       "//images.igdb.com/igdb/image/upload/t_1080p/scsoeq.jpg",
     ],
+    backlogDate: new Date(), // Temporary backlog date for testing
   };
+  
 
   // When using temporary data, immediately set gameOfDay to tempGame.
   useEffect(() => {
@@ -212,6 +214,7 @@ const GameOfTheDay = () => {
     return <div>Loading game data...</div>;
   }
 
+
   return (
     <div className="relative">
       <div>
@@ -228,7 +231,7 @@ const GameOfTheDay = () => {
         <div
           className="absolute top-0 h-full w-[103%] pointer-events-none z-10 right-0"
           style={{
-            background: "linear-gradient(to left, #121212 5%, transparent 75%)",
+            background: "linear-gradient(to left, #121212 0%, transparent 65%)",
           }}
         ></div>
         <div
@@ -277,6 +280,7 @@ const GameOfTheDay = () => {
                 gameName={gameOfDay.name}
                 maxSize={"w-[50%]"}
                 minSize={"w-[35%]"}
+                marginLeft={"ml-0"}
                 />
               ) : (
                 <h1 className="font-semibold text-2xl">
@@ -286,7 +290,7 @@ const GameOfTheDay = () => {
               )}
             </div>
 
-            <div className="flex">
+            <div className="flex pt-4 pb-2">
               {Array(5)
                 .fill(0)
                 .map((_, i) => (
@@ -349,7 +353,7 @@ const GameOfTheDay = () => {
                   <img
                     src={gameOfDay?.screenshots?.[mainScreenshotIndex]}
                     alt={`${gameOfDay?.name} Screenshot`}
-                    className="w-full h-full object-cover rounded"
+                    className="w-full h-full max-h-[300px] object-cover rounded"
                   />
                 </div>
                 {/* Thumbnails Container */}
