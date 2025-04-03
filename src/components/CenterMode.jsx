@@ -1,12 +1,11 @@
-import React, { Component, useState } from "react";
+import React, { useState } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import GameCard from "./GameCard";
 import { useNavigate } from "react-router-dom";
 import ThumbsUp from "../assets/icons/ThumbsUp.jsx";
 import ThumbsDown from "../assets/icons/ThumbsDown.jsx";
-import StarRating from "../components/StarRating";
+import DynamicLogo from "./DynamicLogo.jsx";
 
 function CenterMode({ games = [] }) {
   const navigate = useNavigate();
@@ -18,7 +17,7 @@ function CenterMode({ games = [] }) {
     centerPadding: "0px",
     slidesToShow: 1,
     speed: 500,
-    draggable: false, // 🛑 Prevent mouse dragging
+    draggable: false, 
   };
 
   return (
@@ -79,7 +78,7 @@ function GameSlide({ game, navigate }) {
                 className="w-auto h-48 ml-12 z-1000 rounded"
               /> */}
               {game.logos?.url && (
-                <DynamicLogo url={game.logos.url} gameName={game.name} />
+                <DynamicLogo url={game.logos.url} gameName={game.name} maxSize={"w-96"} minSize={"w-60"}/>
               )}
             </div>
           </div>
@@ -161,7 +160,7 @@ function GameSlide({ game, navigate }) {
                   className={`w-auto object-contain mb-1 mt-1 h-full rounded cursor-pointer transition-opacity duration-300 ${
                     mainScreenshotIndex === index
                       ? "opacity-100"
-                      : "opacity-50 hover:opacity-100"
+                      : "brightness-50 hover:brightness-100"
                   }`}
                   alt={`Screenshot ${index}`}
                 />
@@ -182,26 +181,3 @@ function GameSlide({ game, navigate }) {
   );
 }
 
-const DynamicLogo = ({ url, gameName }) => {
-  const [widthClass, setWidthClass] = useState("w-60");
-
-  const handleLoad = (e) => {
-    const { naturalWidth, naturalHeight } = e.target;
-    const aspectRatio = naturalWidth / naturalHeight;
-
-    if (aspectRatio < 1.3) {
-      setWidthClass("w-60");
-    } else {
-      setWidthClass("w-96");
-    }
-  };
-
-  return (
-    <img
-      src={url}
-      alt={`${gameName} logo`}
-      onLoad={handleLoad}
-      className={`ml-4 h-auto self-auto ${widthClass}`}
-    />
-  );
-};

@@ -11,12 +11,10 @@ const GameCard = forwardRef(
 
     const handleCardClick = (event) => {
       if (isLoading) return;
-
       // Allow middle-clicks to work naturally
       if (event.button === 1 || event.ctrlKey || event.metaKey) {
         return;
       }
-
       event.preventDefault();
       navigate(gameUrl);
     };
@@ -27,13 +25,14 @@ const GameCard = forwardRef(
         target="_blank"
         rel="noopener noreferrer"
         onClick={handleCardClick}
-        ref={ref} // ✅ Ref attached here
         className={`hover:drop-shadow-[0_0_10px_rgba(44,44,44,255)] relative flex items-center justify-center cursor-pointer rounded-lg ${className} ${
           isLoading ? "bg-red-500 animate-pulse" : ""
         }`}
       >
         {!isLoading ? (
+          // Attach the ref to the <img> element so that its height can be measured.
           <img
+            ref={ref}
             loading="lazy"
             src={src}
             alt={alt}
@@ -42,7 +41,8 @@ const GameCard = forwardRef(
             draggable="false"
           />
         ) : (
-          <div className="w-full h-full"></div>
+          // When loading, attach the ref to the fallback container.
+          <div ref={ref} className="w-full h-full"></div>
         )}
 
         {showSheen && !isLoading && (

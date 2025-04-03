@@ -1,20 +1,37 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import { useAuth } from "../useAuth";
 import GameCard from "./GameCard";
 import { useNavigate } from "react-router-dom";
+import React from "react";
+import DynamicLogo from "./DynamicLogo";
 
-// Helper functions...
+// Helper functions…
 async function fetchBacklogGames(user) {
   if (!user) {
     console.error("User is not logged in or user object not available");
     return [];
   }
   try {
-    const userGameStatusesRef = collection(db, "users", user.uid, "gameStatuses");
-    const backlogQuery = query(userGameStatusesRef, where("status", "==", "Backlog"));
+    const userGameStatusesRef = collection(
+      db,
+      "users",
+      user.uid,
+      "gameStatuses"
+    );
+    const backlogQuery = query(
+      userGameStatusesRef,
+      where("status", "==", "Backlog")
+    );
     const querySnapshot = await getDocs(backlogQuery);
     const backlogGames = [];
     querySnapshot.forEach((docSnapshot) => {
@@ -45,16 +62,53 @@ const GameOfTheDay = () => {
   const { user } = useAuth();
   const [backlogGames, setBacklogGames] = useState([]);
   const [gameOfDay, setGameOfDay] = useState(null);
-  const [imgHeight, setImgHeight] = useState(0);
   const [platforms, setPlatforms] = useState([]);
   const [backlogDate, setBacklogDate] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [mainScreenshotIndex, setMainScreenshotIndex] = useState(0);
   const [detailsFetched, setDetailsFetched] = useState(false);
   const imgRef = useRef(null);
   const navigate = useNavigate();
 
-  // Fetch backlog games for the user
+  // Flag to control use of temporary data
+  const useTempData = true;
+
+  const tempGame = {
+    id: 1,
+    name: "FragPunk",
+    releaseYear: "2024",
+    heroes: {
+      url: "https://cdn2.steamgriddb.com/hero/3bd7875f994b1dd763d668f8d4816575.png",
+    },
+    coverUrl: "//images.igdb.com/igdb/image/upload/t_720p/co9gmx.jpg",
+    logos: {
+      url: "https://cdn2.steamgriddb.com/logo/79167346cb707b193dadbd67ab20855e.png",
+    },
+    genres: ["Shooter"],
+    platforms: ["Xbox Series X|S", "PC (Microsoft Windows)", "PlayStation 5"],
+    summary:
+      "FragPunk is the new free-to-play 5v5 hero shooter poised to break the rules of combat. What makes FragPunk different is the introduction of Shard Cards that can affect the playing field for all players. Shard Cards are voted on by players before each round and can change the entire playing field – from making player’s heads big to your team into zombies when you are downed. FragPunk has a low barrier entry but a high-level of gunplay mechanics making it a great choice for casual gamers to hardcore FPS fans alike.",
+    totalRating: 76.5, // Added totalRating
+    rating_count: 12, // Added rating_count
+    screenshots: [
+      "//images.igdb.com/igdb/image/upload/t_1080p/scsoeo.jpg",
+      "//images.igdb.com/igdb/image/upload/t_1080p/scsoep.jpg",
+      "//images.igdb.com/igdb/image/upload/t_1080p/scsoer.jpg",
+      "//images.igdb.com/igdb/image/upload/t_1080p/scsoes.jpg",
+      "//images.igdb.com/igdb/image/upload/t_1080p/scsoeq.jpg",
+    ],
+  };
+
+  // When using temporary data, immediately set gameOfDay to tempGame.
   useEffect(() => {
+    if (useTempData) {
+      setGameOfDay(tempGame);
+    }
+  }, [useTempData]);
+
+  // Only run the fetch calls if not using temporary data.
+  useEffect(() => {
+    if (useTempData) return;
     async function getData() {
       if (user) {
         const games = await fetchBacklogGames(user);
@@ -62,10 +116,10 @@ const GameOfTheDay = () => {
       }
     }
     getData();
-  }, [user]);
+  }, [user, useTempData]);
 
-  // Select game of the day from backlog or from local storage
   useEffect(() => {
+    if (useTempData) return;
     if (backlogGames.length > 0) {
       const storedGame = getStoredRandomGame();
       if (storedGame) {
@@ -77,10 +131,10 @@ const GameOfTheDay = () => {
         storeRandomGame(selectedGame);
       }
     }
-  }, [backlogGames]);
+  }, [backlogGames, useTempData]);
 
-  // Fetch detailed game data (only once per selected game)
   useEffect(() => {
+    if (useTempData) return;
     if (!gameOfDay || !gameOfDay.id || detailsFetched) return;
 
     const fetchGameData = async () => {
@@ -91,7 +145,6 @@ const GameOfTheDay = () => {
           { ids: [gameOfDay.id] }
         );
         console.log("Fetched Game Data:", gameResponse.data);
-        // Set gameOfDay to the detailed data (first element if array)
         setGameOfDay(gameResponse.data[0]);
         setDetailsFetched(true);
       } catch (err) {
@@ -102,10 +155,10 @@ const GameOfTheDay = () => {
     };
 
     fetchGameData();
-  }, [gameOfDay, detailsFetched]);
+  }, [gameOfDay, detailsFetched, useTempData]);
 
-  // Fetch additional data (platforms, backlog date)
   useEffect(() => {
+    if (useTempData) return;
     const fetchPlatforms = async () => {
       if (!gameOfDay || !gameOfDay.id) return;
       try {
@@ -119,13 +172,20 @@ const GameOfTheDay = () => {
       }
     };
     fetchPlatforms();
-  }, [gameOfDay]);
+  }, [gameOfDay, useTempData]);
 
   useEffect(() => {
+    if (useTempData) return;
     const fetchAddedDate = async () => {
       if (!user || !gameOfDay || !gameOfDay.id) return;
       try {
-        const userGameRef = doc(db, "users", user.uid, "gameStatuses", String(gameOfDay.id));
+        const userGameRef = doc(
+          db,
+          "users",
+          user.uid,
+          "gameStatuses",
+          String(gameOfDay.id)
+        );
         const docSnap = await getDoc(userGameRef);
         if (docSnap.exists()) {
           const data = docSnap.data();
@@ -138,21 +198,7 @@ const GameOfTheDay = () => {
       }
     };
     fetchAddedDate();
-  }, [user, gameOfDay]);
-
-  // Update image height on load and window resize
-  useEffect(() => {
-    const updateHeight = () => {
-      if (imgRef.current) {
-        setImgHeight(imgRef.current.clientHeight);
-      }
-    };
-    updateHeight();
-    window.addEventListener("resize", updateHeight);
-    return () => {
-      window.removeEventListener("resize", updateHeight);
-    };
-  }, []);
+  }, [user, gameOfDay, useTempData]);
 
   const navigateToGamePage = () => {
     if (!gameOfDay || !gameOfDay.id) {
@@ -168,54 +214,52 @@ const GameOfTheDay = () => {
 
   return (
     <div className="relative">
-      {/* Background Image */}
-      {gameOfDay?.cover && (
-        <div
-          className="absolute inset-0 bg-cover z-0 bg-center bg-no-repeat opacity-70"
-          style={{ backgroundImage: `url(${gameOfDay.cover.url})` }}
-        />
-      )}
-      <h1 className="relative text-2xl font-bold pb-4 z-20">
-        Your Backlog Game of the Day
-      </h1>
+      <div>
+        {gameOfDay?.heroes && (
+          <div
+            className="absolute inset-0 bg-cover z-0 bg-center bg-no-repeat opacity-70"
+            style={{ backgroundImage: `url(${gameOfDay.heroes.url})` }}
+          />
+        )}
+        <h1 className="relative text-2xl font-bold pb-4 z-20">
+          Your Backlog Game of the Day
+        </h1>
 
-      {/* Gradients */}
-      <div
-        className="absolute top-0 h-full w-[103%] pointer-events-none z-10 right-0"
-        style={{
-          background: "linear-gradient(to left, #121212 5%, transparent 50%)",
-        }}
-      ></div>
-      <div
-        className="absolute top-0 h-full w-[101%] pointer-events-none z-10 left-50"
-        style={{
-          background: "linear-gradient(to right, #121212 50%, transparent 70%)",
-        }}
-      ></div>
-      <div
-        className="absolute top-0 h-[50vh] w-[101%] pointer-events-none z-10"
-        style={{
-          background: "linear-gradient(to bottom, #121212 0%, transparent 20%)",
-        }}
-      ></div>
-      <div
-        className="absolute bottom-0 h-[50vh] w-[101%] pointer-events-none z-10"
-        style={{
-          background: "linear-gradient(to top,#121212 0%, transparent 20%)",
-        }}
-      ></div>
+        <div
+          className="absolute top-0 h-full w-[103%] pointer-events-none z-10 right-0"
+          style={{
+            background: "linear-gradient(to left, #121212 5%, transparent 75%)",
+          }}
+        ></div>
+        <div
+          className="absolute top-0 h-full w-[101%] pointer-events-none z-10 left-50"
+          style={{
+            background:
+              "linear-gradient(to right, #121212 50%, transparent 65%)",
+          }}
+        ></div>
+        <div
+          className="absolute top-0 h-[50vh] w-[101%] pointer-events-none z-10"
+          style={{
+            background:
+              "linear-gradient(to bottom, #121212 0%, transparent 15%)",
+          }}
+        ></div>
+        <div
+          className="absolute bottom-0 h-[50vh] w-[101%] pointer-events-none z-10"
+          style={{
+            background: "linear-gradient(to top,#121212 0%, transparent 15%)",
+          }}
+        ></div>
+      </div>
 
       <div className="bg-cover bg-center bg-no-repeat relative z-10 pb-10">
-        <div
-          className="grid grid-cols-[20%_40%_auto] z-10"
-          style={{ height: imgHeight || "auto" }}
-        >
-          <div className="relative z-50">
+        <div className="grid grid-cols-[20%_40%_auto] z-10">
+          <div className="relative z-50 flex items-center">
             {gameOfDay?.coverUrl && (
               <div>
                 <GameCard
                   ref={imgRef}
-                  onLoad={() => setImgHeight(imgRef.current.clientHeight)}
                   src={gameOfDay.coverUrl}
                   alt={`${gameOfDay.name} Logo`}
                   gameId={gameOfDay.id}
@@ -223,13 +267,120 @@ const GameOfTheDay = () => {
                 />
               </div>
             )}
+          </div>
 
+          <div className="flex flex-col ml-2 rounded bg-customGray-900/50 p-2 relative">
+            <div>
+              {gameOfDay?.logos ? (
+                <DynamicLogo
+                url={gameOfDay.logos.url}
+                gameName={gameOfDay.name}
+                maxSize={"w-[50%]"}
+                minSize={"w-[35%]"}
+                />
+              ) : (
+                <h1 className="font-semibold text-2xl">
+                  {gameOfDay?.name}{" "}
+                  <span className="italic">({gameOfDay?.releaseYear})</span>
+                </h1>
+              )}
+            </div>
+
+            <div className="flex">
+              {Array(5)
+                .fill(0)
+                .map((_, i) => (
+                  <svg
+                    key={i}
+                    className={`h-6 w-6 ${
+                      i < Math.round(gameOfDay?.totalRating / 20)
+                        ? "text-yellow-400"
+                        : "text-gray-300"
+                    } fill-current`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 2l2.7 8H22l-6.9 5 2.7 8L12 18l-6.9 5 2.7-8L2 10h7.3L12 2z" />
+                  </svg>
+                ))}
+              <div className="text-sm italic text-gray-500 mt-auto pl-1">
+                {gameOfDay?.totalRating
+                  ? `(${gameOfDay.totalRating.toFixed(1)}/5)`
+                  : "No ratings available"}
+              </div>
+            </div>
+
+            <p className="pt-2 text">
+              {gameOfDay?.genres?.length > 0
+                ? gameOfDay.genres.join(", ")
+                : "No genres available"}
+            </p>
+
+            <p className="font-light">
+              {gameOfDay?.platforms?.length > 0
+                ? gameOfDay.platforms.join(", ")
+                : "No platforms available"}
+            </p>
+
+            {gameOfDay?.summary ? (
+              <p className="font-light pt-2 line-clamp-6 mr-20">
+                {gameOfDay.summary}
+              </p>
+            ) : (
+              <p className="font-light">No summary available</p>
+            )}
+
+            <div className="absolute p-2 bottom-0 right-0 font-light text-xs hidden lg:block">
+              Added to backlog:{" "}
+              <span className="italic">
+                {backlogDate?.toLocaleDateString()}
+              </span>
+              <span className="mt-auto ml-4 cursor-pointer font-semibold text-primaryPurple-500">
+                Remove Title
+              </span>
+            </div>
           </div>
-          <div className="flex flex-col pl-6 bg-customGray-900/50 rounded ml-2" style={{ height: imgHeight }}>
-            {/* Additional details */}
-          </div>
-          <div className="flex flex-col pl-2" style={{ height: imgHeight }}>
+          <div className="flex flex-col pl-2 h-full">
             {/* Screenshots and other UI elements */}
+            <div className="relative h-full overflow-hidden">
+              <div className="flex flex-col h-full">
+                {/* Main Screenshot Container */}
+                <div className="flex-1 relative rounded overflow-hidden flex justify-center items-center">
+                  <img
+                    src={gameOfDay?.screenshots?.[mainScreenshotIndex]}
+                    alt={`${gameOfDay?.name} Screenshot`}
+                    className="w-full h-full object-cover rounded"
+                  />
+                </div>
+                {/* Thumbnails Container */}
+                <div className="h-20 relative mt-2">
+                  <div className="flex items-center h-full gap-2">
+                    {gameOfDay?.screenshots?.slice(0, 5).map((url, index) => (
+                      <img
+                        key={index}
+                        src={url}
+                        onMouseEnter={() => setMainScreenshotIndex(index)}
+                        onClick={(e) => e.stopPropagation()}
+                        className={`h-full object-contain rounded cursor-pointer transition-opacity duration-300 ${
+                          mainScreenshotIndex === index
+                            ? "brightness-100"
+                            : "brightness-50 hover:brightness-100"
+                        }`}
+                        alt={`Screenshot ${index}`}
+                      />
+                    ))}
+                  </div>
+                  {/* Optional gradient overlay */}
+                  <div
+                    className="absolute top-0 h-full w-full pointer-events-none z-10"
+                    style={{
+                      background:
+                        "linear-gradient(to left, #121212 0%, transparent 10%)",
+                    }}
+                  ></div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
