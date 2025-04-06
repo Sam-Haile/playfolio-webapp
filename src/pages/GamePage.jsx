@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Header from "../components/Header";
@@ -9,8 +9,11 @@ import SkeletonLoading from "../components/SkeletonLoading";
 import Footer from "../components/Footer";
 import GameStatus from "../components/GameStatus";
 import StarRating from "../components/StarRating";
-import GameCard from "../components/GameCard";
-
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import DynamicLogo from "../components/DynamicLogo";
+import ReviewEntry from "../components/ReviewEntry";
 const GamePage = () => {
   const { id } = useParams(); // Get the game ID from the URL
   const [gameDetails, setGameDetails] = useState(null); // Store details about the game
@@ -18,12 +21,14 @@ const GamePage = () => {
   const [logos, setLogos] = useState([]); // Store SteamGridDB logos
   const [loading, setLoading] = useState(true); // Tracks if data is being fetched
   const [heroes, setHeroes] = useState([]); // Store heroes
-  const [hoveredStar, setHoveredStar] = useState(null); // For star hover effect
-  const [userRating, setUserRating] = useState(null); // Store user's rating
-  const [similarGames, setSimilarGames] = useState([]); // Store similar games
-  const [preloadedGames, setPreloadedGames] = useState({}); // Cache for preloaded similar games
   const [showMore, setShowMore] = useState(false);
   const navigate = useNavigate();
+  const [logoError, setLogoError] = useState(false);
+  const [developerError, setDeveloperError] = useState(false);
+  const [showSeeMoreButton, setShowSeeMoreButton] = useState(false);
+  const synopsisRef = useRef(null);
+  const safeSummary = gameDetails?.summary || "";
+  const [mainScreenshotIndex, setMainScreenshotIndex] = useState(0);
 
   useEffect(() => {
     fetchGameData();
@@ -33,45 +38,21 @@ const GamePage = () => {
     }
   }, [id]);
 
-  const fetchSimilarGames = async (ids) => {
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/similar-games`,
-        {
-          ids,
-        }
-      );
-
-      const preloadedData = response.data.reduce((acc, game) => {
-        acc[game.id] = game;
-        return acc;
-      }, {});
-      setPreloadedGames((prevCache) => ({ ...prevCache, ...preloadedData }));
-
-      // Update the similar games state
-      setSimilarGames(response.data);
-    } catch (err) {
-      console.error("Error fetching similar games:", err);
-    }
-  };
-
   const handleCompanyClick = (companyId) => {
     navigate(`/developer/${companyId}`);
   };
 
   const fetchGameData = async () => {
     try {
-      const gameResponse = await axios.post(`${import.meta.env.VITE_API_URL}/api/game`, {
-        id,
-      });
+      const gameResponse = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/game`,
+        {
+          id,
+        }
+      );
 
       // Update main game data
       setGameDetails(gameResponse.data);
-
-      const similarGameIds = gameResponse.data.similar_games || [];
-      if (similarGameIds.length > 0) {
-        fetchSimilarGames(similarGameIds);
-      }
 
       // Fetch and process other data (screenshots, heroes, logos)
       let screenshotsResponse = { data: [] };
@@ -87,9 +68,7 @@ const GamePage = () => {
         sortedScreenshots = [...screenshotsResponse.data].sort((a, b) => {
           return a.id - b.id; // Sort by ID for stable ordering
         });
-      } catch (err) {
-        console.warn("Error fetching screenshots:", err.message);
-      }
+      } catch (err) {}
 
       try {
         heroesResponse = await axios.post(
@@ -98,9 +77,7 @@ const GamePage = () => {
             gameName: gameResponse.data.name,
           }
         );
-      } catch (err) {
-        console.warn("Error fetching heroes:", err.message);
-      }
+      } catch (err) {}
 
       try {
         logosResponse = await axios.post(
@@ -109,9 +86,7 @@ const GamePage = () => {
             gameName: gameResponse.data.name,
           }
         );
-      } catch (err) {
-        console.warn("Error fetching logos:", err.message);
-      }
+      } catch (err) {}
 
       // Update state with processed data
       setScreenshots(sortedScreenshots);
@@ -123,39 +98,6 @@ const GamePage = () => {
       setLoading(false);
     }
   };
-
-  const handleSimilarGameClick = (gameId) => {
-    // Scroll to the top of the page
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-    // Delay navigation to ensure scrolling completes before re-rendering
-    setTimeout(() => {
-      navigate(`/game/${gameId}`);
-    }, 300); // Adjust delay to match scroll duration
-  };
-
-  if (loading) {
-    return <SkeletonLoading type="game" />;
-  }
-
-  if (!gameDetails) {
-    return <p>Game not found.</p>;
-  }
-
-  const {
-    name,
-    summary,
-    storyline,
-    genres,
-    cover,
-    releaseYear,
-    releaseDate,
-    involvedCompanies,
-    developers,
-    publishers,
-    ageRatings,
-    platforms,
-  } = gameDetails;
 
   const getRatingIconUrl = (category, rating) => {
     const baseUrl = "https://www.igdb.com/icons/rating_icons";
@@ -239,6 +181,55 @@ const GamePage = () => {
     easing: "cubic-bezier(.03,.98,.52,.99)",
   };
 
+  useEffect(() => {
+    const el = synopsisRef.current;
+    if (!el) return;
+
+    const observer = new ResizeObserver(() => {
+      const isOverflowing = el.scrollHeight > el.clientHeight;
+      setShowSeeMoreButton(isOverflowing || showMore); // <-- key change here
+    });
+
+    observer.observe(el);
+
+    return () => observer.disconnect();
+  }, [safeSummary, loading, showMore]);
+
+  if (loading) {
+    return <SkeletonLoading type="game" />;
+  }
+
+  if (!gameDetails) {
+    return <p>Game not found.</p>;
+  }
+
+  const {
+    name,
+    summary,
+    storyline,
+    genres,
+    cover,
+    releaseYear,
+    releaseDate,
+    involvedCompanies,
+    developers,
+    publishers,
+    ageRatings,
+    platforms,
+  } = gameDetails;
+
+  const settings = {
+    centerMode: false,
+    infinite: true,
+    centerPadding: "0px",
+    slidesToShow: 6,
+    speed: 500,
+    draggable: true,
+    swipe: true,
+    arrows: true,
+    swipeToSlide: true,
+  };
+
   return (
     <div className="h-[100%]">
       <div className="mx-[5%]">
@@ -250,7 +241,7 @@ const GamePage = () => {
         />
       </div>
 
-      <div className="bg-white h-[75vh] relative mt-8">
+      <div className="bg-white h-[75vh] relative mt-8 ">
         <div className="bg-white h-[75vh] relative flex items-center justify-center overflow-hidden pointer-event:none">
           {heroes && heroes.length > 0 ? (
             <img
@@ -273,14 +264,14 @@ const GamePage = () => {
         {/* Gradients */}
         <div>
           <div
-            className="absolute top-0 h-[100%] w-full pointer-events-none z-10"
+            className="absolute top-0 -mt-[1px] h-[100%] w-full pointer-events-none z-10"
             style={{
               background:
                 "linear-gradient(to bottom, #121212 0%, transparent 60%)",
             }}
           ></div>
           <div
-            className="absolute bottom-0 h-[100%] w-full pointer-events-none z-10"
+            className="absolute bottom-0 -mb-[1px] h-[100%] w-full pointer-events-none z-10"
             style={{
               background:
                 "linear-gradient(to top, #121212 25%, transparent 85%)",
@@ -289,7 +280,7 @@ const GamePage = () => {
         </div>
 
         <div className="absolute inset-0 bg-customBlack bg-opacity-0 z-30">
-          <div className="h-[75%] grid grid-cols-[auto_40%_35%]  mx-[15%]">
+          <div className="h-[75%] grid grid-cols-[auto_40%_40%] mx-[15%]">
             <div className="relative">
               <Tilt
                 options={defaultOptions}
@@ -309,58 +300,63 @@ const GamePage = () => {
             <div className="grid grid-rows-[auto] h-auto self-end pl-4">
               <div className="flex flex-col items-start gap-2">
                 {/* Developer Logo */}
-                {developers[0].logo && (
+                {developers[0].logo && !developerError ? (
                   <button onClick={() => handleCompanyClick(developers[0].id)}>
-                    <img
-                      src={developers[0].logo}
-                      alt={developers[0].name}
-                      className="w-[75px] h-auto object-contain mt-2" // Adjust size for better visuals
+                    <DynamicLogo
+                      url={developers[0].logo}
+                      onError={() => setDeveloperError(true)}
                       draggable="false"
+                      gameName={name}
+                      maxSize={"w-24"}
+                      minSize={"w-12"}
                     />
                   </button>
+                ) : (
+                  <div className="flex gap-2">
+                    {/* Developer Names */}
+                    {developers.length > 0 &&
+                      developers.map((developer, index) => (
+                        <button
+                          onClick={() => handleCompanyClick(developer.id)}
+                          key={index}
+                          className="italic font-light text-sm hover:text-primaryPurple-500"
+                        >
+                          {developer.name}
+                        </button>
+                      ))}
+                  </div>
                 )}
 
                 {/* Game Logo */}
-                {logos && logos.length > 0 && (
-                  <img
-                    src={logos[0].url} // Use the first logo
-                    alt="Game Logo"
-                    className="max-h-[120px] max-w-full h-auto object-contain" // Adjusted for responsive scaling
+                {logos && logos.length > 0 && !logoError ? (
+                  <DynamicLogo
+                    url={logos[0].url}
                     draggable="false"
+                    gameName={name}
+                    maxSize={"w-96"}
+                    minSize={"w-60"}
+                    onError={() => setLogoError(true)}
                   />
+                ) : (
+                  <h3 className="text-3xl font-normal italic whitespace-nowrap overflow-hidden text-ellipsis">
+                    {name} ({releaseYear})
+                  </h3>
                 )}
-              </div>
-
-              <div className="flex flex-col h-full mt-4">
-                {/* Game Name */}
-                <h3 className="text-3xl font-normal italic whitespace-nowrap overflow-hidden text-ellipsis">
-                  {name} ({releaseYear})
-                </h3>
-
-                <div className="flex gap-2">
-                  {/* Developer Names */}
-                  {developers.length > 0 &&
-                    developers.map((developer, index) => (
-                      <button onClick={() => handleCompanyClick(developer.id)} key={index} className="italic font-light text-sm hover:text-primaryPurple-500">
-                        {developer.name}
-                      </button>
-                    ))}
-                </div>
               </div>
             </div>
           </div>
 
           {/* Main Content */}
-          <div className="mx-[15%] grid grid-cols-[65%_35%]">
+          <div className="mx-[15%] grid grid-cols-[60%_40%]">
             <div className="h-[auto]">
               <HorizontalLine
                 marginTop="mt-14"
-                marginBottom="mb-8"
+                marginBottom="mb-4"
                 width="w-full"
               />
 
-              <div className="grid grid-cols-3">
-                <div className="w-[80%]">
+              <div className="grid grid-cols-3 ">
+                <div className="w-[80%] flex-col self-center">
                   <h3 className="font-">Genres</h3>
                   <p className="italic font-light">
                     {genres.length > 0
@@ -369,69 +365,79 @@ const GamePage = () => {
                   </p>
                 </div>
 
-                <div>
+                <div className="flex-col self-center">
                   <h3>Release Date</h3>
                   <p className="italic font-light">{releaseDate}</p>
                 </div>
 
                 <div>
                   <h3>Platforms</h3>
-                {platforms.length > 0 &&
-                  platforms.map((platform, index) => (
-                    <span onClick={() => console.log("Head to Console Page")} key={index} className="italic font-light hover:underline hover:text-primaryPurple=500 cursor-pointer inline">
-                      {platform.name}
-                      <br />
-                    </span>
-                  ))}
+                  {platforms.length > 0 &&
+                    platforms.map((platform, index) => (
+                      <span key={index}>
+                        <span
+                          onClick={() => console.log("Head to Console Page")}
+                          className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline"
+                        >
+                          {platform.name}
+                        </span>
+                        {index < platforms.length - 1 && ", "}
+                      </span>
+                    ))}
                 </div>
 
                 {/* {platforms?.length > 0 && (
-                  <div className="grid grid-cols-2  w-full max-w-sm">
+                  <div className="grid grid-cols-3  w-full max-w-sm">
                     {platforms.map((platform, index) => (
-                      <div key={index} className="flex items-center gap-2">
+                      <div key={index} className="flex items-center">
                         <img
                           src={platform.logo}
                           alt={`${platform.name} icon`}
-                          className="w-8 h-8 object-contain rounded  transition duration-300 group-hover:brightness-125 filter invert"
+                          className="w-18 h-18 object-contain rounded "
                         />
                       </div>
                     ))}
                   </div>
-                )} */}
+                )}  */}
               </div>
 
               <HorizontalLine
-                marginTop="mt-8"
-                marginBottom="mb-8"
+                marginTop="mt-4"
+                marginBottom="mb-4"
                 width="w-full"
               />
 
               <div className="grid grid-cols-[33%_33%_auto]">
-                <div className=" flex-col self-start">
+                <div className=" flex-col self-center">
                   <h3 className="font-bold">Developers</h3>
 
                   {developers.length > 0 &&
                     developers.map((developer, index) => (
-                      <span onClick={() => handleCompanyClick(developer.id)}  key={index} className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline ">
+                      <span
+                        onClick={() => handleCompanyClick(developer.id)}
+                        key={index}
+                        className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline "
+                      >
                         {developer.name}
                         <br />
                       </span>
                     ))}
                 </div>
 
-
-                <div>
+                <div className="flex-col self-center">
                   <h3 className="font-bold">Publisher</h3>
                   {publishers.length > 0 &&
                     publishers.map((publisher, index) => (
-                      <span onClick={() => handleCompanyClick(developer.id)}  key={index} className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline ">
+                      <span
+                        onClick={() => handleCompanyClick(developer.id)}
+                        key={index}
+                        className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline "
+                      >
                         {publisher.name}
                         <br />
                       </span>
                     ))}
                 </div>
-
-
 
                 <div className="flex justify-center">
                   {ageRatings.some((rating) => rating.category === 1) ? (
@@ -455,14 +461,82 @@ const GamePage = () => {
                 </div>
               </div>
 
+              <HorizontalLine
+                marginTop="mt-4"
+                marginBottom="mb-4"
+                width="w-full"
+              />
+
+              <div>
+                <h3 className="font-bold pb-2">Synopsis</h3>
+                <p
+                  ref={synopsisRef}
+                  className={`font-light ${
+                    showMore ? "" : "line-clamp-3 overflow-hidden"
+                  }`}
+                  style={{
+                    display: "-webkit-box",
+                    WebkitBoxOrient: "vertical",
+                    WebkitLineClamp: showMore ? "none" : 3,
+                  }}
+                >
+                  {summary}
+                </p>
+
+                {showSeeMoreButton && (
+                  <button
+                    onClick={() => setShowMore(!showMore)}
+                    className="text-primaryPurple hover:font-semibold"
+                  >
+                    {showMore ? "See Less" : "See More"}
+                  </button>
+                )}
+              </div>
+
               {/* Additional Media */}
-              <div className="my-12">
-                <h1 className="text-2xl font-semibold mb-2">Media</h1>
+              <div className="my-8">
+                <h1 className="text-base font-semibold mb-2">Media</h1>
+
+                <div className="flex flex-col gap-2">
+                  {/* Main Screenshot */}
+                  <div className="w-full aspect-video bg-black rounded overflow-hidden flex items-center justify-center">
+                    <img
+                      src={screenshots?.[mainScreenshotIndex]?.imageUrl}
+                      alt={`Main screenshot of ${name}`}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+
+                  {/* Screenshot Carousel */}
+                  <Slider {...settings}>
+                    {screenshots.slice(0, 8).map((shot, index) => (
+                      <div key={index} className="pr-2">
+                        <img
+                          src={shot.imageUrl}
+                          alt={`Screenshot ${index + 1} of ${name}`}
+                          onClick={() => setMainScreenshotIndex(index)}
+                          className={`rounded cursor-pointer transition-all duration-200 ${
+                            mainScreenshotIndex === index
+                              ? "opacity-100 border border-2 border-primaryPurple"
+                              : "brightness-75 hover:brightness-100"
+                          }`}
+                          loading="lazy"
+                        />
+                      </div>
+                    ))}
+                  </Slider>
+                </div>
+              </div>
+              <div>
+              <h1 className="text-base font-semibold ">Reviews</h1>
+              <HorizontalLine marginTop="mt-0" width="full" marginBottom="mb-8"/>
+              <ReviewEntry />
               </div>
             </div>
 
-            <div>
-              <div className="bg-customBlack rounded h-[auto] mt-auto w-[90%] ml-12 drop-shadow-xl">
+            <div className="mt-14">
+              <div className="bg-customBlack rounded h-[auto] mt-auto w-[90%] ml-12  drop-shadow-xl">
                 <div className="flex flex-col gap-2 p-4">
                   <div className="text-sm font-bold uppercase ">Rating</div>
                   {/* Display Numerical Rating (Converted to out of 5) */}
@@ -500,53 +574,51 @@ const GamePage = () => {
 
               <div className="bg-customBlack rounded h-auto w-[90%] ml-12 mt-14 drop-shadow-xl">
                 {/* YOUR OPTIONS (MARK AS PLAYING BACKLOG ETC.) */}
-                <div className="flex flex-col gap-2 p-4">
+                <div className="flex flex-col gap-2 lg:px-4 lg:py-8 md:p-2">
                   {/* Options */}
-                  <div className="text-sm font-bold uppercase mb-2">You</div>
-
-                  <div className="flex flex-cols-4 justify-center w-full">
+                  <div className="flex px-2 flex-cols-4 justify-center w-full">
                     <GameStatus gameId={String(gameDetails.id)} />
                   </div>
 
-                  <div className="w-[full]">
-                    <p className="text-sm font-bold uppercase mt-8 mb-2">
-                      Your Star Rating
+                  <div className="px-2 w-full">
+                    <p className="text-sm font-semibold uppercase mt-4  mb-2">
+                      Rate
                     </p>
-                    <div className="flex">
+                    <div className="lex justify-center items-center w-full">
                       <StarRating gameId={String(gameDetails.id)} />
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className="mt-16 pl-12">
-                <h3 className="font-semibold">Summary</h3>
-                {/* <p className="font-light -mr-24">{summary}</p> */}
 
-                <div>
-                  <p
-                    className={`font-light -mr-24 ${
-                      showMore ? "" : "line-clamp-5 overflow-hidden"
-                    }`}
-                    style={{
-                      display: "-webkit-box",
-                      WebkitBoxOrient: "vertical",
-                      WebkitLineClamp: showMore ? "none" : 5,
-                    }}
-                  >
-                    {summary}
-                  </p>
-                  <button
-                    onClick={() => setShowMore(!showMore)}
-                    className="text-primaryPurple mt-2"
-                  >
-                    {showMore ? "See Less" : "See More"}
-                  </button>
+                  <div className="px-2 w-full">
+                    <p className="text-sm font-semibold uppercase mt-4 mb-2">
+                      Review
+                    </p>
+
+                    <div className="h-40 rounded">
+                      <textarea
+                        id="review"
+                        name="review"
+                        rows="4"
+                        cols="50"
+                        placeholder="Write a review..."
+                        className="w-full h-full px-4 resize-none py-2 text-white bg-customGray-700 
+                        bg-opacity-10 rounded placeholder:text-customGray-800 resize-none focus:outline-none lg:text-base md:text-sm"
+                      />
+                    </div>
+                    <div className="flex justify-end">
+                      <button className="mt-2 h-full bg-primaryPurple-500 rounded lg:px-6 md:px-4 hover:bg-primaryPurple-600 lg:text-base md:text-sm">
+                        Save
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <Footer />
+          <div className="mt-12">
+            <Footer />
+          </div>
         </div>
       </div>
     </div>

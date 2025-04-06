@@ -30,13 +30,13 @@ const Results = () => {
 
   const fetchSearchResults = async (term) => {
     setLoading(true);
-    console.log("API URL:", import.meta.env.VITE_API_URL);
 
     try {
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/games`, {
         searchTerm: term,
       });
       setResults(response.data);
+      console.log(response.data);
       setOriginalResults(response.data); // Save the original results
     } catch (err) {
       console.error("Error fetching search results:", err);
@@ -109,7 +109,7 @@ const Results = () => {
         <p className="px-0">Search Results for "{searchTerm}"</p>
         <HorizontalLine
           marginTop="mt-0"
-          marginBottom="mb-8"
+          marginBottom="mb-4"
           width="w-full"
           zIndex="z-0"
         />
@@ -117,7 +117,7 @@ const Results = () => {
 
 
       {/* Sorting and Visual Type Options */}
-      <div className="px-[10%] mb-8 flex flex-row pt-8 justify-between">
+      <div className="px-[10%] mb-8 flex flex-row justify-between">
         <div className="flex items-center ">
           <label htmlFor="sortOptions" className="text-white mr-4 flex font-bold">
             Sort By:
@@ -187,8 +187,7 @@ const Results = () => {
                 <ResultCard
                   key={game.id}
                   game={game}
-                  imageSize={imageSize}
-                  visualType={visualType} // Pass visualType to ResultCard
+                  visualType={visualType} 
                 />
               ))}
             </div>
@@ -217,7 +216,7 @@ const Results = () => {
       </div>
 
 
-      <div className="relative z-20 mt-24">
+      <div className="absolute bottom-0 w-screen">
       <Footer />
         </div>
     </div>

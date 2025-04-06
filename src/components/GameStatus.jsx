@@ -84,8 +84,6 @@ const GameStatus = ({ gameId }) => {
           }
           // increment new status
           transaction.set(countsRef, { [status]: increment(1) }, { merge: true });
-  
-          console.log(`✅ Updated game status for ${gameId} to: ${status}`);
         }
   
         transaction.set(userGameRef, updates, { merge: true });
@@ -97,9 +95,8 @@ const GameStatus = ({ gameId }) => {
   
 
   return (
-    <div className="flex flex-col">
-
-      <div className="flex items-center justify-center gap-x-2 flex-wrap">
+    <div className="flex flex-col w-full">
+      <div className="flex flex-wrap lg:place-content-between md:justify-center">
         {statusOptions.map(({ name, component: IconComponent, color }) => (
           <button
             key={name}

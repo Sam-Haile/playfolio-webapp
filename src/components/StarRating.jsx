@@ -81,45 +81,50 @@ const StarRating = ({gameId}) => {
     }
   };
 
-  const handleHover = (value) => setHoverRating(value);
-
+  const handleHover = (value) => {
+    if (hoverRating !== value) {
+      setHoverRating(value);
+    }
+  };
+  
   const Star = ({ value }) => {
     const isFilled = (hoverRating || rating) >= value;
     const isHalf = (hoverRating || rating) === value - 0.5;
-
-    return (
-      <div
-        className="cursor-pointer"
-        onClick={() => handleRating(value)}
-        onMouseEnter={() => handleHover(value)}
-        onMouseLeave={() => handleHover(0)}
-      >
-        {isHalf ? (
-          <HalfStar activeColor={starColor} neutralColor={neutralColor} />
-        ) : (
-          <FullStar color={isFilled ? starColor : neutralColor} />
-        )}
-      </div>
+  
+    return isHalf ? (
+      <HalfStar activeColor={starColor} neutralColor={neutralColor} />
+    ) : (
+      <FullStar color={isFilled ? starColor : neutralColor} />
     );
   };
+  
 
-  return (
-    <div className="flex flex-col">
-      <div className="flex gap-2">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <div key={star} className="relative">
-            <Star value={star} />
-            <div
-              className="absolute inset-0 w-1/2 left-0"
-              onClick={() => handleRating(star - 0.5)}
-              onMouseEnter={() => handleHover(star - 0.5)}
-              onMouseLeave={() => handleHover(0)}
-            />
-          </div>
-        ))}
-      </div>
+return (
+  <div className="flex justify-center">
+    <div
+      className="flex gap-2 relative"
+      onMouseLeave={() => setHoverRating(0)}
+    >
+      {[1, 2, 3, 4, 5].map((star) => (
+        <div key={star} className="relative w-full h-full">
+          <Star value={star} />
+          {/* Left half for 0.5 rating */}
+          <div
+            className="absolute left-0 top-0 w-1/2 h-full z-10"
+            onClick={() => handleRating(star - 0.5)}
+            onMouseEnter={() => handleHover(star - 0.5)}
+          />
+          {/* Right half for full rating */}
+          <div
+            className="absolute right-0 top-0 w-1/2 h-full z-10"
+            onClick={() => handleRating(star)}
+            onMouseEnter={() => handleHover(star)}
+          />
+        </div>
+      ))}
     </div>
-  );
+  </div>
+);
 };
 
 export default StarRating;

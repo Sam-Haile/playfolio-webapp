@@ -5,7 +5,7 @@ import GameCard from "./GameCard";
 import HorizontalLine from "./HorizontalLine";
 import axios from "axios";
 
-const ResultCard = ({ game, imageSize = "cover_big", visualType }) => {
+const ResultCard = ({ game, visualType }) => {
   const navigate = useNavigate();
   const [icons, setIcons] = useState([]);
 
@@ -48,9 +48,7 @@ const ResultCard = ({ game, imageSize = "cover_big", visualType }) => {
     easing: "cubic-bezier(.03,.98,.52,.99)",
   };
 
-  const imageUrl = game.coverUrl
-    ? `https:${game.coverUrl.replace("t_thumb", `t_${imageSize}`)}`
-    : "/path-to-placeholder-image.jpg";
+  const imageUrl = game.coverUrl || "/path-to-placeholder-image.jpg";
 
   const getBackgroundColor = (rating) => {
     rating = Math.max(0, Math.min(5, rating));
@@ -83,6 +81,7 @@ const ResultCard = ({ game, imageSize = "cover_big", visualType }) => {
                   <GameCard
                     src={imageUrl}
                     alt={imageUrl}
+                    gameId={game.id}
                     className="h-[auto]"
                   />
                 </div>
@@ -176,6 +175,7 @@ const ResultCard = ({ game, imageSize = "cover_big", visualType }) => {
                   <GameCard
                     src={imageUrl}
                     alt={imageUrl}
+                    gameId={game.id}
                     className="h-[200px]"
                   />
                 </div>
