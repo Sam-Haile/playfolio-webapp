@@ -23,7 +23,7 @@ const TrendingGamesCarousel = ({ slides }) => {
     const updateDisplayedSlides = () => {
       const width = window.innerWidth;
       if (width >= 900) {
-        setDisplayedSlides(slides.slice(0, 8)); // Display 5 slides on large screens
+        setDisplayedSlides(slides.slice(0, 6)); // Display 5 slides on large screens
       } else if (width >= 768) {
         setDisplayedSlides(slides.slice(0, 5)); // Display 3 slides on medium screens
       } else if (width >= 700) {

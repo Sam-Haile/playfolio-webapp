@@ -1,10 +1,10 @@
-const PlayingIcon = ({ color, width = "64px", height = "64px" }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    viewBox="0 0 24 24" 
-    width={width} 
-    height={height}
-  >
+const PlayingIcon = ({ color, width = "64px", height = "64px", viewBox = "24"}) => (
+<svg 
+  xmlns="http://www.w3.org/2000/svg" 
+  viewBox={`0 0 ${viewBox} ${viewBox}`} 
+  width={width} 
+  height={height}
+>
     <path 
       fillRule="evenodd" 
       clipRule="evenodd" 

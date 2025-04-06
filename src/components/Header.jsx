@@ -88,7 +88,7 @@ const Header = ({
           <button onClick={handleLogoClick}>
             <img src={Logo} alt="Playfolio" className="h-5 mr-10" />
           </button>
-          <img src={VerticalLine} alt="Vertical Line" className="mr-10" />
+          <img src={VerticalLine} alt="Vertical Line" className="hidden lg:block md:block sm:hidden mr-10" />
           {showNavButtons && (
             <nav className="hidden md:flex space-x-10">
               <a href="/home" className="hover:text-primaryPurple-500">
@@ -105,8 +105,8 @@ const Header = ({
         <div className="flex items-center ml-auto">
           {/* Search bar */}
           {showSearchBar && location.pathname !== "/" && (
-            <div className="flex w-[100%]">
-              <SearchBar width="25vw" />
+            <div className="flex w-[100%] justify-end">
+              <SearchBar width="20vw" />
             </div>
           )}
 
@@ -148,7 +148,7 @@ const Header = ({
                 ) : (
                   <img src={user.profileIcon} alt="Profile" className="w-5" />
                 )}
-                <p className="ml-2">{user.username}</p>
+                <p className="ml-2 hidden lg:block md:hidden sm:hidden">{user.username}</p>
                 <img
                   src="../src/assets/icons/downArrow.svg"
                   className="w-[20px] ml-1"

@@ -7,7 +7,7 @@ import ThumbsUp from "../assets/icons/ThumbsUp.jsx";
 import ThumbsDown from "../assets/icons/ThumbsDown.jsx";
 import DynamicLogo from "./DynamicLogo.jsx";
 
-function CenterMode({ games = [] }) {
+function DiscoveryQueue({ games = [] }) {
   const navigate = useNavigate();
 
   const settings = {
@@ -46,7 +46,7 @@ function CenterMode({ games = [] }) {
   );
 }
 
-export default CenterMode;
+export default DiscoveryQueue;
 
 function GameSlide({ game, navigate }) {
   const [mainScreenshotIndex, setMainScreenshotIndex] = useState(0);
@@ -59,7 +59,7 @@ function GameSlide({ game, navigate }) {
     <div className="relative px-4">
       <div className="h-96 flex flex-cols-2">
         {/* LEFT HALF */}
-        <div className="w-1/2 z-0 relative">
+        <div className="lg:w-1/2 md:w-full z-0 relative">
           {game.heroes?.url ? (
             <img
               src={game.heroes.url}
@@ -141,7 +141,7 @@ function GameSlide({ game, navigate }) {
         </div>
 
         {/* RIGHT HALF */}
-        <div className="w-1/2 flex flex-col ml-2 h-full ">
+        <div className="hidden lg:flex w-1/2 flex flex-col ml-2 h-full ">
           <div className="relative flex-1 rounded overflow-hidden mt-auto flex justify-center items-center">
             <img
               src={game.screenshots?.[mainScreenshotIndex]}
@@ -176,6 +176,7 @@ function GameSlide({ game, navigate }) {
             </div>
           </div>
         </div>
+
       </div>
     </div>
   );

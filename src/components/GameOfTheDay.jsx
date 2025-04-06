@@ -235,7 +235,7 @@ const GameOfTheDay = () => {
           }}
         ></div>
         <div
-          className="absolute top-0 h-full w-[101%] pointer-events-none z-10 left-50"
+          className="absolute top-0 -mt-[1px] h-full w-[101%] pointer-events-none z-10 left-50"
           style={{
             background:
               "linear-gradient(to right, #121212 50%, transparent 65%)",
@@ -249,7 +249,7 @@ const GameOfTheDay = () => {
           }}
         ></div>
         <div
-          className="absolute bottom-0 h-[50vh] w-[101%] pointer-events-none z-10"
+          className="absolute bottom-0 -mb-[1px] h-[50vh] w-[101%] pointer-events-none z-10"
           style={{
             background: "linear-gradient(to top,#121212 0%, transparent 15%)",
           }}
@@ -257,8 +257,8 @@ const GameOfTheDay = () => {
       </div>
 
       <div className="bg-cover bg-center bg-no-repeat relative z-10 pb-10">
-        <div className="grid grid-cols-[20%_40%_auto] z-10">
-          <div className="relative z-50 flex items-center">
+        <div className="grid lg:grid-cols-[20%_40%_auto] md:grid-cols-[40%_auto] sm:grid-rows-[auto_auto] z-10">
+          <div className="relative z-50 flex items-center hidden sm:hidden md:block lg:block">
             {gameOfDay?.coverUrl && (
               <div>
                 <GameCard
@@ -266,7 +266,7 @@ const GameOfTheDay = () => {
                   src={gameOfDay.coverUrl}
                   alt={`${gameOfDay.name} Logo`}
                   gameId={gameOfDay.id}
-                  className="object-contain h-auto rounded"
+                  className="object-contain h-auto sm:h-96 rounded"
                 />
               </div>
             )}
@@ -309,7 +309,7 @@ const GameOfTheDay = () => {
                 ))}
               <div className="text-sm italic text-gray-500 mt-auto pl-1">
                 {gameOfDay?.totalRating
-                  ? `(${gameOfDay.totalRating.toFixed(1)}/5)`
+                  ? `(${(gameOfDay.totalRating /20).toFixed(1)}/5)`
                   : "No ratings available"}
               </div>
             </div>
@@ -327,14 +327,14 @@ const GameOfTheDay = () => {
             </p>
 
             {gameOfDay?.summary ? (
-              <p className="font-light pt-2 line-clamp-6 mr-20">
+              <p className="font-light pt-2 line-clamp-6 mr-20 pb-4">
                 {gameOfDay.summary}
               </p>
             ) : (
               <p className="font-light">No summary available</p>
             )}
 
-            <div className="absolute p-2 bottom-0 right-0 font-light text-xs hidden lg:block">
+            <div className=" font-light text-xs text-right pt-2 absolute bottom-2 right-2">
               Added to backlog:{" "}
               <span className="italic">
                 {backlogDate?.toLocaleDateString()}
@@ -342,9 +342,14 @@ const GameOfTheDay = () => {
               <span className="mt-auto ml-4 cursor-pointer font-semibold text-primaryPurple-500">
                 Remove Title
               </span>
+              
             </div>
+
+
+            
           </div>
-          <div className="flex flex-col pl-2 h-full">
+          
+          <div className="flex flex-col pl-2 h-full hidden md:hidden lg:block">
             {/* Screenshots and other UI elements */}
             <div className="relative h-full overflow-hidden">
               <div className="flex flex-col h-full">

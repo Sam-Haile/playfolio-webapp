@@ -6,7 +6,7 @@ import AppStore from "../assets/icons/appstore.png";
 import HorizontalLine from "../components/HorizontalLine";
 const Footer = () => {
   return (
-    <footer className="bg-footerGray text-white py-6">
+    <footer className="bg-footerGray text-white py-6 mt-24">
       <div className="flex mx-[10%] py-2 justify-between">
         <div className="flex items-center ">
             <img src={LogoIcon} alt="Playfolio Logo" className="h-10 mr-4 " />

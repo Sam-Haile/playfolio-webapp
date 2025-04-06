@@ -218,7 +218,7 @@ const DeveloperPage = () => {
       <div className="mx-[15%] ">
         <h1 className="text-xl">About {companyDetails.name}</h1>
         <br />
-        <p className="mr-[50%]">{companyDetails.description}</p>
+        <p className="mr-[5%]">{companyDetails.description}</p>
       </div>
     )}
 
@@ -243,11 +243,11 @@ const DeveloperPage = () => {
       {loading ? (
         // Skeleton for game cards
         <div className="mt-[20px] grid grid-cols-5 gap-2">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <div key={index} className="animate-pulse p-4 rounded-lg">
-              <div className="bg-gray-300 h-[200px] w-full mb-4"></div>
-              <div className="h-4 bg-gray-300 mb-2"></div>
-              <div className="h-4 bg-gray-300 w-1/2"></div>
+          {Array.from({ length: 30 }).map((_, index) => (
+            <div key={index} className="animate-pulse p-4 rounded">
+              <div className="bg-gray-300 aspect-[3/4] w-full mb-4 rounded"></div>
+              <div className="h-4 bg-gray-300 mb-2 rounded"></div>
+              <div className="h-4 bg-gray-300 w-1/2 rounded"></div>
             </div>
           ))}
         </div>
@@ -259,11 +259,9 @@ const DeveloperPage = () => {
               <div key={index} className="relative rounded-lg p-4">
                 {/* Game Cover */}
                 {game.cover ? (
-                  <Tilt options={defaultOptions} style={{ width: "100%" }}>
                     <div onClick={() => handleClick(game.id)}>
-                      <GameCard src={game.cover} alt={game.name} className="h-[auto]" />
+                      <GameCard src={game.cover} alt={game.name} className="h-[auto]" gameId={game.id} />
                     </div>
-                  </Tilt>
                 ) : (
                   <div className="text-white flex h-[200px]">No Image Available</div>
                 )}

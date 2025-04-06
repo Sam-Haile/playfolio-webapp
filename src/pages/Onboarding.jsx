@@ -14,12 +14,19 @@ const HomePage = () => {
   const [trendingGames, setTrendingGames] = useState([]);
   const [events, setEvents] = useState([]);
 
+  // Fetch trending games and events
   useEffect(() => {
     const fetchGames = async () => {
-      const trendingData = await fetchTrendingGames(6);
-      const currentEvents = await fetchEvents(4);
-      setTrendingGames(trendingData);
-      setEvents(currentEvents);
+      try {
+        const trendingData = await fetchTrendingGames(20);
+        const currentEvents = await fetchEvents(4);
+        setTrendingGames(Array.isArray(trendingData) ? trendingData : []);
+        setEvents(Array.isArray(currentEvents) ? currentEvents : []);
+      } catch (error) {
+        console.error("Error fetching trending games/events:", error);
+        setTrendingGames([]);
+        setEvents([]);
+      }
     };
 
     fetchGames();
@@ -119,7 +126,7 @@ const HomePage = () => {
           <TrendingGames slides={trendingGames} />
         </div>
 
-        <HorizontalLine marginTop="mt-8" className="!z-0" marginBottom="mb-8" />
+        <HorizontalLine marginTop="mt-4" className="!z-0" marginBottom="mb-4" />
 
         <div className="grid lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-1 h-auto mx-[10%]">
           <div className="p-5">
@@ -167,7 +174,7 @@ const HomePage = () => {
           </div>
         </div>
 
-        <HorizontalLine marginTop="mt-8" className="!z-0" marginBottom="mb-8" />
+        <HorizontalLine marginTop="mt-4" className="!z-0" marginBottom="mb-4" />
 
         <h1 className="z-50 mx-[10%] text-2xl font-bold mb-4">Events</h1>
 
