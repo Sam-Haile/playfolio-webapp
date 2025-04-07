@@ -84,7 +84,7 @@ const Collections = ({ user, showProfile = true }) => {
                 });
             });
             const filteredGames = gamesList.filter(
-                (game) => game.status.toLowerCase() === type.toLowerCase()
+                (game) => game.status && game.status.toLowerCase() === type.toLowerCase()
             );
             const updatedGames = await fetchGameCovers(filteredGames);
             setGames(updatedGames);

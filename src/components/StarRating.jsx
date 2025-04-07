@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../AuthContext";
 import { db } from "../firebaseConfig";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, runTransaction, getDoc, serverTimestamp, increment } from "firebase/firestore";
 
 const FullStar = ({ color }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={color} className="w-full h-full">
@@ -33,16 +33,43 @@ const HalfStar = ({ activeColor, neutralColor }) => (
 );
 
 const saveRatingToFirestore = async (userId, gameId, ratingValue) => {
+  const userGameRef = doc(db, "users", userId, "gameStatuses", gameId);
+  const countsRef = doc(db, "users", userId, "statusesCount", "counts");
+
   try {
-    await setDoc(
-      doc(db, "users", userId, "gameStatuses", gameId),
-      { rating: ratingValue },
-      { merge: true }
-    );
+    await runTransaction(db, async (transaction) => {
+      const gameDoc = await transaction.get(userGameRef);
+      const oldData = gameDoc.exists() ? gameDoc.data() : {};
+      const oldStatus = oldData.status || "";
+
+      // We'll merge rating plus any other changes
+      const newData = {
+        rating: ratingValue,
+        updatedAt: serverTimestamp(),
+      };
+
+      // If there was no status set, automatically mark it as "Played"
+      if (!oldStatus) {
+        newData.status = "Played";
+        // Also increment the "Played" count by 1
+        transaction.set(
+          countsRef,
+          { Played: increment(1) },
+          { merge: true }
+        );
+      }
+
+      // If they already have a status, we leave it as is
+      // (only overwrite rating, unless you want to force "Played" anyway)
+
+      // Finally, set the merged data
+      transaction.set(userGameRef, newData, { merge: true });
+    });
   } catch (error) {
     console.error("Error saving rating:", error);
   }
 };
+
 
 const StarRating = ({gameId}) => {
   const [rating, setRating] = useState(0);
@@ -72,10 +99,20 @@ const StarRating = ({gameId}) => {
     loadRating();
   }, [user, gameId]);
 
-  const handleRating = (value) => {
+  const handleRating = async (value) => {
     setRating(value);
     if (user) {
-      saveRatingToFirestore(user.uid, gameId, value);
+      await saveRatingToFirestore(user.uid, gameId, value);
+
+       // Now re-fetch the doc to see "Played" (so UI sees the updated status)
+    const docRef = doc(db, "users", user.uid, "gameStatuses", gameId);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const updatedStatus = docSnap.data()?.status;
+      console.log("Refetched status after rating:", updatedStatus);
+      // If you have a parent or context that tracks status, update it here
+      // or call some function in GameStatus to refresh.
+    }
     } else {
       console.error("User is not authenticated");
     }

@@ -7,7 +7,7 @@ import {
   onAuthStateChanged,
   sendEmailVerification,
 } from "firebase/auth";
-import { db } from "../firebaseConfig"; // ✅ Ensure Firestore is imported
+import { db } from "../firebaseConfig";
 import Logo from "../assets/icons/logo.svg";
 import LogoIcon from "../assets/icons/logoicon.svg";
 import VerticalLine from "../assets/icons/verticalLine.svg";
@@ -165,7 +165,7 @@ const SignIn = () => {
       {/* Left Side */}
       <div className="flex flex-col h-full">
         {/* Header Section */}
-        <div className="mx-[20%]">
+        <div className="mx-[20%] h-[00px]">
           <div className="bg-customBlack text-white relative h-[75px] flex w-full">
             <div className="flex items-center">
               <a href="/">
@@ -215,7 +215,7 @@ const SignIn = () => {
               <div className="w-full">
                 {isSignUp && (
                   <div className="w-full form-group">
-                    <div className="grid grid-cols-2 gap-4 w-full">
+                    <div className="grid grid-cols-2 gap-3 w-full">
                       <input
                         type="text"
                         name="firstName"
@@ -233,19 +233,45 @@ const SignIn = () => {
                         className="w-full p-2 border border-gray-300 rounded-md"
                       />
                     </div>
+                    <div className="w-full form-group">
+                      <input
+                        type="text"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        placeholder="Email"
+                        className="w-full p-2 border border-gray-300 rounded-md "
+                      />
+                    </div>
                   </div>
                 )}
               </div>
-              <div className="w-full form-group">
-                <input
-                  type="text"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Enter your email"
-                  className="w-full p-2 border border-gray-300 rounded-md "
-                />
-              </div>
+              {!isSignUp && (
+
+                <div className="w-full form-group">
+                  <input
+                    type="text"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="Email / Username"
+                    className="w-full p-2 border border-gray-300 rounded-md "
+                  />
+                </div>
+              )}
+
+              {isSignUp && (
+                <div className="w-full form-group">
+                  <input
+                    type="text"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    placeholder="Username"
+                    className="w-full p-2 border border-gray-300 rounded-md "
+                  />
+                </div>
+              )}
 
               <div className="w-full form-group">
                 <input
@@ -253,7 +279,7 @@ const SignIn = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="Enter your password"
+                  placeholder="Password"
                   className="w-full p-2 border border-gray-300 rounded-md "
                 />
               </div>
@@ -265,13 +291,37 @@ const SignIn = () => {
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    placeholder="Re-enter your password"
-                    className="w-full p-2 border border-gray-300 rounded-md"
+                    placeholder="Re-enter Password"
+                    className="w-full border border-gray-300 rounded-md"
                   />
                 </div>
               )}
 
-              <button type="submit" className="sign-up-button w-full mt-4">
+              {isSignUp && (
+                <div className="w-full h-full flex justify-start my-2 ">
+                  <input
+                    id="privacyPolicy"
+                    type="checkbox"
+                    name="privacyPolicy"
+                    checked={formData.privacyPolicy}
+                    onChange={handleChange}
+                    className="mr-2 h-5 w-5  "
+                    />
+                  <label htmlFor="privacyPolicy" className="text-sm">
+                    I agree to the{" "}
+                    <a
+                      href="/privacy-policy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primaryPurple-500 hover:underline"
+                    >
+                      Privacy Policy
+                    </a>
+                  </label>
+                </div>
+              )}
+
+              <button type="submit" className="sign-up-button w-full my-2">
                 {isSignUp ? "Sign Up" : "Log In"}
               </button>
 

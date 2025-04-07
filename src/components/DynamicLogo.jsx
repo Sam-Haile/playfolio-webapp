@@ -18,7 +18,7 @@ const DynamicLogo = ({ url, gameName, maxSize, minSize, marginLeft = "ml-4" }) =
       src={url}
       alt={`${gameName} logo`}
       onLoad={handleLoad}
-      className={`${marginLeft} h-auto self-auto ${widthClass}`}
+      className={`${marginLeft} h-auto self-auto ${widthClass} `}
     />
   );
 };

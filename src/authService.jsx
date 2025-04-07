@@ -10,7 +10,7 @@ export const signUpUser = async (email, password, username, firstName, lastName)
         const usernameDoc = await getDoc(usernameDocRef);
   
         if (usernameDoc.exists()) {
-            throw new Error("⚠️ This username is already taken.");
+            throw new Error("This username is already taken.");
         }
   
         // 🔐 Step 2: Create user in Firebase Authentication

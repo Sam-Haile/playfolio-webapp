@@ -14,6 +14,10 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import DynamicLogo from "../components/DynamicLogo";
 import ReviewEntry from "../components/ReviewEntry";
+import ImageOverlay from "../components/ImageOverlay";
+import ReviewBox from "../components/ReviewBox";
+import GameReviews from "../components/GameReviews";
+
 const GamePage = () => {
   const { id } = useParams(); // Get the game ID from the URL
   const [gameDetails, setGameDetails] = useState(null); // Store details about the game
@@ -29,6 +33,7 @@ const GamePage = () => {
   const synopsisRef = useRef(null);
   const safeSummary = gameDetails?.summary || "";
   const [mainScreenshotIndex, setMainScreenshotIndex] = useState(0);
+  const [overlayOpen, setOverlayOpen] = useState(false);
 
   useEffect(() => {
     fetchGameData();
@@ -68,7 +73,7 @@ const GamePage = () => {
         sortedScreenshots = [...screenshotsResponse.data].sort((a, b) => {
           return a.id - b.id; // Sort by ID for stable ordering
         });
-      } catch (err) {}
+      } catch (err) { }
 
       try {
         heroesResponse = await axios.post(
@@ -77,7 +82,7 @@ const GamePage = () => {
             gameName: gameResponse.data.name,
           }
         );
-      } catch (err) {}
+      } catch (err) { }
 
       try {
         logosResponse = await axios.post(
@@ -86,7 +91,7 @@ const GamePage = () => {
             gameName: gameResponse.data.name,
           }
         );
-      } catch (err) {}
+      } catch (err) { }
 
       // Update state with processed data
       setScreenshots(sortedScreenshots);
@@ -284,7 +289,7 @@ const GamePage = () => {
             <div className="relative self-end">
               <Tilt
                 options={defaultOptions}
-                className="inline-block relative" 
+                className="inline-block relative"
               >
                 {" "}
                 {cover && (
@@ -356,7 +361,7 @@ const GamePage = () => {
               />
 
               <div className="grid grid-cols-3 ">
-                <div className="w-[80%] flex-col self-center">
+                <div className="w-[80%] flex-col self-center pr-2">
                   <h3 className="font-">Genres</h3>
                   <p className="italic font-light">
                     {genres.length > 0
@@ -365,12 +370,12 @@ const GamePage = () => {
                   </p>
                 </div>
 
-                <div className="flex-col self-center">
+                <div className="flex-col self-center pr-2">
                   <h3>Release Date</h3>
                   <p className="italic font-light">{releaseDate}</p>
                 </div>
 
-                <div>
+                <div className="flex-col self-center pr-2">
                   <h3>Platforms</h3>
                   {platforms.length > 0 &&
                     platforms.map((platform, index) => (
@@ -408,7 +413,7 @@ const GamePage = () => {
               />
 
               <div className="grid grid-cols-[33%_33%_auto]">
-                <div className=" flex-col self-center">
+                <div className=" flex-col self-center pr-2">
                   <h3 className="font-bold">Developers</h3>
 
                   {developers.length > 0 &&
@@ -424,7 +429,7 @@ const GamePage = () => {
                     ))}
                 </div>
 
-                <div className="flex-col self-center">
+                <div className="flex-col self-center pr-2">
                   <h3 className="font-bold">Publisher</h3>
                   {publishers.length > 0 &&
                     publishers.map((publisher, index) => (
@@ -439,7 +444,7 @@ const GamePage = () => {
                     ))}
                 </div>
 
-                <div className="flex justify-center">
+                <div className="flex justify-center pr-2">
                   {ageRatings.some((rating) => rating.category === 1) ? (
                     ageRatings
                       .filter((rating) => rating.category === 1)
@@ -471,9 +476,8 @@ const GamePage = () => {
                 <h3 className="font-bold pb-2">Synopsis</h3>
                 <p
                   ref={synopsisRef}
-                  className={`font-light ${
-                    showMore ? "" : "line-clamp-3 overflow-hidden"
-                  }`}
+                  className={`font-light ${showMore ? "" : "line-clamp-3 overflow-hidden"
+                    }`}
                   style={{
                     display: "-webkit-box",
                     WebkitBoxOrient: "vertical",
@@ -499,13 +503,32 @@ const GamePage = () => {
 
                 <div className="flex flex-col gap-2">
                   {/* Main Screenshot */}
-                  <div className="w-full aspect-video bg-black rounded overflow-hidden flex items-center justify-center">
+                  <div className="relative w-full aspect-video overflow-hidden rounded">
+                    {/* Background layer (blurred) */}
                     <img
                       src={screenshots?.[mainScreenshotIndex]?.imageUrl}
-                      alt={`Main screenshot of ${name}`}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
+                      alt=""
+                      className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-50"
+                      aria-hidden="true"
                     />
+
+                    {/* Foreground image */}
+                    <img
+                      src={screenshots?.[mainScreenshotIndex]?.imageUrl}
+                      alt="Game Screenshot"
+                      className="relative z-10 w-full h-full object-contain"
+                      onClick={() => setOverlayOpen(true)}
+                    />
+
+
+                    {/* Conditionally render the overlay */}
+                    {overlayOpen && (
+                      <ImageOverlay
+                        src={screenshots?.[mainScreenshotIndex]?.imageUrl}
+                        alt={`Screenshot of ${name}`}
+                        onClose={() => setOverlayOpen(false)}
+                      />
+                    )}
                   </div>
 
                   {/* Screenshot Carousel */}
@@ -516,11 +539,10 @@ const GamePage = () => {
                           src={shot.imageUrl}
                           alt={`Screenshot ${index + 1} of ${name}`}
                           onClick={() => setMainScreenshotIndex(index)}
-                          className={`rounded cursor-pointer transition-all duration-200 ${
-                            mainScreenshotIndex === index
-                              ? "opacity-100 border border-2 border-primaryPurple"
-                              : "brightness-75 hover:brightness-100"
-                          }`}
+                          className={`rounded cursor-pointer transition-all duration-200 ${mainScreenshotIndex === index
+                            ? "opacity-100 border border-2 border-primaryPurple"
+                            : "brightness-75 hover:brightness-100"
+                            }`}
                           loading="lazy"
                         />
                       </div>
@@ -529,9 +551,9 @@ const GamePage = () => {
                 </div>
               </div>
               <div>
-              <h1 className="text-base font-semibold ">Reviews</h1>
-              <HorizontalLine marginTop="mt-0" width="full" marginBottom="mb-8"/>
-              <ReviewEntry />
+                <h1 className="text-base font-semibold ">Reviews</h1>
+                <HorizontalLine marginTop="mt-0" width="full" marginBottom="mb-8" />
+                <GameReviews gameId={String(gameDetails.id)} />
               </div>
             </div>
 
@@ -551,11 +573,10 @@ const GamePage = () => {
                       .map((_, i) => (
                         <svg
                           key={i}
-                          className={`h-6 w-6 ${
-                            i < Math.round(gameDetails.rating / 20)
-                              ? "text-yellow-400"
-                              : "text-gray-300"
-                          } fill-current`}
+                          className={`h-6 w-6 ${i < Math.round(gameDetails.rating / 20)
+                            ? "text-yellow-400"
+                            : "text-gray-300"
+                            } fill-current`}
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
                         >
@@ -589,28 +610,7 @@ const GamePage = () => {
                     </div>
                   </div>
 
-                  <div className="px-2 w-full">
-                    <p className="text-sm font-semibold uppercase mt-4 mb-2">
-                      Review
-                    </p>
-
-                    <div className="h-40 rounded">
-                      <textarea
-                        id="review"
-                        name="review"
-                        rows="4"
-                        cols="50"
-                        placeholder="Write a review..."
-                        className="w-full h-full px-4 resize-none py-2 text-white bg-customGray-700 
-                        bg-opacity-10 rounded placeholder:text-customGray-800 resize-none focus:outline-none lg:text-base md:text-sm"
-                      />
-                    </div>
-                    <div className="flex justify-end">
-                      <button className="mt-2 h-full bg-primaryPurple-500 rounded lg:px-6 md:px-4 hover:bg-primaryPurple-600 lg:text-base md:text-sm">
-                        Save
-                      </button>
-                    </div>
-                  </div>
+                 <ReviewBox gameDetails={gameDetails} />
                 </div>
               </div>
             </div>

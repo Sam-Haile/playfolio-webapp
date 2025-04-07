@@ -5,11 +5,17 @@ import PlayingIcon from "../assets/icons/PlayingIcon";
 import BacklogIcon from "../assets/icons/BacklogIcon";
 import WishlistIcon from "../assets/icons/WishlistIcon";
 import DroppedIcon from "../assets/icons/DroppedIcon";
-import { doc, setDoc, getDoc, serverTimestamp, increment, runTransaction } from "firebase/firestore";
+import {
+  doc,
+  onSnapshot,
+  runTransaction,
+  serverTimestamp,
+  increment,
+} from "firebase/firestore";
 
 const GameStatus = ({ gameId }) => {
   const { user } = useAuth();
-  const [selectedStatus, setSelectedStatus] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState("");
 
   // Status options
   const statusOptions = [
@@ -21,29 +27,26 @@ const GameStatus = ({ gameId }) => {
 
   const defaultColor = "#FFFFFF"; // ✅ White for unselected
 
-  // ✅ Load status when component mounts
+  // ✅ Subscribe to Firestore doc changes
   useEffect(() => {
-    if (user) {
-      loadGameStatus();
-    }
-    else {
-      console.log("User is not authenticated");
-    }
-  }, [user, gameId]);
+    if (!user) return;
 
-  const loadGameStatus = async () => {
-    try {
-      const userGameRef = doc(db, "users", user.uid, "gameStatuses", gameId);
-      const docSnap = await getDoc(userGameRef);
-      if (docSnap.exists()) {
-        const status = docSnap.data().status;
-        setSelectedStatus(typeof status === "string" ? status : ""); // ✅ Ensure it's a string
+    const userGameRef = doc(db, "users", user.uid, "gameStatuses", gameId);
+
+    // onSnapshot() fires immediately with the current data, then again whenever data changes
+    const unsubscribe = onSnapshot(userGameRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const status = snapshot.data().status;
+        setSelectedStatus(status ?? "");
+      } else {
+        // Doc doesn't exist yet
+        setSelectedStatus("");
       }
-    } catch (error) {
-      console.error("Error loading game status:", error);
-    }
-  };
+    });
 
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, [user, gameId]);
 
   // ✅ Save status to Firestore and maintain counts
   const updateGameStatus = async (status) => {
@@ -51,48 +54,54 @@ const GameStatus = ({ gameId }) => {
       alert("You must be logged in to save your game status!");
       return;
     }
-  
+
     const userGameRef = doc(db, "users", user.uid, "gameStatuses", gameId);
     const countsRef = doc(db, "users", user.uid, "statusesCount", "counts");
-  
+
     try {
       await runTransaction(db, async (transaction) => {
         const gameDoc = await transaction.get(userGameRef);
-        const countsDoc = await transaction.get(countsRef);
-  
-        const previousStatus = gameDoc.exists() ? gameDoc.data().status : null;
-  
+        const previousStatus = gameDoc.exists() ? gameDoc.data().status : "";
+
         const updates = { updatedAt: serverTimestamp() };
-  
+
         if (previousStatus === status) {
           // User clicked the same status; remove it
           updates.status = "";
-          setSelectedStatus(null);
-  
+          // Set local state so icon reverts to default
+          setSelectedStatus("");
+
           if (previousStatus) {
-            transaction.set(countsRef, { [previousStatus]: increment(-1) }, { merge: true });
+            transaction.set(
+              countsRef,
+              { [previousStatus]: increment(-1) },
+              { merge: true }
+            );
           }
-  
           console.log(`❌ Removed game status for ${gameId}`);
         } else {
+          // Changing to a new status
           updates.status = status;
           setSelectedStatus(status);
-  
+
           if (previousStatus) {
             // decrement the old status
-            transaction.set(countsRef, { [previousStatus]: increment(-1) }, { merge: true });
+            transaction.set(
+              countsRef,
+              { [previousStatus]: increment(-1) },
+              { merge: true }
+            );
           }
           // increment new status
           transaction.set(countsRef, { [status]: increment(1) }, { merge: true });
         }
-  
+
         transaction.set(userGameRef, updates, { merge: true });
       });
     } catch (error) {
       console.error("Error saving game status:", error);
     }
   };
-  
 
   return (
     <div className="flex flex-col w-full">
@@ -103,9 +112,15 @@ const GameStatus = ({ gameId }) => {
             className="flex flex-col items-center w-[20%] min-w-[80px] transition-all"
             onClick={() => updateGameStatus(name)}
           >
-            <IconComponent color={selectedStatus === name ? color : defaultColor} />
-
-            <p className={`text-center uppercase text-sm sm:text-base mt-2 font-semibold ${selectedStatus === name ? "text-white " : ""}`}>
+            {/* If selectedStatus === name, use the color; otherwise defaultColor */}
+            <IconComponent
+              color={selectedStatus === name ? color : defaultColor}
+            />
+            <p
+              className={`text-center uppercase text-sm sm:text-base mt-2 font-semibold ${
+                selectedStatus === name ? "text-white " : ""
+              }`}
+            >
               {name}
             </p>
           </button>
