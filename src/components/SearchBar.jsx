@@ -40,7 +40,7 @@ const SearchBar = ({ width = "100%", margin = "0", padding = "0", className = ""
         searchBarRef.current &&
         !searchBarRef.current.contains(event.target)
       ) {
-        setShowSuggestions(true);
+        setShowSuggestions(false);
       }
     }
 
@@ -125,7 +125,7 @@ const SearchBar = ({ width = "100%", margin = "0", padding = "0", className = ""
           {suggestions.map((suggestion) => (
             <div
               key={suggestion.id}
-              onClick={() => handleSuggestionClick(suggestion)}
+              onMouseDown={() => handleSuggestionClick(suggestion)}
               className="px-4 py-2 text-sm cursor-pointer hover:bg-[#404040] text-white "
             >
               {suggestion.name}

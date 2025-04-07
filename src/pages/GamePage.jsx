@@ -280,18 +280,18 @@ const GamePage = () => {
         </div>
 
         <div className="absolute inset-0 bg-customBlack bg-opacity-0 z-30">
-          <div className="h-[75%] grid grid-cols-[auto_40%_40%] mx-[15%]">
-            <div className="relative">
+          <div className="h-[75%] grid lg:grid-cols-[auto_35%_40%] md:grid-cols-[auto_50%] mx-[15%]">
+            <div className="relative self-end">
               <Tilt
                 options={defaultOptions}
-                className="relative w-full h-full" // Apply container-specific styles
+                className="inline-block relative" 
               >
                 {" "}
                 {cover && (
                   <img
                     src={`https://images.igdb.com/igdb/image/upload/t_1080p/${cover.image_id}.jpg`}
                     alt={`${name} Logo`}
-                    className="w-auto h-auto rounded overflow-hidden bottom-0 absolute"
+                    className="w-auto h-auto rounded overflow-hidden"
                     draggable="false"
                   />
                 )}
@@ -338,7 +338,7 @@ const GamePage = () => {
                     onError={() => setLogoError(true)}
                   />
                 ) : (
-                  <h3 className="text-3xl font-normal italic whitespace-nowrap overflow-hidden text-ellipsis">
+                  <h3 className="text-3xl font-normal italic lg:whitespace-nowrap  overflow-hidden text-ellipsis">
                     {name} ({releaseYear})
                   </h3>
                 )}

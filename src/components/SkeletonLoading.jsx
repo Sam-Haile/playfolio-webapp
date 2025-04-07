@@ -39,7 +39,7 @@ const SkeletonLoading = ({ type }) => {
           </div>
 
           <div className="absolute inset-0 bg-customBlack bg-opacity-0 z-30">
-            <div className="h-[60%] grid grid-cols-[auto_40%_45%] mx-[15%]">
+            <div className="h-[60%] grid lg:grid-cols-[auto_40%_45%] md:grid-cols-[auto_50%]  mx-[15%]">
               {/* Skeleton Cover Image */}
               <div className="relative h-full">
                 <div className="absolute bottom-0 w-full aspect-[2/3] max-h-full bg-gray-300 animate-pulse rounded"></div>
@@ -49,7 +49,7 @@ const SkeletonLoading = ({ type }) => {
               <div className="grid grid-rows-[auto] h-auto self-end pl-2">
                 <div className="flex flex-col items-start gap-2">
                   <div className="w-[90px] h-[90px] bg-gray-200 animate-pulse rounded mt-2"></div>
-                  <div className="w-[420px] h-[100px] bg-gray-200 animate-pulse rounded"></div>
+                  <div className="w-[225px] h-[100px] bg-gray-200 animate-pulse rounded"></div>
                 </div>
               </div>
             </div>

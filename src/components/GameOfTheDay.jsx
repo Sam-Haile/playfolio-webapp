@@ -225,7 +225,7 @@ const GameOfTheDay = () => {
           />
         )}
         <h1 className="relative text-2xl font-bold pb-4 z-20">
-          Your Backlog Game of the Day
+        Backlog Spotlight
         </h1>
 
         <div
