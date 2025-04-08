@@ -113,7 +113,7 @@ const HomePage = () => {
             <div className="w-full h-auto hidden lg:block md:hidden sm:hidden grid grid-cols-2 ">
               <div className="h-1/2 grid grid-cols-3 pb-2 gap-x-4">
                 <div className="overflow-hidden relative border border-opacity-50 border-[5px] border-footerGray p-4 rounded">
-                  <div className="relative z-50">
+                  <div className="relative z-10">
                     <p className="text-3xl font-semibold text-white">258</p>
                     <h2 className="text-xl text-white">Played</h2>
                   </div>
@@ -126,7 +126,7 @@ const HomePage = () => {
                 </div>
 
                 <div className="overflow-hidden relative border border-opacity-50 border-[5px] border-footerGray p-4 rounded">
-                  <div className="relative z-50">
+                  <div className="relative z-10">
                     <p className="text-3xl font-semibold text-white">12</p>
                     <h2 className="text-xl text-white">Backlogs</h2>
                   </div>
@@ -139,7 +139,7 @@ const HomePage = () => {
                 </div>
 
                 <div className="cursor-pointer overflow-hidden relative border border-opacity-50 border-[5px] border-footerGray p-4 rounded">
-                  <div className="relative z-50">
+                  <div className="relative z-10">
                     <p className="text-3xl font-semibold text-white">23</p>
                     <h2 className="text-xl text-white">Reviews</h2>
                   </div>
@@ -155,7 +155,7 @@ const HomePage = () => {
 
               <div className="h-1/2 gap-x-4 grid pt-2 grid-cols-3">
                 <div className="overflow-hidden relative border border-opacity-50 border-[5px] border-footerGray p-4 rounded">
-                  <div className="relative z-50">
+                  <div className="relative z-10">
                     <p className="text-3xl font-semibold text-white">35</p>
                     <h2 className="text-xl text-white">Wishlisted</h2>
                   </div>
@@ -169,7 +169,7 @@ const HomePage = () => {
                 </div>
 
                 <div className="overflow-hidden relative border border-opacity-50 border-[5px] border-footerGray p-4 rounded">
-                  <div className="relative z-50">
+                  <div className="relative z-10">
                     <p className="text-3xl font-semibold text-white">8</p>
                     <h2 className="text-xl text-white">Dropped</h2>
                   </div>
@@ -183,7 +183,7 @@ const HomePage = () => {
                 </div>
 
                 <div className="overflow-hidden relative border border-opacity-50 border-[5px] border-footerGray p-4 rounded">
-                  <div className="relative z-50">
+                  <div className="relative z-10">
                     <p className="text-3xl font-semibold text-white">258</p>
                     <h2 className="text-xl text-white">Lists</h2>
                   </div>
@@ -202,14 +202,14 @@ const HomePage = () => {
         
           </div>
 
-          <HorizontalLine width="full" marginBottom="0" marginTop="lg:mt-12 md:mt-8" />
+          <HorizontalLine width="full" marginBottom="0" marginTop="lg:mt-12 md:mt-8" zIndex="z-0" />
 
           <div className="pt-8">
             {/* <h1 className="text-2xl font-bold py-4">Currently Trending</h1> */}
             <TrendingGames slides={trendingGames} />
           </div>
 
-          <HorizontalLine width="full" marginBottom="mb-4" marginTop="mt-4" />
+          <HorizontalLine width="full" marginBottom="mb-4" marginTop="mt-4" zIndex="z-0"/>
 
           <GameOfTheDay />
 
@@ -227,12 +227,12 @@ const HomePage = () => {
           </div>
 
           */}
-          <HorizontalLine width="full" marginBottom="mb-4" marginTop="mt-4" />
+          <HorizontalLine width="full" marginBottom="mb-4" marginTop="mt-4" zIndex="z-0"/>
 
           <h1 className="relative text-2xl font-bold pb-4 z-20">Events</h1>
           <Event events={currentEvents} />
 
-          <HorizontalLine width="full" marginBottom="mb-4" marginTop="mt-4" />
+          <HorizontalLine width="full" marginBottom="mb-4" marginTop="mt-4" zIndex="z-0"/>
 
           <div className="w-full">
             <h1 className="relative text-2xl font-bold z-20">Discover</h1>

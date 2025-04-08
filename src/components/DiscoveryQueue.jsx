@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import ThumbsUp from "../assets/icons/ThumbsUp.jsx";
 import ThumbsDown from "../assets/icons/ThumbsDown.jsx";
 import DynamicLogo from "./DynamicLogo.jsx";
+import ImageOverlay from "./ImageOverlay.jsx";
+import ReactDOM from "react-dom";
 
 function DiscoveryQueue({ games = [] }) {
   const navigate = useNavigate();
@@ -17,7 +19,7 @@ function DiscoveryQueue({ games = [] }) {
     centerPadding: "0px",
     slidesToShow: 1,
     speed: 500,
-    draggable: false, 
+    draggable: false,
   };
 
   return (
@@ -50,6 +52,7 @@ export default DiscoveryQueue;
 
 function GameSlide({ game, navigate }) {
   const [mainScreenshotIndex, setMainScreenshotIndex] = useState(0);
+  const [overlayOpen, setOverlayOpen] = useState(false);
 
   const handleClick = () => {
     navigate(`/game/${game.id}`);
@@ -78,7 +81,12 @@ function GameSlide({ game, navigate }) {
                 className="w-auto h-48 ml-12 z-1000 rounded"
               /> */}
               {game.logos?.url && (
-                <DynamicLogo url={game.logos.url} gameName={game.name} maxSize={"w-96"} minSize={"w-60"}/>
+                <DynamicLogo
+                  url={game.logos.url}
+                  gameName={game.name}
+                  maxSize={"w-96"}
+                  minSize={"w-60"}
+                />
               )}
             </div>
           </div>
@@ -131,7 +139,10 @@ function GameSlide({ game, navigate }) {
                 <p className="line-clamp-3 cursor-text select-text text-md font-light w-[80%]">
                   {game.storyline || game.summary || "No summary available."}
                 </p>
-                <div className="flex gap-2 ml-auto pb-2 mr-2 overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                <div
+                  className="flex gap-2 ml-auto pb-2 mr-2 overflow-hidden"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <ThumbsUp />
                   <ThumbsDown />
                 </div>
@@ -142,11 +153,33 @@ function GameSlide({ game, navigate }) {
 
         {/* RIGHT HALF */}
         <div className="hidden lg:flex w-1/2 flex flex-col ml-2 h-full ">
-          <div className="relative flex-1 rounded overflow-hidden mt-auto flex justify-center items-center">
+          <div className="relative w-full aspect-video overflow-hidden rounded">
+            {/* Background layer (blurred) */}
             <img
               src={game.screenshots?.[mainScreenshotIndex]}
-              className="w-full object-cover rounded"
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-50"
+              aria-hidden="true"
             />
+
+            {/* Foreground image */}
+            <img
+              src={game.screenshots?.[mainScreenshotIndex]}
+              alt="Game Screenshot"
+              className="relative z-10 w-full h-full object-contain"
+              onClick={() => setOverlayOpen(true)}
+            />
+
+            {/* Conditionally render the overlay */}
+            {overlayOpen &&
+              ReactDOM.createPortal(
+                <ImageOverlay
+                  src={game.screenshots?.[mainScreenshotIndex]}
+                  alt={`Screenshot of ${game.name}`}
+                  onClose={() => setOverlayOpen(false)}
+                />,
+                document.body
+              )}
           </div>
 
           <div className="relative h-[20%] overflow-hidden">
@@ -176,9 +209,7 @@ function GameSlide({ game, navigate }) {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );
 }
-

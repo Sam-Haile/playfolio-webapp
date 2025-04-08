@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
+import ImageOverlay from "../components/ImageOverlay";
 import {
   collection,
   query,
@@ -69,13 +70,14 @@ const GameOfTheDay = () => {
   const [detailsFetched, setDetailsFetched] = useState(false);
   const imgRef = useRef(null);
   const navigate = useNavigate();
+  const [overlayOpen, setOverlayOpen] = useState(false);
 
   // Flag to control use of temporary data
-  const useTempData = true;
+  const useTempData = false;
 
   const tempGame = {
     id: 1,
-    name: "FragPunk",
+    name: "Fragpunk",
     releaseYear: "2024",
     heroes: {
       url: "https://cdn2.steamgriddb.com/hero/3bd7875f994b1dd763d668f8d4816575.png",
@@ -354,13 +356,34 @@ const GameOfTheDay = () => {
             <div className="relative h-full overflow-hidden">
               <div className="flex flex-col h-full">
                 {/* Main Screenshot Container */}
-                <div className="flex-1 relative rounded overflow-hidden flex justify-center items-center">
+                <div className="flex-1 relative rounded aspect-video overflow-hidden flex justify-center items-center">
+                   {/* Background layer (blurred) */}
+                   <img
+                    src={gameOfDay?.screenshots?.[mainScreenshotIndex]}
+                    alt=""
+                      className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-50"
+                      aria-hidden="true"
+                    />
+                  {/* Foreground image */}
                   <img
                     src={gameOfDay?.screenshots?.[mainScreenshotIndex]}
-                    alt={`${gameOfDay?.name} Screenshot`}
-                    className="w-full h-full max-h-[300px] object-cover rounded"
-                  />
+                    alt="Game Screenshot"
+                      className="relative w-full h-full object-contain"
+                      onClick={() => setOverlayOpen(true)}
+                    />
+                  
+                      {/* Conditionally render the overlay */}
+                      {overlayOpen && (
+                      <ImageOverlay
+                      src={gameOfDay?.screenshots?.[mainScreenshotIndex]}
+                      alt={`Screenshot of ${name}`}
+                        onClose={() => setOverlayOpen(false)}
+                      />
+                    )}
                 </div>
+
+
+
                 {/* Thumbnails Container */}
                 <div className="h-20 relative mt-2">
                   <div className="flex items-center h-full gap-2">
@@ -368,8 +391,10 @@ const GameOfTheDay = () => {
                       <img
                         key={index}
                         src={url}
-                        onMouseEnter={() => setMainScreenshotIndex(index)}
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setMainScreenshotIndex(index)
+                        }}
                         className={`h-full object-contain rounded cursor-pointer transition-opacity duration-300 ${
                           mainScreenshotIndex === index
                             ? "brightness-100"
