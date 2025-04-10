@@ -1,7 +1,10 @@
 import { doc, getDoc, setDoc, serverTimestamp, collection } from "firebase/firestore";
 import { useAuth } from "../AuthContext";
 import { db } from "../firebaseConfig";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import ProfileIcon from "../assets/icons/pfp.svg";
+
+
 
 const ReviewBox = ({ gameDetails }) => {
   const { user } = useAuth();
@@ -10,6 +13,16 @@ const ReviewBox = ({ gameDetails }) => {
   const [savedReview, setSavedReview] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const textareaRef = useRef(null);
+
+  useEffect(() => {
+    if(isEditing && textareaRef.current) {
+      const textarea = textareaRef.current;
+      textarea.focus();
+
+      textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+    }
+  }, [isEditing]);
 
   useEffect(() => {
     const loadReview = async () => {
@@ -59,6 +72,7 @@ const ReviewBox = ({ gameDetails }) => {
       const reviewData = {
         userId: user.uid,
         userDisplayName: user.displayName || "Unknown",
+        userPFP: user.profileIcon || ProfileIcon,
         review: review,
         createdAt: serverTimestamp(),
       };
@@ -80,8 +94,7 @@ const ReviewBox = ({ gameDetails }) => {
   };
 
   return (
-    <div className="px-2 w-full">
-      <p className="text-sm font-semibold uppercase mt-4 mb-2">Review</p>
+    <div className="w-full px-4">
 
       {isEditing ? (
         <>
@@ -93,12 +106,13 @@ const ReviewBox = ({ gameDetails }) => {
               cols="50"
               placeholder="Write a review..."
               value={review}
+              ref={textareaRef}
               onChange={(e) => setReview(e.target.value)}
               className="w-full h-full p-4 text-white bg-customGray-700 
               bg-opacity-10 rounded placeholder:text-customGray-800 resize-none focus:outline-none lg:text-base md:text-sm"
             />
           </div>
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end gap-2 mb-4">
             <button
               onClick={() => {
                 setIsEditing(false);
@@ -124,7 +138,7 @@ const ReviewBox = ({ gameDetails }) => {
           <div className="bg-customGray-700 bg-opacity-10 text-white rounded p-4">
             <p className="italic">{savedReview}</p>
           </div>
-          <div className="flex justify-end">
+          <div className="flex justify-end mb-4">
             <button
               onClick={() => setIsEditing(true)}
               className="mt-2 bg-gray-600 rounded px-4 hover:bg-gray-700 text-sm"

@@ -247,7 +247,7 @@ const Profile = () => {
               <img
                 src={userData.profileIcon || "/images/default_profile.png"}
                 alt="Profile"
-                className="w-[150px] h-[150px] rounded-full shadow-lg"
+                className="w-[150px] h-[150px] rounded-full object-cover shadow-lg"
               />
 
               <div

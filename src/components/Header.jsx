@@ -68,7 +68,7 @@ const Header = ({
     }, 300);
   };
 
-  const handleMouseClick = () =>{
+  const handleMouseClick = () => {
     navigate("/profile");
   }
 
@@ -138,15 +138,19 @@ const Header = ({
               onMouseLeave={handleMouseLeave}
               onMouseDown={handleMouseClick}
             >
-              <button className="flex items-center focus:outline-none">
+              <button className="flex items-center px-2 py-1 focus:outline-none whitespace-nowrap min-w-0">
                 {user?.profileIcon ? (
                   <img
                     src={user.profileIcon}
                     alt="Profile Icon"
-                    className="w-8 h-8 rounded-full object-cover"
+                    className="w-8 h-8 rounded-full object-cover aspect-square shadow-lg"
                   />
                 ) : (
-                  <img src={user.profileIcon} alt="Profile" className="w-5" />
+                  <img
+                    src={ProfileIco}
+                    alt="Default Profile"
+                    className="w-8 h-8 rounded-full object-cover shadow-lg"
+                  />
                 )}
                 <p className="ml-2 hidden lg:block md:hidden sm:hidden">{user.username}</p>
                 <img
@@ -157,9 +161,8 @@ const Header = ({
               </button>
 
               <div
-                className={`absolute mt-2 w-32 bg-customGray-500 text-sm text-black rounded shadow-lg z-[1000] ${
-                  showDropdown ? "block" : "hidden"
-                }`}
+                className={`absolute mt-2 w-32 bg-customGray-500 text-sm text-black rounded shadow-lg z-[1000] ${showDropdown ? "block" : "hidden"
+                  }`}
               >
                 <button
                   onClick={() => navigate("/profile")}

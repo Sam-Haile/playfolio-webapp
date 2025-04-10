@@ -1,0 +1,51 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+      // ✅ Allow authenticated users to read their own gameStatuses collection
+      match /users/{userId}/gameStatuses/{gameId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // ✅ Added: Allow access to user's statusesCount document
+    match /users/{userId}/statusesCount/{docId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+
+    // ✅ Allow anyone to read the "usernames" collection (safe)
+    match /usernames/{username} {
+      allow read;
+      allow write: if request.auth != null;
+    }
+
+    // ✅ Restrict access to full user profiles
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth.uid == userId;
+      
+    match /ratings/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth.uid == userId;		
+      
+			}   
+
+    }
+    match /games/{gameId}/reviews/{reviewId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == request.resource.data.userId;
+
+      // 🗨️ First-level replies
+      match /replies/{replyId} {
+        allow read: if true;
+        allow write: if request.auth != null && request.auth.uid == request.resource.data.userId;
+
+        // 🧵 Nested replies to replies
+        match /replies/{nestedReplyId} {
+          allow read: if true;
+          allow write: if request.auth != null && request.auth.uid == request.resource.data.userId;
+        }
+      }
+    }
+  }
+}

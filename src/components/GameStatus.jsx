@@ -104,7 +104,7 @@ const GameStatus = ({ gameId }) => {
   };
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full lg:pt-[0px] md:pt-4 sm:pt-0">
       <div className="flex flex-wrap lg:place-content-between md:justify-center">
         {statusOptions.map(({ name, component: IconComponent, color }) => (
           <button

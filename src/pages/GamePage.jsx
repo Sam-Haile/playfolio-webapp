@@ -285,7 +285,7 @@ const GamePage = () => {
         </div>
 
         <div className="absolute inset-0 bg-customBlack bg-opacity-0 z-30">
-          <div className="h-[75%] grid lg:grid-cols-[auto_35%_40%] md:grid-cols-[auto_50%] mx-[15%]">
+          <div className="h-auto mt-20 grid lg:grid-cols-[auto_35%_40%] md:grid-cols-[auto_60%] mx-[15%]">
             <div className="relative self-end">
               <Tilt
                 options={defaultOptions}
@@ -503,7 +503,7 @@ const GamePage = () => {
 
                 <div className="flex flex-col gap-2">
                   {/* Main Screenshot */}
-                  <div className="relative w-full aspect-video overflow-hidden rounded">
+                  <div className="relative w-full aspect-video overflow-hidden rounded cursor-pointer">
                     {/* Background layer (blurred) */}
                     <img
                       src={screenshots?.[mainScreenshotIndex]?.imageUrl}
@@ -550,8 +550,8 @@ const GamePage = () => {
                   </Slider>
                 </div>
               </div>
-              <div>
-                <h1 className="text-base font-semibold ">Reviews</h1>
+              <div className="lg:block md:hidden sm:hidden">
+                <h1 className="text-base font-semibold">Reviews</h1>
                 <HorizontalLine marginTop="mt-0" width="full" marginBottom="mb-8" />
                 <GameReviews gameId={String(gameDetails.id)} />
               </div>
@@ -602,7 +602,7 @@ const GamePage = () => {
                   </div>
 
                   <div className="px-2 w-full">
-                    <p className="text-sm font-semibold uppercase mt-4  mb-2">
+                    <p className="text-sm font-semibold uppercase mt-4 pl-4 mb-2">
                       Rate
                     </p>
                     <div className="lex justify-center items-center w-full">
@@ -610,11 +610,21 @@ const GamePage = () => {
                     </div>
                   </div>
 
-                 <ReviewBox gameDetails={gameDetails} />
+                  <div className="px-2 w-full">
+                    <p className="text-sm font-semibold uppercase mt-4 pl-4 mb-2">Review</p>
+                    <ReviewBox gameDetails={gameDetails} />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+
+          <div className="mx-[15%] lg:hidden md:block sm:block">
+            <h1 className="text-base font-semibold ">Reviews</h1>
+            <HorizontalLine marginTop="mt-0" width="full" marginBottom="mb-8" />
+            <GameReviews gameId={String(gameDetails.id)} />
+          </div>
+
 
           <div className="mt-12">
             <Footer />
