@@ -78,7 +78,7 @@ const Header = ({
   return (
     <div className="mx-[10%]">
       <header
-        className="bg-customBlack text-white relative h-[75px] flex "
+        className=" text-white relative h-[75px] flex "
         style={{ zIndex }}
       >
         <div className="flex items-center">

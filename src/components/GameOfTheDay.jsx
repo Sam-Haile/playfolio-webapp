@@ -82,7 +82,7 @@ const GameOfTheDay = () => {
     heroes: {
       url: "https://cdn2.steamgriddb.com/hero/3bd7875f994b1dd763d668f8d4816575.png",
     },
-    coverUrl: "//images.igdb.com/igdb/image/upload/t_720p/co9gmx.jpg",
+    coverUrl: "https://images.igdb.com/igdb/image/upload/t_1080p/co1p9c.jpg",
     logos: {
       url: "https://cdn2.steamgriddb.com/logo/79167346cb707b193dadbd67ab20855e.png",
     },
@@ -102,7 +102,6 @@ const GameOfTheDay = () => {
     backlogDate: new Date(), // Temporary backlog date for testing
   };
   
-
   // When using temporary data, immediately set gameOfDay to tempGame.
   useEffect(() => {
     if (useTempData) {
@@ -259,9 +258,9 @@ const GameOfTheDay = () => {
       </div>
 
       <div className="bg-cover bg-center bg-no-repeat relative z-10 pb-10">
-        <div className="grid lg:grid-cols-[20%_40%_auto] md:grid-cols-[40%_auto] sm:grid-rows-[auto_auto] z-10">
-          <div className="relative z-50 flex items-center hidden sm:hidden md:block lg:block">
-            {gameOfDay?.coverUrl && (
+        <div className="grid items-center lg:grid-cols-[auto_40%_auto] md:grid-cols-[40%_auto] sm:grid-rows-[auto_auto] z-10">
+        <div className="relative z-50 flex justify-center items-center hidden sm:hidden md:block lg:block">
+        {gameOfDay?.coverUrl && (
               <div>
                 <GameCard
                   ref={imgRef}
@@ -274,7 +273,7 @@ const GameOfTheDay = () => {
             )}
           </div>
 
-          <div className="flex flex-col ml-2 rounded bg-customGray-900/50 p-2 relative">
+          <div className="h-full flex flex-col ml-2 rounded bg-customGray-900/50 p-2 relative">
             <div>
               {gameOfDay?.logos ? (
                 <DynamicLogo
@@ -351,7 +350,7 @@ const GameOfTheDay = () => {
             
           </div>
           
-          <div className="flex flex-col pl-2 h-full hidden md:hidden lg:block">
+          <div className="h-full flex flex-col pl-2 h-full hidden md:hidden lg:block">
             {/* Screenshots and other UI elements */}
             <div className="relative h-full overflow-hidden">
               <div className="flex flex-col h-full">

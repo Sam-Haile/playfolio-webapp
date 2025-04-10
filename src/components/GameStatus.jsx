@@ -12,6 +12,7 @@ import {
   serverTimestamp,
   increment,
 } from "firebase/firestore";
+import HorizontalLine from "../components/HorizontalLine";
 
 const GameStatus = ({ gameId }) => {
   const { user } = useAuth();
@@ -108,9 +109,9 @@ const GameStatus = ({ gameId }) => {
       <div className="flex flex-wrap lg:place-content-between md:justify-center">
         {statusOptions.map(({ name, component: IconComponent, color }) => (
           <button
-            key={name}
-            className="flex flex-col items-center w-[20%] min-w-[80px] transition-all"
-            onClick={() => updateGameStatus(name)}
+          key={name}
+          className="flex flex-col items-center w-[20%] min-w-[80px] transition-all"
+          onClick={() => updateGameStatus(name)}
           >
             {/* If selectedStatus === name, use the color; otherwise defaultColor */}
             <IconComponent

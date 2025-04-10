@@ -237,7 +237,7 @@ const GamePage = () => {
 
   return (
     <div className="h-[100%]">
-      <div className="mx-[5%]">
+      <div className="mx-[5%] relative">
         <Header
           showSearchBar={true}
           showNavButtons={true}
@@ -246,13 +246,13 @@ const GamePage = () => {
         />
       </div>
 
-      <div className="bg-white h-[75vh] relative mt-8 ">
-        <div className="bg-white h-[75vh] relative flex items-center justify-center overflow-hidden pointer-event:none">
+      <div className="bg-white h-[75vh] mt-8 ">
+        <div className="pt-18 bg-white h-[75vh] absolute top-0 w-full  flex items-center justify-center overflow-hidden pointer-event:none">
           {heroes && heroes.length > 0 ? (
             <img
               src={heroes[0].url} // Use the first hero
               alt="Game Hero"
-              className="w-full h-full object-cover" // Adjust height for proportional scaling
+              className="w-full h-full object-cover " // Adjust height for proportional scaling
               draggable="false"
             />
           ) : screenshots && screenshots.length > 0 ? (
@@ -272,20 +272,20 @@ const GamePage = () => {
             className="absolute top-0 -mt-[1px] h-[100%] w-full pointer-events-none z-10"
             style={{
               background:
-                "linear-gradient(to bottom, #121212 0%, transparent 60%)",
+                "linear-gradient(to bottom, #121212 8%, transparent 80%)",
             }}
           ></div>
           <div
             className="absolute bottom-0 -mb-[1px] h-[100%] w-full pointer-events-none z-10"
             style={{
               background:
-                "linear-gradient(to top, #121212 25%, transparent 85%)",
+                "linear-gradient(to top, #121212 30%, transparent 85%)",
             }}
           ></div>
         </div>
 
         <div className="absolute inset-0 bg-customBlack bg-opacity-0 z-30">
-          <div className="h-auto mt-20 grid lg:grid-cols-[auto_35%_40%] md:grid-cols-[auto_60%] mx-[15%]">
+          <div className="h-auto mt-64 grid grid grid-cols-1 sm:grid-cols-[auto_50%] lg:grid-cols-[auto_35%_45%] mx-[15%]">
             <div className="relative self-end">
               <Tilt
                 options={defaultOptions}
@@ -370,7 +370,7 @@ const GamePage = () => {
                   </p>
                 </div>
 
-                <div className="flex-col self-center pr-2">
+                <div className="flex-col self-center pr-2 font-bold">
                   <h3>Release Date</h3>
                   <p className="italic font-light">{releaseDate}</p>
                 </div>
@@ -418,33 +418,37 @@ const GamePage = () => {
 
                   {developers.length > 0 &&
                     developers.map((developer, index) => (
-                      <span
-                        onClick={() => handleCompanyClick(developer.id)}
-                        key={index}
-                        className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline "
-                      >
-                        {developer.name}
-                        <br />
+                      <span key={index}>
+                        <span
+
+                          onClick={() => handleCompanyClick(developer.id)}
+                          key={index}
+                          className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline "
+                        >
+                          {developer.name}
+                        </span>
+                        {index < developers.length - 1 && ", "}
                       </span>
                     ))}
                 </div>
 
                 <div className="flex-col self-center pr-2">
-                  <h3 className="font-bold">Publisher</h3>
+                  <h3 className="font-bold">Publishers</h3>
                   {publishers.length > 0 &&
                     publishers.map((publisher, index) => (
-                      <span
-                        onClick={() => handleCompanyClick(developer.id)}
-                        key={index}
-                        className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline "
-                      >
-                        {publisher.name}
-                        <br />
+                      <span key={index}>
+                        <span
+                          onClick={() => handleCompanyClick(developer.id)}
+                          className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline "
+                        >
+                          {publisher.name}
+                        </span>
+                        {index < publishers.length - 1 && ", "}
                       </span>
                     ))}
                 </div>
 
-                <div className="flex justify-center pr-2">
+                <div className="flex justify-center items-center pr-2">
                   {ageRatings.some((rating) => rating.category === 1) ? (
                     ageRatings
                       .filter((rating) => rating.category === 1)
