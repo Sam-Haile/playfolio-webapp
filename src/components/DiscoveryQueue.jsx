@@ -143,8 +143,8 @@ function GameSlide({ game, navigate }) {
                   className="flex gap-2 ml-auto pb-2 mr-2 overflow-hidden"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <ThumbsUp />
-                  <ThumbsDown />
+                  <ThumbsUp className="mt-auto h-6 w-6"/>
+                  <ThumbsDown className="mt-auto h-6 w-6"/>
                 </div>
               </div>
             </div>
