@@ -110,11 +110,11 @@ const HomePage = () => {
               </p>
             </div>
 
-            <div className="w-full h-auto hidden lg:block md:hidden sm:hidden grid grid-cols-2 ">
+            <div className="w-full h-auto hidden lg:block md:hidden sm:hidden grid  cursor-default grid-cols-2 ">
               <div className="h-1/2 grid grid-cols-3 pb-2 gap-x-4">
                 <div className="overflow-hidden relative border border-opacity-50 border-[5px] border-footerGray p-4 rounded">
-                  <div className="relative z-10">
-                    <p className="text-3xl font-semibold text-white">258</p>
+                  <div className="relative z-20">
+                    <p className="text-3xl font-semibold text-white ">258</p>
                     <h2 className="text-xl text-white">Played</h2>
                   </div>
                   <div
@@ -126,7 +126,7 @@ const HomePage = () => {
                 </div>
 
                 <div className="overflow-hidden relative border border-opacity-50 border-[5px] border-footerGray p-4 rounded">
-                  <div className="relative z-10">
+                  <div className="relative z-20">
                     <p className="text-3xl font-semibold text-white">12</p>
                     <h2 className="text-xl text-white">Backlogs</h2>
                   </div>
@@ -138,8 +138,8 @@ const HomePage = () => {
                   </div>
                 </div>
 
-                <div className="cursor-pointer overflow-hidden relative border border-opacity-50 border-[5px] border-footerGray p-4 rounded">
-                  <div className="relative z-10">
+                <div className="overflow-hidden relative border border-opacity-50 border-[5px] border-footerGray p-4 rounded">
+                  <div className="relative z-20">
                     <p className="text-3xl font-semibold text-white">23</p>
                     <h2 className="text-xl text-white">Reviews</h2>
                   </div>
@@ -155,7 +155,7 @@ const HomePage = () => {
 
               <div className="h-1/2 gap-x-4 grid pt-2 grid-cols-3">
                 <div className="overflow-hidden relative border border-opacity-50 border-[5px] border-footerGray p-4 rounded">
-                  <div className="relative z-10">
+                  <div className="relative z-20">
                     <p className="text-3xl font-semibold text-white">35</p>
                     <h2 className="text-xl text-white">Wishlisted</h2>
                   </div>
@@ -169,7 +169,7 @@ const HomePage = () => {
                 </div>
 
                 <div className="overflow-hidden relative border border-opacity-50 border-[5px] border-footerGray p-4 rounded">
-                  <div className="relative z-10">
+                  <div className="relative z-20 cursor-default">
                     <p className="text-3xl font-semibold text-white">8</p>
                     <h2 className="text-xl text-white">Dropped</h2>
                   </div>
@@ -183,7 +183,7 @@ const HomePage = () => {
                 </div>
 
                 <div className="overflow-hidden relative border border-opacity-50 border-[5px] border-footerGray p-4 rounded">
-                  <div className="relative z-10">
+                  <div className="relative z-20">
                     <p className="text-3xl font-semibold text-white">258</p>
                     <h2 className="text-xl text-white">Lists</h2>
                   </div>

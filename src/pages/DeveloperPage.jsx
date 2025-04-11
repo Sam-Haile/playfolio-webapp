@@ -209,7 +209,7 @@ const DeveloperPage = () => {
               </div>
             ) : (
               <>
-                {companyDetails.logo && (
+                {companyDetails?.logo && (
                   <img
                     src={companyDetails.logo}
                     alt={`${companyDetails.name} Logo`}
@@ -217,12 +217,12 @@ const DeveloperPage = () => {
                   />
                 )}
                 <div className="flex flex-col items-start mt-4">
-                  <p className="text-xl">{companyDetails.name}</p>
+                  <p className="text-xl">{companyDetails?.name}</p>
                   <p className="italic text-lg">
                     ({companyDetails?.startDate || ""})
                   </p>
                 </div>
-                {companyDetails.websites &&
+                {companyDetails?.websites &&
                   companyDetails.websites.length > 0 && (
                     <div className="italic font-light text-s flex items-center pt-2">
                       <img
@@ -230,7 +230,7 @@ const DeveloperPage = () => {
                         alt="Ico"
                         className="pr-2 w-[40px]"
                       />
-                      {companyDetails.websites.map((website, index) => (
+                      {companyDetails?.websites.map((website, index) => (
                         <a
                           key={index}
                           href={website.url}
