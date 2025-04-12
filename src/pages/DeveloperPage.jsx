@@ -13,13 +13,11 @@ const DeveloperPage = () => {
   const [companyDetails, setCompanyDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [sortOption, setSortOption] = useState("total_rating desc");
-  const [headerGames, setHeaderGames] = useState([]);
+  const [allGames, setAllGames] = useState([]);
   const [paginatedGames, setPaginatedGames] = useState([]); // Stores paginated game list
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = companyDetails?.pagination?.totalPages || 1;
   const [activeTab, setActiveTab] = useState("developed");
-
-  // New state for visual type (detailed, compact, or list)
   const [visualType, setVisualType] = useState("detailed");
 
   // Array to hold the visual type options and corresponding icons
@@ -29,16 +27,6 @@ const DeveloperPage = () => {
     { type: "list", icon: "./src/assets/icons/listView.svg" },
   ];
 
-  // Handler to set the visual type
-  const handleVisualTypeChange = (type) => {
-    console.log("Visual Type: ", type);
-    setVisualType(type);
-  };
-
-  const handleClick = (gameId) => {
-    navigate(`/game/${gameId}`);
-  };
-
   useEffect(() => {
     if (id) {
       fetchHeaderGames(id, "total_rating desc", activeTab);
@@ -47,10 +35,11 @@ const DeveloperPage = () => {
     }
   }, [id, sortOption, activeTab]);
 
+  // Header games fetches titles to display in the header area of the site
   const fetchHeaderGames = async (companyId, sorting, gameType) => {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/company`,
+        `${import.meta.env.VITE_API_URL}/api/companyGames`,
         {
           id: companyId,
           sortOption: sorting,
@@ -60,11 +49,13 @@ const DeveloperPage = () => {
         }
       );
 
-      const tabKey = gameType === "developed" ? "publishedGames" : "developedGames";
-      setHeaderGames(response.data[tabKey] || []);
-
+      const developedGames = response.data.developedGames || [];
+      const publishedGames = response.data.publishedGames || [];
+      const combinedGames = [...developedGames, ...publishedGames];
+      setAllGames(combinedGames);
+     
       if (response.data) {
-        setCompanyDetails(response.data);
+        setCompanyDetails(response.data.companyDetails); // if your backend returns companyDetails separately
       }
     } catch (error) {
       console.error(
@@ -74,11 +65,17 @@ const DeveloperPage = () => {
     }
   };
 
-  const fetchPaginatedGames = async (companyId, sorting, page = 1, gameType = "developed") => {
+  // Fetches both published and developed games by company
+  const fetchPaginatedGames = async (
+    companyId,
+    sorting,
+    page = 1,
+    gameType = "developed"
+  ) => {
     try {
       setLoading(true);
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/company`,
+        `${import.meta.env.VITE_API_URL}/api/companyGames`,
         {
           id: companyId,
           sortOption: sorting,
@@ -89,7 +86,8 @@ const DeveloperPage = () => {
       );
 
       // Use the appropriate key based on the active tab
-      const tabKey = activeTab === "published" ? "publishedGames" : "developedGames";
+      const tabKey =
+        activeTab === "published" ? "publishedGames" : "developedGames";
       setPaginatedGames(response.data[tabKey] || []);
       setCurrentPage(response.data.pagination.currentPage);
       setCompanyDetails((prevDetails) => ({
@@ -104,6 +102,12 @@ const DeveloperPage = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Handler to set the visual type
+  const handleVisualTypeChange = (type) => {
+    console.log("Visual Type: ", type);
+    setVisualType(type);
   };
 
   const handlePageClick = (pageNumber) => {
@@ -130,6 +134,12 @@ const DeveloperPage = () => {
     });
   };
 
+  const handleClick = (gameId) => {
+    navigate(`/game/${gameId}`);
+  };
+
+  console.log("header", paginatedGames);
+
   // The DeveloperPage JSX
   return (
     <div className="h-[100%]">
@@ -143,14 +153,14 @@ const DeveloperPage = () => {
       <div className="relative w-full max-h-[75vh] overflow-hidden mt-8">
         {/* Background Grid */}
         <div>
-          <div className="grid grid-cols-8 gap-2">
-            {headerGames.length > 0 ? (
-              headerGames.map((game, index) => (
+          <div className="grid grid-cols-7 h-[700px] gap-2">
+            {allGames?.length > 0 ? (
+              allGames.map((game, index) => (
                 <div key={index}>
-                  {game.cover ? (
+                  {game.coverUrl ? ( // Updated condition to check coverUrl
                     <div className="w-full h-[160px] overflow-hidden">
                       <img
-                        src={game.cover}
+                        src={game.coverUrl}
                         alt={`${game.name} Cover`}
                         className="w-full h-full object-cover opacity-60"
                       />
@@ -320,7 +330,11 @@ const DeveloperPage = () => {
                     <p>Rating</p>
                   </div>
                 </div>
-                <HorizontalLine marginTop="mt-2" marginBottom="mb-2" width="full" />
+                <HorizontalLine
+                  marginTop="mt-2"
+                  marginBottom="mb-2"
+                  width="full"
+                />
               </div>
             )}
             <div
@@ -332,8 +346,7 @@ const DeveloperPage = () => {
                   : "grid grid-cols-7 gap-4 md:grid-cols-5 sm:grid-cols-3 xs:grid-cols-2"
               }`}
             >
-              {console.log("PaginatedGames:", paginatedGames)}
-
+              {/* {console.log("PaginatedGames from developer page:", paginatedGames)} */}
             </div>
           </>
         )}
