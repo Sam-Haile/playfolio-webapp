@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Header from "../components/Header";
@@ -6,26 +6,39 @@ import Footer from "../components/Footer";
 import HorizontalLine from "../components/HorizontalLine";
 import ResultCard from "../components/ResultCard";
 import Pagination from "../components/Pagination";
-
-const DeveloperPage = () => {
-  const navigate = useNavigate();
-  const { id } = useParams(); // Get company ID from URL
-  const [companyDetails, setCompanyDetails] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [sortOption, setSortOption] = useState("total_rating desc");
-  const [allGames, setAllGames] = useState([]);
-  const [paginatedGames, setPaginatedGames] = useState([]); // Stores paginated game list
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = companyDetails?.pagination?.totalPages || 1;
-  const [activeTab, setActiveTab] = useState("developed");
-  const [visualType, setVisualType] = useState("detailed");
+import useWindowWidth from "../components/useWindowWidth";
+import MasonryBoxArtGrid from "../components/MasonryBoxArtGrid";
+import { trimImages } from "../services/helperFunctions.js";
 
   // Array to hold the visual type options and corresponding icons
   const visualTypes = [
-    { type: "detailed", icon: "./src/assets/icons/detailedView.svg" },
-    { type: "compact", icon: "./src/assets/icons/compactView.svg" },
-    { type: "list", icon: "./src/assets/icons/listView.svg" },
+    { type: "detailed", icon: "/src/assets/icons/detailedView.svg" },
+    { type: "compact", icon: "/src/assets/icons/compactView.svg" },
+    { type: "list", icon: "/src/assets/icons/listView.svg" },
   ];
+  
+const DeveloperPage = () => {
+  const navigate = useNavigate();
+  const { id } = useParams(); // Get company ID from URL
+  const [loading, setLoading] = useState(true);
+  const [sortOption, setSortOption] = useState("total_rating desc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [activeTab, setActiveTab] = useState("developed");
+  const [visualType, setVisualType] = useState("detailed");
+  const [companyDetails, setCompanyDetails] = useState(null);
+  const [allGames, setAllGames] = useState([]);
+  const [trimmedCount, setTrimmedCount] = useState(0);
+  const [paginatedGames, setPaginatedGames] = useState([]);
+  const totalPages = companyDetails?.pagination?.totalPages || 1;
+  const [headerImagesCount, setHeaderImagesCount] = useState(0);
+  const [developedGames, setDevelopedGames] = useState([]);
+  const [publishedGames, setPublishedGames] = useState([]);
+  const windowWidth = useWindowWidth();
+  const trimmedImages = useMemo(() => trimImages(allGames), [allGames]);
+  const [totalPublished, setTotalPublished] = useState(0);
+  const [totalDeveloped, setTotalDeveloped] = useState(0);
+
+
 
   useEffect(() => {
     if (id) {
@@ -45,15 +58,23 @@ const DeveloperPage = () => {
           sortOption: sorting,
           page: 1,
           limit: 30,
-          gameType: gameType, // Pass the active tab value ("developed" or "published")
+          gameType: gameType,
         }
       );
 
       const developedGames = response.data.developedGames || [];
       const publishedGames = response.data.publishedGames || [];
-      const combinedGames = [...developedGames, ...publishedGames];
-      setAllGames(combinedGames);
-     
+      const allGames = response.data.combinedGames || [];
+
+      setTotalDeveloped(response.data.totalDeveloped);
+      setTotalPublished(response.data.totalPublished);
+
+      setDevelopedGames(developedGames);
+      setPublishedGames(publishedGames);
+      setAllGames(allGames);
+
+      //console.log("Combined Games:", combinedGames);
+
       if (response.data) {
         setCompanyDetails(response.data.companyDetails); // if your backend returns companyDetails separately
       }
@@ -89,7 +110,7 @@ const DeveloperPage = () => {
       const tabKey =
         activeTab === "published" ? "publishedGames" : "developedGames";
       setPaginatedGames(response.data[tabKey] || []);
-      setCurrentPage(response.data.pagination.currentPage);
+      setCurrentPage(response.data.companyDetails.pagination.currentPage);
       setCompanyDetails((prevDetails) => ({
         ...prevDetails,
         pagination: response.data.pagination,
@@ -122,11 +143,10 @@ const DeveloperPage = () => {
         <button
           key={pageNumber}
           onClick={() => handlePageClick(pageNumber)}
-          className={`px-2 py-1 m-1 border rounded ${
-            pageNumber === currentPage
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200"
-          }`}
+          className={`px-2 py-1 m-1 border rounded ${pageNumber === currentPage
+            ? "bg-blue-500 text-white"
+            : "bg-gray-200"
+            }`}
         >
           {pageNumber}
         </button>
@@ -138,229 +158,237 @@ const DeveloperPage = () => {
     navigate(`/game/${gameId}`);
   };
 
-  console.log("header", paginatedGames);
+  //console.log("Company Details", companyDetails);
+  //console.log("All Games", allGames);
+  //console.log("Paginated Games", paginatedGames);
+  //console.log(publishedGames);
 
-  // The DeveloperPage JSX
+
+  useEffect(() => {
+    setTrimmedCount(trimmedImages.length);
+    console.log("Computed trimmed count:", trimmedImages.length);
+  }, [trimmedImages]);
+
+
+  // Determine the number of columns based on trimmedCount and screen width
+  const getColumns = () => {
+    if (trimmedCount === 30) {
+      return 6;
+    } else if (trimmedCount === 15) {
+      return windowWidth < 768 ? 3 : 4;
+    } else if (trimmedCount === 10) {
+      return 2;
+    } else if (trimmedCount === 5) {
+      return windowWidth < 768 ? 1 : 2;
+    } else {
+      return 1;
+    }
+  };
+
+  const columns = getColumns();
+
   return (
-    <div className="h-[100%]">
+    <div className="h-[100%] relative ">
       <Header
         showSearchBar={true}
         showNavButtons={true}
         showLoginButtons={true}
-        zIndex={20}
       />
 
-      <div className="relative w-full max-h-[75vh] overflow-hidden mt-8">
+      <div className="relative w-full h-[700px] overflow-hidden z-0">
         {/* Background Grid */}
-        <div>
-          <div className="grid grid-cols-7 h-[700px] gap-2">
-            {allGames?.length > 0 ? (
-              allGames.map((game, index) => (
-                <div key={index}>
-                  {game.coverUrl ? ( // Updated condition to check coverUrl
-                    <div className="w-full h-[160px] overflow-hidden">
-                      <img
-                        src={game.coverUrl}
-                        alt={`${game.name} Cover`}
-                        className="w-full h-full object-cover opacity-60"
-                      />
-                    </div>
-                  ) : (
-                    <div className="text-white">No Image</div>
-                  )}
-                </div>
-              ))
-            ) : (
-              // Skeleton for header games
-              <div className="animate-pulse grid grid-cols-8 h-[400px] gap-2"></div>
-            )}
-          </div>
+        <div className="absolute top-0 left-0 w-full">
+          <MasonryBoxArtGrid images={allGames} columns={columns} />
 
-          {/* Gradients */}
-          <div>
-            <div
-              className="absolute top-0 h-[100%] w-full pointer-events-none z-10"
-              style={{
-                background:
-                  "linear-gradient(to bottom, #121212 0%, transparent 60%)",
-              }}
-            ></div>
-            <div
-              className="absolute bottom-0 h-[100%] w-full pointer-events-none z-10"
-              style={{
-                background:
-                  "linear-gradient(to top, #121212 25%, transparent 85%)",
-              }}
-            ></div>
-          </div>
+
         </div>
 
-        <div className="absolute z-50 top-0 mx-[15%] h-full flex flex-col justify-center">
-          {/* Company Info */}
-          <div className="bg-customBlack p-8 rounded-lg drop-shadow-lg bg-opacity-70">
-            {loading ? (
-              <div className="animate-pulse space-y-4">
-                <div className="w-32 h-32 bg-gray-300 rounded"></div>
-                <div className="w-48 h-6 bg-gray-300"></div>
-                <div className="w-24 h-4 bg-gray-300"></div>
+        {/* Top Gradient */}
+        <div className="absolute top-0 h-full w-full pointer-events-none z-10"
+          style={{
+            background: "linear-gradient(to bottom, #121212 8%, transparent 50%)",
+          }}
+        />
+
+        <div className="absolute bottom-0 h-full w-full pointer-events-none z-10"
+          style={{
+            background: "linear-gradient(to top,#121212 8%, transparent 50%)",
+          }}
+        />
+      </div>
+
+
+
+      <div className="absolute top-0 mx-[15%] mt-56 flex flex-col justify-center">
+        {/* Company Info */}
+        <div className="bg-customBlack w-fit p-8 rounded-lg drop-shadow-lg bg-opacity-70">
+          {loading ? (
+            <div className="animate-pulse space-y-4">
+              <div className="w-32 h-32 bg-gray-300 rounded"></div>
+              <div className="w-48 h-6 bg-gray-300"></div>
+              <div className="w-24 h-4 bg-gray-300"></div>
+            </div>
+          ) : (
+            <>
+              {companyDetails?.logo && (
+                <img
+                  src={companyDetails.logo}
+                  alt={`${companyDetails.name} Logo`}
+                  className="w-74"
+                />
+              )}
+              <div className="flex flex-col items-start mt-4">
+                <p className="text-xl">{companyDetails?.name}</p>
+                <p className="italic text-lg">
+                  ({companyDetails?.startDate || ""})
+                </p>
               </div>
-            ) : (
-              <>
-                {companyDetails?.logo && (
-                  <img
-                    src={companyDetails.logo}
-                    alt={`${companyDetails.name} Logo`}
-                    className="w-74"
-                  />
+              {companyDetails?.websites &&
+                companyDetails.websites.length > 0 && (
+                  <div className="italic font-light text-s flex items-center pt-2">
+                    <img
+                      src="./../public/icons/newTab.svg"
+                      alt="Ico"
+                      className="pr-2 w-[40px]"
+                    />
+                    {companyDetails?.websites.map((website, index) => (
+                      <a
+                        key={index}
+                        href={website.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-primaryPurple-500 underline text-xl"
+                      >
+                        Official Website
+                      </a>
+                    ))}
+                  </div>
                 )}
-                <div className="flex flex-col items-start mt-4">
-                  <p className="text-xl">{companyDetails?.name}</p>
-                  <p className="italic text-lg">
-                    ({companyDetails?.startDate || ""})
-                  </p>
-                </div>
-                {companyDetails?.websites &&
-                  companyDetails.websites.length > 0 && (
-                    <div className="italic font-light text-s flex items-center pt-2">
-                      <img
-                        src="./../public/icons/newTab.svg"
-                        alt="Ico"
-                        className="pr-2 w-[40px]"
-                      />
-                      {companyDetails?.websites.map((website, index) => (
-                        <a
-                          key={index}
-                          href={website.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="hover:text-primaryPurple-500 underline text-xl"
-                        >
-                          Official Website
-                        </a>
-                      ))}
-                    </div>
-                  )}
-              </>
-            )}
-          </div>
+            </>
+          )}
         </div>
       </div>
 
       {companyDetails && companyDetails.description && (
         <div className="mx-[15%]">
-          <h1 className="text-xl">About {companyDetails.name}</h1>
-          <br />
-          <p className="mr-[5%]">{companyDetails.description}</p>
+          <h1 className="text-xl font-semibold">About {companyDetails.name}</h1>
+          <p className="mr-[5%] mt-2">{companyDetails.description}</p>
         </div>
       )}
 
-      <div className="mx-[15%] mt-[30px]">
-        <div className="flex justify-between mb-2">
-          <h1 className="text-xl">
-            List of games from {companyDetails?.name || "…"}
-          </h1>
-          <select
-            onChange={(e) => setSortOption(e.target.value)}
-            className="px-2 bg-customBlack border border-1 text-white rounded"
-            value={sortOption}
-          >
-            <option value="total_rating desc">Top Rated</option>
-            <option value="popularity desc">Most Popular</option>
-            <option value="release_dates.y desc">Newest Releases</option>
-            <option value="hypes desc">Most Hyped</option>
-            <option value="follows desc">Most Followed</option>
-          </select>
-        </div>
-
-        <div className="flex gap-4 mb-4">
+      <div className="mx-[15%] mt-12">
+        <div className="flex  h-12">
           <button
             onClick={() => setActiveTab("developed")}
-            className={activeTab === "developed" ? "font-bold underline" : ""}
+            className={activeTab === "developed" ? "font-semibold bg-primaryPurple-500 w-36 rounded-t" : "font-semibold w-36"}
           >
-            Developed
+            {`Developed ${totalDeveloped}`}
           </button>
           <button
             onClick={() => setActiveTab("published")}
-            className={activeTab === "published" ? "font-bold underline" : ""}
+            className={activeTab === "published" ? "font-semibold bg-primaryPurple-500 w-36 rounded-t" : "font-semibold w-36"}
           >
-            Published
+            {`Published ${totalPublished}`}
           </button>
         </div>
+        <HorizontalLine width="w-full" marginTop="0" marginBottom="0" className="mx-[15%]" />
 
-        <HorizontalLine marginTop="mt-0" marginBottom="mb-8" width="w-full" />
 
+
+      </div>
+
+
+      <div className="mx-[15%] mt-[30px]">
+        <div className="flex justify-between items-center">
+          <div className="flex justify-center align-center">
+            <p className="self-center">Sort by: </p>
+            <select
+              onChange={(e) => setSortOption(e.target.value)}
+              className="ml-2 px-2 h-8 bg-customBlack border border-1 text-white rounded"
+              value={sortOption}
+            >
+              <option value="total_rating desc">Top Rated</option>
+              <option value="popularity desc">Most Popular</option>
+              <option value="release_dates.y desc">Newest Releases</option>
+              <option value="hypes desc">Most Hyped</option>
+              <option value="follows desc">Most Followed</option>
+            </select>
+          </div>
         {/* Visual Type Controls */}
-        <div className="flex justify-end mb-4">
+        <div className="flex justify-end items-center ">
           <div className="flex space-x-2">
             {visualTypes.map(({ type, icon }) => (
               <button
                 key={type}
                 onClick={() => handleVisualTypeChange(type)}
-                className={`p-2 rounded ${
-                  visualType === type
-                    ? "bg-primaryPurple-500"
-                    : "bg-customBlack"
-                } border border-1 text-white hover:bg-primaryPurple-700 transition`}
+                className={`p-2 rounded ${visualType === type
+                  ? "bg-primaryPurple-500"
+                  : "bg-customBlack"
+                  } border border-1 text-white hover:bg-primaryPurple-700 transition`}
               >
                 <img src={icon} alt={`${type} view`} className="w-[25px]" />
               </button>
             ))}
           </div>
         </div>
+        </div>
+
+
+        {/* <HorizontalLine marginTop="mt-0" marginBottom="mb-8" width="w-full" /> */}
+
 
         {/* Render Games in different visual styles */}
         {loading ? (
           <p>Loading...</p>
         ) : (
           <>
-            {/* If using a list view, you could add a header row */}
             {visualType === "list" && (
               <div>
                 <div className="grid grid-cols-[35%_25%_25%_15%] items-center gap-4 w-full">
-                  <div>
-                    <p>Game</p>
-                  </div>
-                  <div>
-                    <p>Developer</p>
-                  </div>
-                  <div>
-                    <p>Genre</p>
-                  </div>
-                  <div>
-                    <p>Rating</p>
-                  </div>
+                  <div><p>Game</p></div>
+                  <div><p>Developer</p></div>
+                  <div><p>Genre</p></div>
+                  <div><p>Rating</p></div>
                 </div>
-                <HorizontalLine
-                  marginTop="mt-2"
-                  marginBottom="mb-2"
-                  width="full"
-                />
+                <HorizontalLine marginTop="mt-2" marginBottom="mb-2" width="full" />
               </div>
             )}
+            {/* Display the games using a grid or list */}
             <div
-              className={`${
+              className={
                 visualType === "detailed"
-                  ? "grid grid-flow-row grid-cols-1 w-full lg:grid-cols-2"
+                  ? "grid grid-flow-row grid-cols-1 w-full lg:grid-cols-2 gap-4"
                   : visualType === "list"
-                  ? "grid grid-cols-1 gap-4"
-                  : "grid grid-cols-7 gap-4 md:grid-cols-5 sm:grid-cols-3 xs:grid-cols-2"
-              }`}
+                    ? "grid grid-cols-1 gap-4"
+                    : "grid grid-cols-7 gap-4 md:grid-cols-5 sm:grid-cols-3 xs:grid-cols-2"
+              }
             >
-              {/* {console.log("PaginatedGames from developer page:", paginatedGames)} */}
+              {paginatedGames && paginatedGames.length > 0 ? (
+                paginatedGames.map((game) => (
+                  <ResultCard
+                    key={game.id}
+                    game={game}
+                    onClick={() => handleClick(game.id)}
+                  />
+                ))
+              ) : (
+                <p>No games found.</p>
+              )}
             </div>
           </>
         )}
 
-        <div className="flex justify-center mt-4">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageClick}
-          />
-        </div>
+        {/* <div className="flex justify-center mt-4">
+  <Pagination
+    currentPage={currentPage}
+    totalPages={totalPages}
+    onPageChange={handlePageClick}
+  />
+</div> */}
       </div>
 
-      <Footer />
+
+      {/* <Footer /> */}
     </div>
   );
 };

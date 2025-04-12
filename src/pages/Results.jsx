@@ -103,10 +103,11 @@ const Results = () => {
   };
 
   return (
-    <div className="relative max-w-screen min-h-[100%]">
+    <div>
       <Header showSearchBar={true} showNavButtons={true} showLoginButtons={true} zIndex={20} />
+    <div className="relative max-w-screen min-h-[100%] mx-[15%]">
 
-      <div className="flex flex-col px-[10%] mt-24">
+      <div className="flex flex-col  mt-24">
         <p className="px-0">Search Results for "{searchTerm}"</p>
         <HorizontalLine
           marginTop="mt-0"
@@ -118,7 +119,7 @@ const Results = () => {
 
 
       {/* Sorting and Visual Type Options */}
-      <div className="px-[10%] mb-8 flex flex-row justify-between">
+      <div className="mb-8 flex flex-row justify-between">
         <div className="flex items-center ">
           <label htmlFor="sortOptions" className="text-white mr-4 flex font-bold">
             Sort By:
@@ -159,7 +160,7 @@ const Results = () => {
         </div>
       </div>
 
-      <div className="px-[10%] mb-8">
+      <div className="mb-8">
         {loading ? (
           <p>Loading...</p>
         ) : (
@@ -219,6 +220,7 @@ const Results = () => {
       </div>
 
 
+    </div>
       <Footer />
     </div>
   );

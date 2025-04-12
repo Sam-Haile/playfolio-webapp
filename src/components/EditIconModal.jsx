@@ -72,10 +72,10 @@ const EditIconModal = ({ onClose, user, onIconUpdate }) => {
             onClick={() => setSelectedTab("search")}
             className={`w-full h-16 py-2 flex flex-col justify-center items-center cursor-pointer transition duration-150 ${selectedTab === "search" ? "bg-customGray-800" : "hover:bg-customGray-900"}`}
           >
-          <PaletteIcon width="40px" height="40px" />
+            <PaletteIcon width="40px" height="40px" />
             <p className="text-sm">Search Icons</p>
           </div>
-          
+
           <div
             onClick={() => setSelectedTab("upload")}
             className={`w-full h-16 py-2 flex flex-col justify-center items-center cursor-pointer transition duration-150 ${selectedTab === "upload" ? "bg-customGray-800" : "hover:bg-customGray-900"}`}
@@ -90,49 +90,49 @@ const EditIconModal = ({ onClose, user, onIconUpdate }) => {
 
         {/* Content */}
         <div className="w-full flex flex-col flex-grow px-4 overflow-y-auto pb-4">
-        {selectedTab === "upload" ? (
-  <div className="text-white flex flex-col justify-center items-center h-full rounded border-2 border-dashed p-8">
-    <img src={pfpIcon} className="w-36 pb-4" />
-    <p className="">Drag Image</p>
-    <p className="italic">or</p>
+          {selectedTab === "upload" ? (
+            <div className="text-white flex flex-col justify-center items-center h-full rounded border-2 border-dashed p-8">
+              <img src={pfpIcon} className="w-36 pb-4" />
+              <p className="">Drag Image</p>
+              <p className="italic">or</p>
 
-    <label htmlFor="fileUpload" className="mt-2 w-64 h-12 bg-primaryPurple-500 hover:bg-primaryPurple-600 rounded-3xl flex items-center justify-center cursor-pointer">
-      {uploading ? "Uploading..." : "Upload from Computer"}
-    </label>
-    <input
-      type="file"
-      id="fileUpload"
-      accept="image/*"
-      className="hidden"
-      onChange={async (e) => {
-        const file = e.target.files[0];
-        if (!file || !user) return;
+              <label htmlFor="fileUpload" className="mt-2 w-64 h-12 bg-primaryPurple-500 hover:bg-primaryPurple-600 rounded-3xl flex items-center justify-center cursor-pointer">
+                {uploading ? "Uploading..." : "Upload from Computer"}
+              </label>
+              <input
+                type="file"
+                id="fileUpload"
+                accept="image/*"
+                className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files[0];
+                  if (!file || !user) return;
 
-        try {
-          setUploading(true);
-          const storageRef = ref(storage, `profileIcons/${user.uid}/${file.name}`);
-          await uploadBytes(storageRef, file);
-          const downloadURL = await getDownloadURL(storageRef);
+                  try {
+                    setUploading(true);
+                    const storageRef = ref(storage, `profileIcons/${user.uid}/${file.name}`);
+                    await uploadBytes(storageRef, file);
+                    const downloadURL = await getDownloadURL(storageRef);
 
-          // Save to Firestore
-          const userDocRef = doc(db, "users", user.uid);
-          await updateDoc(userDocRef, { profileIcon: downloadURL });
+                    // Save to Firestore
+                    const userDocRef = doc(db, "users", user.uid);
+                    await updateDoc(userDocRef, { profileIcon: downloadURL });
 
-          if (onIconUpdate) {
-            onIconUpdate(downloadURL);
-          }
+                    if (onIconUpdate) {
+                      onIconUpdate(downloadURL);
+                    }
 
-          onClose();
-        } catch (err) {
-          console.error("Upload error:", err);
-          alert("Failed to upload image. Please try again.");
-        } finally {
-          setUploading(false);
-        }
-      }}
-    />
-  </div>
-) : (
+                    onClose();
+                  } catch (err) {
+                    console.error("Upload error:", err);
+                    alert("Failed to upload image. Please try again.");
+                  } finally {
+                    setUploading(false);
+                  }
+                }}
+              />
+            </div>
+          ) : (
 
             <>
               <div className="w-full flex justify-center">

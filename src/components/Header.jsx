@@ -10,12 +10,12 @@ import VerticalLine from "../assets/icons/verticalLine.svg";
 import SearchBar from "./SearchBar";
 import HorizontalLine from "../components/HorizontalLine";
 import { useAuth } from "../useAuth";
-
+import DownArrow from "../assets/icons/downArrow.svg";
+  
 const Header = ({
   showSearchBar = false,
   showNavButtons = false,
   showLoginButtons = false,
-  zIndex = 50,
 }) => {
   const { user } = useAuth();
   const [userData, setUserData] = useState(null); // Store user profile data
@@ -76,11 +76,8 @@ const Header = ({
     navigate(user ? '/home' : '/');
   };
   return (
-    <div className="mx-[10%]">
-      <header
-        className=" text-white relative h-[75px] flex "
-        style={{ zIndex }}
-      >
+    <header className="absolute top-0 w-full bg-opacity-90 z-[9999]">
+      <div className="mx-[15%] text-white h-[75px] flex items-center justify-between">
         <div className="flex items-center">
           <button onClick={handleLogoClick}>
             <img src={LogoIcon} alt="Playfolio Logo" className="h-10 mr-4" />
@@ -105,7 +102,7 @@ const Header = ({
         <div className="flex items-center ml-auto">
           {/* Search bar */}
           {showSearchBar && location.pathname !== "/" && (
-            <div className="flex w-[100%] justify-end">
+            <div className="flex w-auto justify-end">
               <SearchBar width="20vw" />
             </div>
           )}
@@ -138,27 +135,27 @@ const Header = ({
               onMouseLeave={handleMouseLeave}
               onMouseDown={handleMouseClick}
             >
-              <button className="flex items-center px-2 py-1 focus:outline-none whitespace-nowrap min-w-0">
-                {user?.profileIcon ? (
-                  <img
-                    src={user.profileIcon}
-                    alt="Profile Icon"
-                    className="w-8 h-8 rounded-full object-cover aspect-square shadow-lg"
-                  />
-                ) : (
-                  <img
-                    src={ProfileIco}
-                    alt="Default Profile"
-                    className="w-8 h-8 rounded-full object-cover shadow-lg"
-                  />
-                )}
-                <p className="ml-2 hidden lg:block md:hidden sm:hidden">{user.username}</p>
-                <img
-                  src="../src/assets/icons/downArrow.svg"
-                  className="w-[20px] ml-1"
-                  alt="Down arrow"
-                />
-              </button>
+             <button className="flex items-center px-2 py-1 focus:outline-none">
+  {user?.profileIcon ? (
+    <img
+      src={user.profileIcon}
+      alt="Profile Icon"
+      className="w-8 h-8 rounded-full object-cover shadow-lg flex-shrink-0"
+    />
+  ) : (
+    <img
+      src={ProfileIco}
+      alt="Default Profile"
+      className="w-8 h-8 rounded-full object-cover shadow-lg flex-shrink-0"
+    />
+  )}
+  <p className="ml-2 flex-grow text-right">{user.username}</p>
+  <img
+    src={DownArrow}
+    alt="Down arrow"
+    className="w-[20px] ml-1 flex-shrink-0"
+  />
+</button>
 
               <div
                 className={`absolute mt-2 w-32 bg-customGray-500 text-sm text-black rounded shadow-lg z-[1000] ${showDropdown ? "block" : "hidden"
@@ -218,8 +215,8 @@ const Header = ({
             </div>
           )}
         </div>
-      </header>
-    </div>
+      </div>
+    </header>
   );
 };
 

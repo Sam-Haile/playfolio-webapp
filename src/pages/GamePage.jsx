@@ -237,17 +237,15 @@ const GamePage = () => {
 
   return (
     <div className="h-[100%]">
-      <div className="mx-[5%] relative">
         <Header
           showSearchBar={true}
           showNavButtons={true}
           showLoginButtons={true}
           zIndex={1000}
         />
-      </div>
 
       <div className="bg-white h-[75vh] mt-8 ">
-        <div className="pt-18 bg-white h-[75vh] absolute top-0 w-full  flex items-center justify-center overflow-hidden pointer-event:none">
+        <div className="pt-18 bg-white h-[75vh] absolute top-0 w-full flex items-center justify-center overflow-hidden pointer-event:none">
           {heroes && heroes.length > 0 ? (
             <img
               src={heroes[0].url} // Use the first hero

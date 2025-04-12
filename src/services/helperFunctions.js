@@ -64,3 +64,19 @@ export async function fetchScreenshotsCached(gameId) {
     return [];
   }
 }
+
+// Update trimmedCount based on allGames using useMemo logic defined in MasonryBoxArtGrid
+export const trimImages = (allGames) => {
+  let validImages = allGames.filter((img) => img.coverUrl);
+  if (validImages.length > 30) {
+    return validImages.slice(0, 30);
+  } else if (validImages.length < 30 && validImages.length >= 15) {
+    return validImages.slice(0, 15);
+  } else if (validImages.length < 15 && validImages.length >= 10) {
+    return validImages.slice(0, 10);
+  } else if (validImages.length < 10 && validImages.length >= 5) {
+    return validImages.slice(0, 5);
+  } else {
+    return validImages.slice(0, 1);
+  }
+};
