@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { Tilt } from "react-tilt";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import HorizontalLine from "../components/HorizontalLine";
-import GameCard from "../components/GameCard";
-import { useNavigate } from "react-router-dom";
+import ResultCard from "../components/ResultCard";
 import Pagination from "../components/Pagination";
+
 const DeveloperPage = () => {
   const navigate = useNavigate();
   const { id } = useParams(); // Get company ID from URL
@@ -20,18 +19,33 @@ const DeveloperPage = () => {
   const totalPages = companyDetails?.pagination?.totalPages || 1;
   const [activeTab, setActiveTab] = useState("developed");
 
+  // New state for visual type (detailed, compact, or list)
+  const [visualType, setVisualType] = useState("detailed");
+
+  // Array to hold the visual type options and corresponding icons
+  const visualTypes = [
+    { type: "detailed", icon: "./src/assets/icons/detailedView.svg" },
+    { type: "compact", icon: "./src/assets/icons/compactView.svg" },
+    { type: "list", icon: "./src/assets/icons/listView.svg" },
+  ];
+
+  // Handler to set the visual type
+  const handleVisualTypeChange = (type) => {
+    console.log("Visual Type: ", type);
+    setVisualType(type);
+  };
+
   const handleClick = (gameId) => {
     navigate(`/game/${gameId}`);
   };
 
   useEffect(() => {
     if (id) {
-      // After – include `gameType: activeTab`
       fetchHeaderGames(id, "total_rating desc", activeTab);
-      // Header games = top 30 by rating
-      fetchPaginatedGames(id, sortOption, 1, activeTab); // Paginated list
+      // Header games = top 30 by rating; call paginated list for page 1.
+      fetchPaginatedGames(id, sortOption, 1, activeTab);
     }
-  }, [id, sortOption, activeTab]); // ✔️ includes activeTab
+  }, [id, sortOption, activeTab]);
 
   const fetchHeaderGames = async (companyId, sorting, gameType) => {
     try {
@@ -46,12 +60,9 @@ const DeveloperPage = () => {
         }
       );
 
-      const tabKey =
-        gameType === "developed" ? "publishedGames" : "developedGames";
+      const tabKey = gameType === "developed" ? "publishedGames" : "developedGames";
       setHeaderGames(response.data[tabKey] || []);
 
-      console.log("Developed:", response.data["developedGames"]);
-      console.log("Published:", response.data["publishedGames"]);
       if (response.data) {
         setCompanyDetails(response.data);
       }
@@ -63,12 +74,7 @@ const DeveloperPage = () => {
     }
   };
 
-  const fetchPaginatedGames = async (
-    companyId,
-    sorting,
-    page = 1,
-    gameType = "developed"
-  ) => {
+  const fetchPaginatedGames = async (companyId, sorting, page = 1, gameType = "developed") => {
     try {
       setLoading(true);
       const response = await axios.post(
@@ -83,16 +89,13 @@ const DeveloperPage = () => {
       );
 
       // Use the appropriate key based on the active tab
-      const tabKey =
-        activeTab === "published" ? "publishedGames" : "developedGames";
+      const tabKey = activeTab === "published" ? "publishedGames" : "developedGames";
       setPaginatedGames(response.data[tabKey] || []);
       setCurrentPage(response.data.pagination.currentPage);
       setCompanyDetails((prevDetails) => ({
         ...prevDetails,
         pagination: response.data.pagination,
       }));
-
-      console.log(response);
     } catch (error) {
       console.error(
         "Error fetching paginated games:",
@@ -107,6 +110,7 @@ const DeveloperPage = () => {
     fetchPaginatedGames(id, sortOption, pageNumber, activeTab);
   };
 
+  // Render the list of page numbers (if not using a separate Pagination component)
   const renderPageNumbers = () => {
     return Array.from({ length: totalPages }, (_, index) => {
       const pageNumber = index + 1;
@@ -126,24 +130,7 @@ const DeveloperPage = () => {
     });
   };
 
-  const getBackgroundColor = (rating) => {
-    rating = Math.max(0, Math.min(5, rating));
-
-    if (rating <= 2.5) {
-      const t = rating / 2.5;
-      const red = 255;
-      const green = Math.round(255 * t);
-      const blue = 0;
-      return `rgb(${red}, ${green}, ${blue})`;
-    }
-
-    const t = (rating - 2.5) / 2.5;
-    const red = Math.round(255 * (1 - t));
-    const green = 255;
-    const blue = 0;
-    return `rgb(${red}, ${green}, ${blue})`;
-  };
-
+  // The DeveloperPage JSX
   return (
     <div className="h-[100%]">
       <Header
@@ -199,7 +186,7 @@ const DeveloperPage = () => {
         </div>
 
         <div className="absolute z-50 top-0 mx-[15%] h-full flex flex-col justify-center">
-          {/* Game Name / Company Info */}
+          {/* Company Info */}
           <div className="bg-customBlack p-8 rounded-lg drop-shadow-lg bg-opacity-70">
             {loading ? (
               <div className="animate-pulse space-y-4">
@@ -250,7 +237,7 @@ const DeveloperPage = () => {
       </div>
 
       {companyDetails && companyDetails.description && (
-        <div className="mx-[15%] ">
+        <div className="mx-[15%]">
           <h1 className="text-xl">About {companyDetails.name}</h1>
           <br />
           <p className="mr-[5%]">{companyDetails.description}</p>
@@ -260,9 +247,8 @@ const DeveloperPage = () => {
       <div className="mx-[15%] mt-[30px]">
         <div className="flex justify-between mb-2">
           <h1 className="text-xl">
-            List of games from {companyDetails?.name || "..."}
+            List of games from {companyDetails?.name || "…"}
           </h1>
-
           <select
             onChange={(e) => setSortOption(e.target.value)}
             className="px-2 bg-customBlack border border-1 text-white rounded"
@@ -293,74 +279,63 @@ const DeveloperPage = () => {
 
         <HorizontalLine marginTop="mt-0" marginBottom="mb-8" width="w-full" />
 
-        {loading ? (
-          <div className="mt-[20px] grid grid-cols-5 gap-2">
-            {Array.from({ length: 30 }).map((_, index) => (
-              <div key={index} className="animate-pulse p-4 rounded">
-                <div className="bg-gray-300 aspect-[3/4] w-full mb-4 rounded"></div>
-                <div className="h-4 bg-gray-300 mb-2 rounded"></div>
-                <div className="h-4 bg-gray-300 w-1/2 rounded"></div>
-              </div>
+        {/* Visual Type Controls */}
+        <div className="flex justify-end mb-4">
+          <div className="flex space-x-2">
+            {visualTypes.map(({ type, icon }) => (
+              <button
+                key={type}
+                onClick={() => handleVisualTypeChange(type)}
+                className={`p-2 rounded ${
+                  visualType === type
+                    ? "bg-primaryPurple-500"
+                    : "bg-customBlack"
+                } border border-1 text-white hover:bg-primaryPurple-700 transition`}
+              >
+                <img src={icon} alt={`${type} view`} className="w-[25px]" />
+              </button>
             ))}
           </div>
+        </div>
+
+        {/* Render Games in different visual styles */}
+        {loading ? (
+          <p>Loading...</p>
         ) : (
-          <div className="mt-[20px] grid grid-cols-5 gap-2">
-            {paginatedGames.map((game, index) => {
-              const backgroundColor = getBackgroundColor(
-                (game.totalRating || 0) / 20
-              );
-              return (
-                <div key={index} className="relative rounded-lg p-4">
-                  {/* Game Cover */}
-                  {game.cover ? (
-                    <div onClick={() => handleClick(game.id)}>
-                      <img
-                        src={game.cover}
-                        alt={game.name}
-                        className="w-full h-[300px] object-cover rounded-md shadow"
-                      />
-                    </div>
-                  ) : (
-                    <div className="text-white flex h-[200px]">
-                      No Image Available
-                    </div>
-                  )}
-
-                  {/* Game Info */}
-                  <div className="mt-2">
-                    <p
-                      className="text-white font-bold hover:text-primaryPurple-500 cursor-pointer"
-                      onClick={() => handleClick(game.id)}
-                    >
-                      {game.name}{" "}
-                      <span className="italic font-light">
-                        ({game.releaseYear})
-                      </span>
-                    </p>
-
-                    <div className="flex flex-row">
-                      <div
-                        className="w-[30px] h-[25px] flex items-center justify-center text-sm font-bold rounded"
-                        style={{
-                          backgroundColor: game.totalRating
-                            ? backgroundColor
-                            : "gray",
-                          color: "#121212",
-                        }}
-                      >
-                        {game.totalRating
-                          ? (game.totalRating / 20).toFixed(1)
-                          : "N/A"}
-                      </div>
-                      <p className="pl-2 font-thin italic">
-                        {game.totalRatingCount} Ratings
-                      </p>
-                    </div>
+          <>
+            {/* If using a list view, you could add a header row */}
+            {visualType === "list" && (
+              <div>
+                <div className="grid grid-cols-[35%_25%_25%_15%] items-center gap-4 w-full">
+                  <div>
+                    <p>Game</p>
+                  </div>
+                  <div>
+                    <p>Developer</p>
+                  </div>
+                  <div>
+                    <p>Genre</p>
+                  </div>
+                  <div>
+                    <p>Rating</p>
                   </div>
                 </div>
-              );
-            })}
-          </div>
+                <HorizontalLine marginTop="mt-2" marginBottom="mb-2" width="full" />
+              </div>
+            )}
+            <div
+              className={`${
+                visualType === "detailed"
+                  ? "grid grid-flow-row grid-cols-1 w-full lg:grid-cols-2"
+                  : visualType === "list"
+                  ? "grid grid-cols-1 gap-4"
+                  : "grid grid-cols-7 gap-4 md:grid-cols-5 sm:grid-cols-3 xs:grid-cols-2"
+              }`}
+            >
+              {console.log("PaginatedGames:", paginatedGames)}
+
+            </div>
+          </>
         )}
 
         <div className="flex justify-center mt-4">

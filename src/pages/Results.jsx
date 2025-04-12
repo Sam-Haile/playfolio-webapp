@@ -98,6 +98,7 @@ const Results = () => {
   ];
 
   const handleVisualTypeChange = (type) => {
+    console.log("Visual Type: ", visualType)
     setVisualType(type);
   };
 
@@ -182,6 +183,8 @@ const Results = () => {
                 ? "grid grid-cols-1 gap-4" // One row per game for list view
                 : "grid grid-cols-7 gap-4 md:grid-cols-5 sm:grid-cols-3 xs:grid-cols-2"
               }`}>
+
+{console.log("PaginatedGames from Results:", paginatedResults)}
 
               {paginatedResults.map((game) => (
                 <ResultCard
