@@ -92,7 +92,7 @@ const HomePage = () => {
 
   return (
     <div>
-      <div className="mx-[5%]">
+      <div className="">
         <Header
           showSearchBar={true}
           showNavButtons={true}
@@ -100,8 +100,8 @@ const HomePage = () => {
           zIndex={1000}
         />
 
-        <div className="mx-[10%]">
-          <div className="grid lg:grid-cols-[45%_55%] lg:grid-cols-[45%] lg:mt-24 md:mt-8 sm:mt-12 lg:h-60 h-48 ">
+        <div className="mx-[15%]">
+          <div className="grid lg:grid-cols-[45%_55%] lg:grid-cols-[45%] mt-32  lg:h-60 h-48 ">
 
             <div className="flex flex-col justify-center h-full w-full pr-4">
               <h1 className="text-4xl font-bold">{`Hello ${user?.username}, Welcome Back!`}</h1>

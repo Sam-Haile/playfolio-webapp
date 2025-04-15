@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -10,21 +10,24 @@ import useWindowWidth from "../components/useWindowWidth";
 import MasonryBoxArtGrid from "../components/MasonryBoxArtGrid";
 import { trimImages } from "../services/helperFunctions.js";
 
-  // Array to hold the visual type options and corresponding icons
-  const visualTypes = [
-    { type: "detailed", icon: "/src/assets/icons/detailedView.svg" },
-    { type: "compact", icon: "/src/assets/icons/compactView.svg" },
-    { type: "list", icon: "/src/assets/icons/listView.svg" },
-  ];
-  
+// Array to hold the visual type options and corresponding icons
+const visualTypes = [
+  { type: "detailed", icon: "/src/assets/icons/detailedView.svg" },
+  { type: "compact", icon: "/src/assets/icons/compactView.svg" },
+  { type: "list", icon: "/src/assets/icons/listView.svg" },
+];
+
 const DeveloperPage = () => {
   const navigate = useNavigate();
   const { id } = useParams(); // Get company ID from URL
   const [loading, setLoading] = useState(true);
   const [sortOption, setSortOption] = useState("total_rating desc");
+  const [visualType, setVisualType] = useState("compact");
   const [currentPage, setCurrentPage] = useState(1);
-  const [activeTab, setActiveTab] = useState("developed");
-  const [visualType, setVisualType] = useState("detailed");
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const defaultTab = queryParams.get("tab") || "developed";
+  const [activeTab, setActiveTab] = useState(defaultTab);
   const [companyDetails, setCompanyDetails] = useState(null);
   const [allGames, setAllGames] = useState([]);
   const [trimmedCount, setTrimmedCount] = useState(0);
@@ -58,7 +61,7 @@ const DeveloperPage = () => {
           sortOption: sorting,
           page: 1,
           limit: 30,
-          gameType: gameType,
+          gameType: "gameType",
         }
       );
 
@@ -199,10 +202,7 @@ const DeveloperPage = () => {
         {/* Background Grid */}
         <div className="absolute top-0 left-0 w-full">
           <MasonryBoxArtGrid images={allGames} columns={columns} />
-
-
         </div>
-
         {/* Top Gradient */}
         <div className="absolute top-0 h-full w-full pointer-events-none z-10"
           style={{
@@ -216,8 +216,6 @@ const DeveloperPage = () => {
           }}
         />
       </div>
-
-
 
       <div className="absolute top-0 mx-[15%] mt-56 flex flex-col justify-center">
         {/* Company Info */}
@@ -292,14 +290,11 @@ const DeveloperPage = () => {
           </button>
         </div>
         <HorizontalLine width="w-full" marginTop="0" marginBottom="0" className="mx-[15%]" />
-
-
-
       </div>
 
 
       <div className="mx-[15%] mt-[30px]">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center mb-8">
           <div className="flex justify-center align-center">
             <p className="self-center">Sort by: </p>
             <select
@@ -314,27 +309,24 @@ const DeveloperPage = () => {
               <option value="follows desc">Most Followed</option>
             </select>
           </div>
-        {/* Visual Type Controls */}
-        <div className="flex justify-end items-center ">
-          <div className="flex space-x-2">
-            {visualTypes.map(({ type, icon }) => (
-              <button
-                key={type}
-                onClick={() => handleVisualTypeChange(type)}
-                className={`p-2 rounded ${visualType === type
-                  ? "bg-primaryPurple-500"
-                  : "bg-customBlack"
-                  } border border-1 text-white hover:bg-primaryPurple-700 transition`}
-              >
-                <img src={icon} alt={`${type} view`} className="w-[25px]" />
-              </button>
-            ))}
+          {/* Visual Type Controls */}
+          <div className="flex justify-end items-center ">
+            <div className="flex space-x-2">
+              {visualTypes.map(({ type, icon }) => (
+                <button
+                  key={type}
+                  onClick={() => handleVisualTypeChange(type)}
+                  className={`p-2 rounded ${visualType === type
+                    ? "bg-primaryPurple-500"
+                    : "bg-customBlack"
+                    } border border-1 text-white hover:bg-primaryPurple-700 transition`}
+                >
+                  <img src={icon} alt={`${type} view`} className="w-[25px]" />
+                </button>
+              ))}
+            </div>
           </div>
         </div>
-        </div>
-
-
-        {/* <HorizontalLine marginTop="mt-0" marginBottom="mb-8" width="w-full" /> */}
 
 
         {/* Render Games in different visual styles */}
@@ -357,10 +349,10 @@ const DeveloperPage = () => {
             <div
               className={
                 visualType === "detailed"
-                  ? "grid grid-flow-row grid-cols-1 w-full lg:grid-cols-2 gap-4"
+                  ? "grid grid-flow-row grid-cols-1 w-full lg:grid-cols-2"
                   : visualType === "list"
                     ? "grid grid-cols-1 gap-4"
-                    : "grid grid-cols-7 gap-4 md:grid-cols-5 sm:grid-cols-3 xs:grid-cols-2"
+                    : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-4"
               }
             >
               {paginatedGames && paginatedGames.length > 0 ? (
@@ -369,6 +361,7 @@ const DeveloperPage = () => {
                     key={game.id}
                     game={game}
                     onClick={() => handleClick(game.id)}
+                    visualType={visualType}
                   />
                 ))
               ) : (

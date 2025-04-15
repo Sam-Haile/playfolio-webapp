@@ -14,7 +14,7 @@ const ResultCard = ({ game, visualType }) => {
   };
 
   useEffect(() => {
-      fetchIcons(game.name);
+    fetchIcons(game.name);
   }, [game.name, visualType]);
 
 
@@ -36,6 +36,14 @@ const ResultCard = ({ game, visualType }) => {
     }
   };
 
+  const handleDeveloperClick = (companyId) => {
+    navigate(`/developer/${companyId}?tab=developed`);
+  };
+
+  const handlePublisherClick = (companyId) => {
+    navigate(`/developer/${companyId}?tab=published`);
+  };
+  
   const defaultOptions = {
     reverse: false,
     max: 20,
@@ -70,11 +78,13 @@ const ResultCard = ({ game, visualType }) => {
 
   const backgroundColor = getBackgroundColor((game.totalRating || 0) / 20);
 
+  //console.log("gane", id);
+
   const getCardLayout = () => {
     switch (visualType) {
       case "compact":
         return (
-          <div onClick={handleClick} className="px-2">
+          <div onClick={handleClick} className="h-full flex flex-col justify-between pb-2">
             <div className="flex flex-col">
               <Tilt options={defaultOptions} style={{ width: "100%" }}>
                 <div onClick={handleClick}>
@@ -86,9 +96,9 @@ const ResultCard = ({ game, visualType }) => {
                   />
                 </div>
               </Tilt>
-              <h1 className="font-regular text-xl line-clamp-3 hover:text-primaryPurple-500 cursor-pointer">{game.name} <span className="font-light italic">({game.releaseYear})</span></h1>
+              <h1 className="pt-2 font-regular text-lg line-clamp-3 hover:text-primaryPurple-500 cursor-pointer">{game.name} <span className="font-light italic">({game.releaseYear})</span></h1>
             </div>
-            <div className="pb-6 flex self-end pb-3">
+            <div className="pt-1 flex self-start">
               <div
                 className="w-[30px] h-[25px] flex items-center justify-center text-sm font-bold rounded"
                 style={{
@@ -98,8 +108,8 @@ const ResultCard = ({ game, visualType }) => {
               >
                 {((game.totalRating || 0) / 20).toFixed(1)}
               </div>
-              <p className="pl-2 font-thin italic">
-                {game.rating_count} Ratings{" "}
+              <p className="pl-1 font-thin text-sm italic self-center">
+                ll{game.rating_count} <span className="hidden lg:inline">Ratings</span>{" "}
               </p>
             </div>
           </div>
@@ -114,13 +124,13 @@ const ResultCard = ({ game, visualType }) => {
 
               {icons.length > 0 ? (
                 <Tilt>
-                <img
-                  src={icons[0].url} // Use only the first icon
-                  alt={`${game.name} icon`}
-                  className="game-icon cursor-pointer"
-                  style={{ width: "50px", height: "50px", margin: "5px" }}
-                  onClick={handleClick}
-                />
+                  <img
+                    src={icons[0].url} // Use only the first icon
+                    alt={`${game.name} icon`}
+                    className="game-icon cursor-pointer"
+                    style={{ width: "50px", height: "50px", margin: "5px" }}
+                    onClick={handleClick}
+                  />
                 </Tilt>
               ) : (
                 <p>No icons available</p>
@@ -138,7 +148,8 @@ const ResultCard = ({ game, visualType }) => {
                 {Array.isArray(game.developers)
                   ? game.developers.join(", ")
                   : "Unknown Developer"}
-              </p>              </div>
+              </p>
+            </div>
 
             {/* Genre */}
             <div>
@@ -198,19 +209,25 @@ const ResultCard = ({ game, visualType }) => {
                       ({game.releaseYear || "N/A"})
                     </span>
                   </h1>
-                  <p className="font-light italic text-sm">
-                    {Array.isArray(game.developers)
-                      ? game.developers.join(", ")
-                      : "Unknown Developer"}
+
+                  <p className="pt-1 font-light italic">
+                    {Array.isArray(game.developers) && game.developers.length > 0 ? (
+                      game.developers.map((dev, index) => (
+                        <span key={dev} onClick={() => handleDeveloperClick( dev.id)} className="cursor-pointer hover:text-primaryPurple-500">{dev.name} {index < game.developers.length - 1 && ", "}</span>
+                      ))
+                    ) : ("No Developers Found")
+                    }
                   </p>
-                  <p className="font-extralight truncate-text pr-24">
+
+                  <p className="pt-1 text-gray-400">{game.genres.join(", ")}</p>
+
+                  <p className="pt-1 font-extralight truncate-text pr-24">
                     {game.storyline ||
                       game.summary ||
                       "No storyline or summary available."}
                   </p>
-                  <p className="pt-2 text-gray-400">{game.genres.join(", ")}</p>
                 </div>
-                <div className="pb-6 flex self-end pb-3">
+                <div className="flex self-end ">
                   <div
                     className="w-[30px] h-[25px] flex items-center justify-center text-sm font-bold rounded"
                     style={{

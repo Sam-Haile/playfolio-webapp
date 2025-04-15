@@ -43,8 +43,12 @@ const GamePage = () => {
     }
   }, [id]);
 
-  const handleCompanyClick = (companyId) => {
-    navigate(`/developer/${companyId}`);
+  const handleDeveloperClick = (companyId) => {
+    navigate(`/developer/${companyId}?tab=developed`);
+  };
+
+  const handlePublisherClick = (companyId) => {
+    navigate(`/developer/${companyId}?tab=published`);
   };
 
   const fetchGameData = async () => {
@@ -304,7 +308,7 @@ const GamePage = () => {
               <div className="flex flex-col items-start gap-2">
                 {/* Developer Logo */}
                 {developers[0].logo && !developerError ? (
-                  <button onClick={() => handleCompanyClick(developers[0].id)}>
+                  <button onClick={() => handleDeveloperClick(developers[0].id)}>
                     <DynamicLogo
                       url={developers[0].logo}
                       onError={() => setDeveloperError(true)}
@@ -320,7 +324,7 @@ const GamePage = () => {
                     {developers.length > 0 &&
                       developers.map((developer, index) => (
                         <button
-                          onClick={() => handleCompanyClick(developer.id)}
+                          onClick={() => handlePublisherClick(developer.id)}
                           key={index}
                           className="italic font-light text-sm hover:text-primaryPurple-500"
                         >
@@ -419,7 +423,7 @@ const GamePage = () => {
                       <span key={index}>
                         <span
 
-                          onClick={() => handleCompanyClick(developer.id)}
+                          onClick={() => handleDeveloperClick(developer.id)}
                           key={index}
                           className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline "
                         >
@@ -436,7 +440,7 @@ const GamePage = () => {
                     publishers.map((publisher, index) => (
                       <span key={index}>
                         <span
-                          onClick={() => handleCompanyClick(developer.id)}
+                          onClick={() => handlePublisherClick(publisher.id)}
                           className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline "
                         >
                           {publisher.name}
