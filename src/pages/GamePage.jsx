@@ -241,12 +241,12 @@ const GamePage = () => {
 
   return (
     <div className="h-[100%]">
-        <Header
-          showSearchBar={true}
-          showNavButtons={true}
-          showLoginButtons={true}
-          zIndex={1000}
-        />
+      <Header
+        showSearchBar={true}
+        showNavButtons={true}
+        showLoginButtons={true}
+        zIndex={1000}
+      />
 
       <div className="bg-white h-[75vh] mt-8 ">
         <div className="pt-18 bg-white h-[75vh] absolute top-0 w-full flex items-center justify-center overflow-hidden pointer-event:none">
@@ -508,58 +508,115 @@ const GamePage = () => {
                 <h1 className="text-base font-semibold mb-2">Media</h1>
 
                 <div className="flex flex-col gap-2">
-                  {/* Main Screenshot */}
-                  <div className="relative w-full aspect-video overflow-hidden rounded cursor-pointer">
-                    {/* Background layer (blurred) */}
-                    <img
-                      src={screenshots?.[mainScreenshotIndex]?.imageUrl}
-                      alt=""
-                      className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-50"
-                      aria-hidden="true"
-                    />
+              {/* Main Screenshot Container */}
+              <div className="flex-1 relative rounded aspect-video overflow-hidden flex justify-center items-center">
+                {/* Background layer (blurred) */}
+                <img
+                  src={screenshots?.[mainScreenshotIndex]?.imageUrl}
+                  alt=""
+                  className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-50"
+                  aria-hidden="true"
+                />
+                {/* Foreground image */}
+                <img
+                  src={screenshots?.[mainScreenshotIndex]?.imageUrl}
+                  alt="Game Screenshot"
+                  className="relative w-full h-full object-contain"
+                  onClick={() => setOverlayOpen(true)}
+                />
 
-                    {/* Foreground image */}
-                    <img
-                      src={screenshots?.[mainScreenshotIndex]?.imageUrl}
-                      alt="Game Screenshot"
-                      className="relative z-10 w-full h-full object-contain focus:outline-none"
-                      onClick={() => setOverlayOpen(true)}
-                    />
+                {/* Conditionally render the overlay */}
+                {overlayOpen && (
+                  <ImageOverlay
+                    src={screenshots?.[mainScreenshotIndex]?.imageUrl}
+                    alt={`Screenshot of ${name}`}
+                    onClose={() => setOverlayOpen(false)}
+                  />
+                )}
+              </div>
 
-
-                    {/* Conditionally render the overlay */}
-                    {overlayOpen && (
-                      <ImageOverlay
-                        src={screenshots?.[mainScreenshotIndex]?.imageUrl}
-                        alt={`Screenshot of ${name}`}
-                        onClose={() => setOverlayOpen(false)}
-                      />
-                    )}
-                  </div>
 
                   {/* Screenshot Carousel */}
-                  <div className="m-4">
+                  <div className="px-6 pt-2">
 
-                  <Slider {...settings}>
-                    {screenshots.slice(0, 8).map((shot, index) => (
-                      <div key={index} className="  border-0">
-                        <img
-                          src={shot.imageUrl}
-                          alt={`Screenshot ${index + 1} of ${name}`}
-                          onClick={() => setMainScreenshotIndex(index)}
-                          className={`rounded cursor-pointer transition-all duration-200 outline-none focus:outline-none ring-0 border-0 ${
-                            mainScreenshotIndex === index
-                              ? "opacity-100 border-primaryPurple-500"
-                              : "brightness-75 hover:brightness-100"
-                          }`}
-                                                    loading="lazy"
+                    <Slider {...settings}>
+                      {screenshots.slice(0, 8).map((shot, index) => (
+                        <div key={index} className=" px-1 border-0">
+                          <img
+                            src={shot.imageUrl}
+                            alt={`Screenshot ${index + 1} of ${name}`}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setMainScreenshotIndex(index)
+                            }}
+                              className={`rounded cursor-pointer transition-all duration-200 outline-none focus:outline-none ring-0 border-0 ${mainScreenshotIndex === index
+                                ? "opacity-100 border-primaryPurple-500"
+                                : "brightness-50 hover:brightness-100"
+                              }`}
+                            loading="lazy"
                           />
-                      </div>
-                    ))}
-                  </Slider>
-                    </div>
+                        </div>
+                      ))}
+                    </Slider>
+                  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  
                 </div>
               </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
               <div className="lg:block md:hidden sm:hidden">
                 <h1 className="text-base font-semibold">Reviews</h1>
                 <HorizontalLine marginTop="mt-0" width="full" marginBottom="mb-8" />

@@ -42,7 +42,7 @@ const TrendingGamesCarousel = ({ slides }) => {
   return (
     <div>
       <div className="flex justify-center">
-        {displayedSlides.map((slide, index) => (
+        {displayedSlides.filter((slide) => slide.cover).map((slide, index) => (
           <div
             className="px-2 cursor-pointer  "
             key={index}
@@ -58,7 +58,7 @@ const TrendingGamesCarousel = ({ slides }) => {
                 />
               ) : (
                 <div className="w-full rounded-lg flex items-center justify-center bg-gray-200">
-                  <p className="text-gray-500 text-sm">No Cover Available</p>
+                  <p className="text-gray-500 text-sm">No Coverk Available</p>
                 </div>
               )}
             </Tilt>

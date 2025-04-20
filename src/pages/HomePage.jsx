@@ -77,6 +77,8 @@ const HomePage = () => {
     const fetchGames = async () => {
       try {
         const trendingData = await fetchTrendingGames(20);
+
+        console.log("Trending Data:", trendingData);
         const currentEvents = await fetchEvents(4);
         setTrendingGames(Array.isArray(trendingData) ? trendingData : []);
         setEvents(Array.isArray(currentEvents) ? currentEvents : []);
@@ -91,8 +93,7 @@ const HomePage = () => {
   }, []);
 
   return (
-    <div>
-      <div className="">
+    <div className="relative">
         <Header
           showSearchBar={true}
           showNavButtons={true}
@@ -100,9 +101,8 @@ const HomePage = () => {
           zIndex={1000}
         />
 
-        <div className="mx-[15%]">
-          <div className="grid lg:grid-cols-[45%_55%] lg:grid-cols-[45%] mt-32  lg:h-60 h-48 ">
-
+        <div className="mx-[15%] pt-36">
+          <div className="grid lg:grid-cols-[45%_55%] lg:grid-cols-[45%] lg:h-60 h-48 ">
             <div className="flex flex-col justify-center h-full w-full pr-4">
               <h1 className="text-4xl font-bold">{`Hello ${user?.username}, Welcome Back!`}</h1>
               <p className="font-light text-lg pt-2">
@@ -243,10 +243,8 @@ const HomePage = () => {
             <DiscoveryQueue games={recommendedGames} />
           </div>
         </div>
-      </div>
-<div className="">
+
       <Footer />
-</div>
     </div>
   );
 };

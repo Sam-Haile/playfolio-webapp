@@ -258,8 +258,8 @@ const GameOfTheDay = () => {
       </div>
 
       <div className="bg-cover bg-center bg-no-repeat relative z-10 pb-10">
-        <div className="grid items-center lg:grid-cols-[auto_40%_auto] md:grid-cols-[40%_auto] sm:grid-rows-[auto_auto] z-10">
-        <div className="relative z-50 flex justify-center items-center hidden sm:hidden md:block lg:block">
+        <div className="grid h-full lg:grid-cols-[auto_auto_auto] md:grid-cols-[auto_auto] sm:grid-rows-[auto_auto] z-10">
+        {/* <div className="w-full relative z-50 flex justify-center items-center hidden sm:hidden md:block lg:block h-full">
         {gameOfDay?.coverUrl && (
               <div>
                 <GameCard
@@ -267,11 +267,11 @@ const GameOfTheDay = () => {
                   src={gameOfDay.coverUrl}
                   alt={`${gameOfDay.name} Logo`}
                   gameId={gameOfDay.id}
-                  className="object-contain h-auto sm:h-96 rounded"
+                  className="object-cover h-full w-full rounded"
                 />
               </div>
             )}
-          </div>
+          </div> */}
 
           <div className="h-full flex flex-col ml-2 rounded bg-customGray-900/50 p-2 relative">
             <div>
@@ -321,21 +321,22 @@ const GameOfTheDay = () => {
                 : "No genres available"}
             </p>
 
-            <p className="font-light">
+            <p className="font-light pr-4">
               {gameOfDay?.platforms?.length > 0
                 ? gameOfDay.platforms.join(", ")
                 : "No platforms available"}
             </p>
 
+
             {gameOfDay?.summary ? (
-              <p className="font-light pt-2 line-clamp-6 mr-20 pb-4">
-                {gameOfDay.summary}
+              <p className="overflow-hidden font-light pt-2 flex-grow">
+              {gameOfDay.summary}
               </p>
             ) : (
               <p className="font-light">No summary available</p>
             )}
 
-            <div className=" font-light text-xs text-right pt-2 absolute bottom-2 right-2">
+            <div className=" font-light text-xs text-right pt-2">
               Added to backlog:{" "}
               <span className="italic">
                 {backlogDate?.toLocaleDateString()}
