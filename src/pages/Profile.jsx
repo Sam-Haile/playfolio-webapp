@@ -210,13 +210,13 @@ const Profile = () => {
   const itemsToShow = useResponsiveSlice();
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <div className="mx-[%]">
+    <div className="relative min-h-screen flex flex-col">
+      <div className="mx-[]">
 
         <Header showSearchBar showNavButtons showLoginButtons showProfileIcon />
 
         {/* Banner Container */}
-        <div className="relative bg-white mx-[10%] h-[260px] mt-6 rounded-lg">
+        <div className="relative bg-white mx-[15%] h-[260px] mt-24 rounded-lg">
           {/* Banner Image */}
           <div className="group relative">
             {!loading ? (
@@ -265,7 +265,7 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 mt-24 mx-[10%]">
+        <div className="grid grid-cols-2 mt-24 mx-[15%]">
           {/* Left Collumn */}
           <div>
             <div>
@@ -299,7 +299,7 @@ const Profile = () => {
 
         </div>
 
-        <div className="mx-[10%]">
+        <div className="mx-[15%]">
 
           <Collections showProfile={true} />
 

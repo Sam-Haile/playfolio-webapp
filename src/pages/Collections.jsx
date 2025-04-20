@@ -120,17 +120,19 @@ const Collections = ({ user, showProfile = true }) => {
       <div className="min-h-screen">
         <h1 className="mt-14 text-lg font-semibold">Your Collection</h1>
         <div className="mt-8 w-full">
-          <div className="hidden sm:flex space-x-4">
+          <div className="hidden sm:flex">
             {["played", "wishlist", "backlog", "dropped"].map((category) => (
               <button
-                key={category}
-                className={`border rounded px-3 py-1 hover:bg-primaryPurple-700 ${
-                  type === category ? "text-white bg-primaryPurple-500" : ""
-                }`}
-                onClick={() => setType(category)}
-              >
-                {category.charAt(0).toUpperCase() + category.slice(1)}
-              </button>
+  key={category}
+  onClick={() => setType(category)}
+  className={`font-semibold rounded-t h-12 w-36
+    ${type === category
+      ? "bg-primaryPurple-500 text-white cursor-default"   // selected
+      : "hover:bg-primaryPurple-800"}                      // not selected
+  `}
+>
+  {category.charAt(0).toUpperCase() + category.slice(1)}
+</button>
             ))}
           </div>
           <div className="sm:hidden relative">
@@ -150,10 +152,10 @@ const Collections = ({ user, showProfile = true }) => {
           </div>
         </div>
 
-        <HorizontalLine marginBottom="mb-0" marginTop="mt-3" width="w-full" />
+        <HorizontalLine marginBottom="mb-0" marginTop="mt-0" width="w-full" />
 
         <div className="mt-8">
-          <div className="grid lg:grid-cols-8 md:grid-cols-6 grid-cols-4 gap-4">
+          <div className="grid lg:grid-cols-8 md:grid-cols-4 grid-cols-3 gap-4">
             {loading ? (
               Array.from({ length: games.length || 8 }).map((_, index) => (
                 <Tilt key={index} options={{ scale: 1.1 }}>

@@ -522,7 +522,7 @@ const GamePage = () => {
                     <img
                       src={screenshots?.[mainScreenshotIndex]?.imageUrl}
                       alt="Game Screenshot"
-                      className="relative z-10 w-full h-full object-contain"
+                      className="relative z-10 w-full h-full object-contain focus:outline-none"
                       onClick={() => setOverlayOpen(true)}
                     />
 
@@ -538,22 +538,26 @@ const GamePage = () => {
                   </div>
 
                   {/* Screenshot Carousel */}
+                  <div className="m-4">
+
                   <Slider {...settings}>
                     {screenshots.slice(0, 8).map((shot, index) => (
-                      <div key={index} className="pr-2">
+                      <div key={index} className="  border-0">
                         <img
                           src={shot.imageUrl}
                           alt={`Screenshot ${index + 1} of ${name}`}
                           onClick={() => setMainScreenshotIndex(index)}
-                          className={`rounded cursor-pointer transition-all duration-200 ${mainScreenshotIndex === index
-                            ? "opacity-100 border border-2 border-primaryPurple"
-                            : "brightness-75 hover:brightness-100"
-                            }`}
-                          loading="lazy"
-                        />
+                          className={`rounded cursor-pointer transition-all duration-200 outline-none focus:outline-none ring-0 border-0 ${
+                            mainScreenshotIndex === index
+                              ? "opacity-100 border-primaryPurple-500"
+                              : "brightness-75 hover:brightness-100"
+                          }`}
+                                                    loading="lazy"
+                          />
                       </div>
                     ))}
                   </Slider>
+                    </div>
                 </div>
               </div>
               <div className="lg:block md:hidden sm:hidden">

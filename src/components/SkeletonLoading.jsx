@@ -4,19 +4,19 @@ import Footer from "./Footer";
 
 const SkeletonLoading = ({ type }) => {
   return (
-    <div className="h-[100%]">
+    <div className="relative">
       <Header
         showSearchBar={true}
         showNavButtons={true}
-        showLoginButtons={false}
-        zIndex={20}
+        showLoginButtons={true}
+        zIndex={1000}
       />
 
       {/* ✅ Skeleton for Game Page */}
       {type === "game" && (
-        <div className="bg-white h-[75vh] relative mt-32">
+        <div className="bg-white h-[75vh] relative">
           {/* Skeleton Hero Section */}
-          <div className="bg-gray-300 h-[75vh] relative flex items-center justify-center pointer-event:none">
+          <div className="bg-gray-300 h-[75vh] elative flex items-center justify-center pointer-event:none">
             <div className="w-full h-full bg-gray-200 animate-pulse"></div>
           </div>
 
@@ -38,7 +38,7 @@ const SkeletonLoading = ({ type }) => {
             ></div>
           </div>
 
-          <div className="absolute inset-0 bg-customBlack bg-opacity-0 z-30">
+          <div className="absolute mt-60 inset-0 bg-customBlack bg-opacity-0 z-30">
             <div className="h-[60%] grid lg:grid-cols-[auto_40%_45%] md:grid-cols-[auto_50%]  mx-[15%]">
               {/* Skeleton Cover Image */}
               <div className="relative h-full">
@@ -103,7 +103,7 @@ const SkeletonLoading = ({ type }) => {
                   <div className="w-[30%] h-[20px] bg-gray-300 animate-pulse mb-4 rounded"></div>
                   <div className="w-full h-[100px] bg-gray-200 animate-pulse rounded"></div>
                 </div>
-                  <div className="w-full h-[510px] bg-gray-200 animate-pulse rounded mt-8"></div>
+                <div className="w-full h-[510px] bg-gray-200 animate-pulse rounded mt-8"></div>
               </div>
 
               {/* Skeleton Sidebar */}

@@ -41,8 +41,6 @@ const DeveloperPage = () => {
   const [totalPublished, setTotalPublished] = useState(0);
   const [totalDeveloped, setTotalDeveloped] = useState(0);
 
-
-
   useEffect(() => {
     if (id) {
       fetchHeaderGames(id, "total_rating desc", activeTab);
@@ -146,10 +144,11 @@ const DeveloperPage = () => {
         <button
           key={pageNumber}
           onClick={() => handlePageClick(pageNumber)}
-          className={`px-2 py-1 m-1 border rounded ${pageNumber === currentPage
-            ? "bg-blue-500 text-white"
-            : "bg-gray-200"
-            }`}
+          className={`px-2 py-1 m-1 border rounded ${
+            pageNumber === currentPage
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200"
+          }`}
         >
           {pageNumber}
         </button>
@@ -166,12 +165,10 @@ const DeveloperPage = () => {
   //console.log("Paginated Games", paginatedGames);
   //console.log(publishedGames);
 
-
   useEffect(() => {
     setTrimmedCount(trimmedImages.length);
     console.log("Computed trimmed count:", trimmedImages.length);
   }, [trimmedImages]);
-
 
   // Determine the number of columns based on trimmedCount and screen width
   const getColumns = () => {
@@ -204,13 +201,16 @@ const DeveloperPage = () => {
           <MasonryBoxArtGrid images={allGames} columns={columns} />
         </div>
         {/* Top Gradient */}
-        <div className="absolute top-0 h-full w-full pointer-events-none z-10"
+        <div
+          className="absolute top-0 h-full w-full pointer-events-none z-10"
           style={{
-            background: "linear-gradient(to bottom, #121212 8%, transparent 50%)",
+            background:
+              "linear-gradient(to bottom, #121212 8%, transparent 50%)",
           }}
         />
 
-        <div className="absolute bottom-0 h-full w-full pointer-events-none z-10"
+        <div
+          className="absolute bottom-0 h-full w-full pointer-events-none z-10"
           style={{
             background: "linear-gradient(to top,#121212 8%, transparent 50%)",
           }}
@@ -275,23 +275,43 @@ const DeveloperPage = () => {
       )}
 
       <div className="mx-[15%] mt-12">
-        <div className="flex  h-12">
+        <div className="flex h-12">
+          {/* Developed tab */}
           <button
             onClick={() => setActiveTab("developed")}
-            className={activeTab === "developed" ? "font-semibold bg-primaryPurple-500 w-36 rounded-t" : "font-semibold w-36"}
+            className={`font-semibold w-36
+        ${
+          activeTab === "developed"
+            ? "bg-primaryPurple-500 rounded-t cursor-default"
+            : "hover:bg-primaryPurple-800 rounded-t"
+        }         
+      `}
           >
             {`Developed ${totalDeveloped}`}
           </button>
+
+          {/* Published tab */}
           <button
             onClick={() => setActiveTab("published")}
-            className={activeTab === "published" ? "font-semibold bg-primaryPurple-500 w-36 rounded-t" : "font-semibold w-36"}
+            className={`font-semibold w-36
+        ${
+          activeTab === "published"
+            ? "bg-primaryPurple-500 rounded-t cursor-default"
+            : "hover:bg-primaryPurple-800 rounded-t"
+        }
+      `}
           >
             {`Published ${totalPublished}`}
           </button>
         </div>
-        <HorizontalLine width="w-full" marginTop="0" marginBottom="0" className="mx-[15%]" />
-      </div>
 
+        <HorizontalLine
+          width="w-full"
+          marginTop="0"
+          marginBottom="0"
+          className="mx-[15%]"
+        />
+      </div>
 
       <div className="mx-[15%] mt-[30px]">
         <div className="flex justify-between items-center mb-8">
@@ -316,10 +336,11 @@ const DeveloperPage = () => {
                 <button
                   key={type}
                   onClick={() => handleVisualTypeChange(type)}
-                  className={`p-2 rounded ${visualType === type
-                    ? "bg-primaryPurple-500"
-                    : "bg-customBlack"
-                    } border border-1 text-white hover:bg-primaryPurple-700 transition`}
+                  className={`p-2 rounded ${
+                    visualType === type
+                      ? "bg-primaryPurple-500"
+                      : "bg-customBlack"
+                  } border border-1 text-white hover:bg-primaryPurple-700 transition`}
                 >
                   <img src={icon} alt={`${type} view`} className="w-[25px]" />
                 </button>
@@ -327,7 +348,6 @@ const DeveloperPage = () => {
             </div>
           </div>
         </div>
-
 
         {/* Render Games in different visual styles */}
         {loading ? (
@@ -337,12 +357,24 @@ const DeveloperPage = () => {
             {visualType === "list" && (
               <div>
                 <div className="grid grid-cols-[35%_25%_25%_15%] items-center gap-4 w-full">
-                  <div><p>Game</p></div>
-                  <div><p>Developer</p></div>
-                  <div><p>Genre</p></div>
-                  <div><p>Rating</p></div>
+                  <div>
+                    <p>Game</p>
+                  </div>
+                  <div>
+                    <p>Developer</p>
+                  </div>
+                  <div>
+                    <p>Genre</p>
+                  </div>
+                  <div>
+                    <p>Rating</p>
+                  </div>
                 </div>
-                <HorizontalLine marginTop="mt-2" marginBottom="mb-2" width="full" />
+                <HorizontalLine
+                  marginTop="mt-2"
+                  marginBottom="mb-2"
+                  width="full"
+                />
               </div>
             )}
             {/* Display the games using a grid or list */}
@@ -351,8 +383,8 @@ const DeveloperPage = () => {
                 visualType === "detailed"
                   ? "grid grid-flow-row grid-cols-1 w-full lg:grid-cols-2"
                   : visualType === "list"
-                    ? "grid grid-cols-1 gap-4"
-                    : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-4"
+                  ? "grid grid-cols-1 gap-4"
+                  : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-4"
               }
             >
               {paginatedGames && paginatedGames.length > 0 ? (
@@ -379,7 +411,6 @@ const DeveloperPage = () => {
   />
 </div> */}
       </div>
-
 
       {/* <Footer /> */}
     </div>

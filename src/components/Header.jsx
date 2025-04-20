@@ -76,8 +76,8 @@ const Header = ({
     navigate(user ? '/home' : '/');
   };
   return (
-    <header className="absolute top-0 left-0 w-full bg-opacity-90 z-[9999] ">
-      <div className="mx-[15%] text-white h-[75px] flex items-center justify-between">
+    <header className="mt-4 absolute top-0 left-0 w-full bg-opacity-90 z-[9999] ">
+      <div className="mx-[15%] text-white h-auto flex items-center justify-between">
         <div className="flex items-center">
           <button onClick={handleLogoClick}>
             <img src={LogoIcon} alt="Playfolio Logo" className="h-10 mr-4" />
