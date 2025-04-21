@@ -51,7 +51,7 @@ const EditIconModal = ({ onClose, user, onIconUpdate }) => {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-[50%] h-[65%] bg-customBlack flex flex-col rounded-lg relative"
+        className="w-[75%] h-[70%] bg-customBlack flex flex-col rounded-lg relative"
       >
         {/* Header */}
         <div className="flex flex-cols mb-4 px-8 pt-4">
@@ -91,7 +91,7 @@ const EditIconModal = ({ onClose, user, onIconUpdate }) => {
         {/* Content */}
         <div className="w-full flex flex-col flex-grow px-4 overflow-y-auto pb-4">
           {selectedTab === "upload" ? (
-            <div className="text-white flex flex-col justify-center items-center h-full rounded border-2 border-dashed p-8">
+            <div className="text-white flex flex-col justify-center items-center h-full rounded border-2 border-dashed border-darkGray p-8">
               <img src={pfpIcon} className="w-36 pb-4" />
               <p className="">Drag Image</p>
               <p className="italic">or</p>

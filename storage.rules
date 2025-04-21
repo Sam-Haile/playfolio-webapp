@@ -1,16 +1,28 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    
-    // Public read access to profile icons (for viewing)
-    match /profileIcons/{userId}/{allPaths=**} {
-      allow read: if true;
 
-      // Only allow the authenticated user to upload their own icon
-      allow write: if request.auth != null && request.auth.uid == userId;
+    /* ─────────────  PROFILE ICONS  ───────────── */
+    match /profileIcons/{userId}/{allPaths=**} {
+      // Anyone can view a user’s icon
+      allow read:  if true;
+
+      // Only that user can upload / replace their icon
+      allow write: if request.auth != null
+                   && request.auth.uid == userId;
     }
 
-    // Block everything else by default
+    /* ─────────────  PROFILE BANNERS  ──────────── */
+    match /profileBanners/{userId}/{allPaths=**} {
+      // Public read so banners show on profiles
+      allow read:  if true;
+
+      // User‑only writes
+      allow write: if request.auth != null
+                   && request.auth.uid == userId;
+    }
+
+    /* ─────────────  DENY EVERYTHING ELSE  ─────── */
     match /{allPaths=**} {
       allow read, write: if false;
     }

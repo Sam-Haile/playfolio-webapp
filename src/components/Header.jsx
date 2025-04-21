@@ -91,9 +91,9 @@ const Header = ({
               <a href="/home" className="hover:text-primaryPurple-500">
                 Home
               </a>
-              <a href="/explore" className="hover:text-primaryPurple-500">
+              {/* <a href="/explore" className="hover:text-primaryPurple-500">
                 Explore
-              </a>
+              </a> */}
             </nav>
           )}
         </div>
@@ -133,7 +133,6 @@ const Header = ({
               className="relative pl-4 z-50 "
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
-              onMouseDown={handleMouseClick}
             >
              <button className="flex items-center px-2 py-1 focus:outline-none">
   {user?.profileIcon ? (
@@ -169,31 +168,45 @@ const Header = ({
                 </button>
 
                 <button
-                  onClick={() => navigate("/profile?type=played")}
+                  onClick={() => navigate("/profile?section=games&type=played")}
                   className="block w-full text-left px-2 py-1 hover:bg-customGray-600 hover:rounded-t"
                 >
                   Played
                 </button>
 
                 <button
-                  onClick={() => navigate("/profile?type=wishlist")}
+                  onClick={() => navigate("/profile?section=games&type=wishlist")}
                   className="block w-full text-left px-2 py-1 hover:bg-customGray-600 hover:rounded-t"
                 >
                   Wishlist
                 </button>
 
                 <button
-                  onClick={() => navigate("/profile?type=backlog")}
+                  onClick={() => navigate("/profile?section=games&type=backlog")}
                   className="block w-full text-left px-2 py-1 hover:bg-customGray-600 hover:rounded-t"
                 >
                   Backlog
                 </button>
 
                 <button
-                  onClick={() => navigate("/profile?type=dropped")}
+                  onClick={() => navigate("/profile?section=games&type=dropped")}
                   className="block w-full text-left px-2 py-1 hover:bg-customGray-600 hover:rounded-t"
                 >
                   Dropped
+                </button>
+
+                <button
+                  onClick={() => navigate("/profile?section=reviews")}
+                  className="block w-full text-left px-2 py-1 hover:bg-customGray-600 hover:rounded-t"
+                >
+                  Reviews
+                </button>
+
+                <button
+                  onClick={() => navigate("/profile?section=lists")}
+                  className="block w-full text-left px-2 py-1 hover:bg-customGray-600 hover:rounded-t"
+                >
+                  Lists
                 </button>
 
                 <HorizontalLine

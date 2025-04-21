@@ -209,6 +209,15 @@ const Profile = () => {
 
   const itemsToShow = useResponsiveSlice();
 
+  function capitalizeName(name) {
+    return name
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+
+  const displayName = capitalizeName(userData?.firstName) + " " + capitalizeName(userData?.lastName);
+console.log(displayName);
   return (
     <div className="relative min-h-screen flex flex-col">
       <div className="mx-[]">
@@ -216,7 +225,7 @@ const Profile = () => {
         <Header showSearchBar showNavButtons showLoginButtons showProfileIcon />
 
         {/* Banner Container */}
-        <div className="relative bg-white mx-[15%] h-[260px] mt-24 rounded-lg">
+        <div className="relative bg-white mx-[15%] h-[280px] mt-24 rounded-lg">
           {/* Banner Image */}
           <div className="group relative">
             {!loading ? (
@@ -225,19 +234,24 @@ const Profile = () => {
                   userData.bannerImage || "./public/images/defaultBanner.png"
                 }
                 alt="Banner"
-                className="w-full h-[260px] object-cover rounded-lg "
+                className="w-full h-[280px] object-cover rounded-lg "
               />
             ) : (
-              <div className="w-full h-[260px] bg-gray-700 animate-pulse rounded-lg"></div>
+              <div className="w-full h-[280px] bg-gray-700 animate-pulse rounded-lg"></div>
             )}
 
             <div className="absolute top-0 w-full h-full group-hover:bg-black group-hover:opacity-50 duration-300"></div>
 
             <button
               onClick={() => setIsEditBannerOpen(true)}
-              className="bg-footerGray w-[125px] rounded-lg absolute top-0 right-0 p-1 m-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              className="bg-footerGray w-8 h-8 rounded-lg absolute top-0 right-0 p-1 m-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
             >
-              Edit Banner
+              <img
+                onClick={() => setIsEditBannerOpen(true)}
+                src="./src/assets/icons/pencil.svg"
+                alt="Edit Icon"
+                className="hover:cursor-pointer w-4 absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:duration-300 duration-300"
+              />
             </button>
           </div>
 
@@ -269,40 +283,21 @@ const Profile = () => {
           {/* Left Collumn */}
           <div>
             <div>
-              <h1 className="text-2xl">
-                {userData.firstName} {userData.lastName}
-              </h1>
-              <h4>@{userData.username}</h4>
-            </div>
-
-            <h2 className="text-lg font-light">lorem ipsum. this is my bio!</h2>
-
-            {/* <div className="lg:text-xl text-sm pt-4 flex">
-                            <p><span className="text-primaryPurple-500">500</span> Followers</p>
-                            <p><span className="text-primaryPurple-500 pl-8">500</span> Followers</p>
-                        </div> */}
-
-            <div className="mt-8 flex gap-x-8">
-              {/* <button className="bg-primaryPurple-500 w-[125px] h-[30px] rounded-lg flex justify-center items-center">Follow</button> */}
-              <button className="bg-footerGray w-[125px] rounded-lg flex justify-center items-center">
-                Edit Profile
-              </button>
+              <h1 className="text-2xl font-semibold"> {displayName} </h1>
+              <h4 className="text-lg">@{userData.username}</h4>
             </div>
           </div>
-
+            
           {/* Right Collumn */}
           <div className="pl-8">
             <div className="flex gap-4 justify-center align-center items-center">
               <RatingGraph />
             </div>
           </div>
-
         </div>
 
         <div className="mx-[15%]">
-
           <Collections showProfile={true} />
-
         </div>
 
 

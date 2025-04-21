@@ -205,7 +205,6 @@ const GameOfTheDay = () => {
 
   const navigateToGamePage = () => {
     if (!gameOfDay || !gameOfDay.id) {
-      console.log("Random game is still loading...");
       return;
     }
     navigate(`/game/${gameOfDay.id}`);

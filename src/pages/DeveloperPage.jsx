@@ -351,7 +351,7 @@ const DeveloperPage = () => {
 
         {/* Render Games in different visual styles */}
         {loading ? (
-          <p>Loading...</p>
+          <div></div>
         ) : (
           <>
             {visualType === "list" && (

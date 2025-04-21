@@ -45,7 +45,7 @@ const RatingGraph = () => {
 
   return (
     <div>
-      <h3 className="text-xl font-bold mb-2">Your Ratings</h3>
+      {/* <h3 className="text-xl font-bold mb-2">Your Ratings</h3> */}
       <RatingBarGraph distribution={ratingDistribution} />
     </div>
   );

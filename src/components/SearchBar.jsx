@@ -53,15 +53,15 @@ const SearchBar = ({ width = "100%", margin = "0", padding = "0", className = ""
 
   // Fetch Suggestions Function
   const fetchSuggestions = async (query) => {
-    if (query.trim() === "") {
+    if (query.trim().length < 3) {
       setSuggestions([]);
       return;
     }
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/games`, {
-        searchTerm: query,
-      });
-      setSuggestions(response.data.slice(0, 5)); // Limit to 5 suggestions
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/suggest?q=${encodeURIComponent(query)}`
+      );
+      setSuggestions(response.data.slice(0, 5));
     } catch (error) {
       console.error("Error fetching suggestions:", error);
     }
@@ -71,7 +71,7 @@ const SearchBar = ({ width = "100%", margin = "0", padding = "0", className = ""
   useEffect(() => {
     const debounceTimeout = setTimeout(() => {
       fetchSuggestions(searchTerm);
-    }, 300); // Adjust debounce delay as needed
+    }, 0); // Adjust debounce delay as needed
 
     return () => clearTimeout(debounceTimeout);
   }, [searchTerm]);

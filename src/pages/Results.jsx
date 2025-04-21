@@ -103,9 +103,9 @@ const Results = () => {
   };
 
   return (
-    <div>
+    <div className="relative">
       <Header showSearchBar={true} showNavButtons={true} showLoginButtons={true} zIndex={20} />
-      <div className="relative max-w-screen min-h-[100%] mx-[15%]">
+      <div className="pt-10 relative max-w-screen min-h-[100%] mx-[15%]">
 
         <div className="flex flex-col  mt-24">
           <p className="px-0">Search Results for "{searchTerm}"</p>
@@ -162,7 +162,7 @@ const Results = () => {
 
         <div className="mb-8">
           {loading ? (
-            <p>Loading...</p>
+            <div></div>
           ) : (
             <>
               {/* Add the HorizontalLine before the grid for list view */}
