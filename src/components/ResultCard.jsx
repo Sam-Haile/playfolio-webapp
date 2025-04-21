@@ -109,7 +109,7 @@ const ResultCard = ({ game, visualType }) => {
                 {((game.totalRating || 0) / 20).toFixed(1)}
               </div>
               <p className="pl-1 font-thin text-sm italic self-center">
-                ll{game.rating_count} <span className="hidden lg:inline">Ratings</span>{" "}
+                {game.rating_count} <span className="hidden lg:inline">Ratings</span>{" "}
               </p>
             </div>
           </div>

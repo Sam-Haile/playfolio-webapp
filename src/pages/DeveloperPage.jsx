@@ -403,16 +403,16 @@ const DeveloperPage = () => {
           </>
         )}
 
-        {/* <div className="flex justify-center mt-4">
+        <div className="flex justify-center mt-4">
   <Pagination
     currentPage={currentPage}
     totalPages={totalPages}
     onPageChange={handlePageClick}
   />
-</div> */}
+</div> 
       </div>
 
-      {/* <Footer /> */}
+       <Footer /> 
     </div>
   );
 };

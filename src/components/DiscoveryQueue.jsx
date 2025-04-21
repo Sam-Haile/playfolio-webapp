@@ -188,8 +188,10 @@ function GameSlide({ game, navigate }) {
                 <img
                   key={index}
                   src={url}
-                  onMouseEnter={() => setMainScreenshotIndex(index)}
-                  onClick={(e) => e.stopPropagation()}
+                  onClick={(e) => { 
+                    e.stopPropagation()
+                    setMainScreenshotIndex(index)
+                  }}
                   className={`w-auto object-contain mb-1 mt-1 h-full rounded cursor-pointer transition-opacity duration-300 ${
                     mainScreenshotIndex === index
                       ? "opacity-100"

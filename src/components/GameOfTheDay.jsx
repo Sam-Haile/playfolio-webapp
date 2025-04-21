@@ -73,7 +73,7 @@ const GameOfTheDay = () => {
   const [overlayOpen, setOverlayOpen] = useState(false);
 
   // Flag to control use of temporary data
-  const useTempData = false;
+  const useTempData = true;
 
   const tempGame = {
     id: 1,
@@ -259,7 +259,7 @@ const GameOfTheDay = () => {
 
       <div className="bg-cover bg-center bg-no-repeat relative z-10 pb-10">
         <div className="grid h-full lg:grid-cols-[auto_auto_auto] md:grid-cols-[auto_auto] sm:grid-rows-[auto_auto] z-10">
-        {/* <div className="w-full relative z-50 flex justify-center items-center hidden sm:hidden md:block lg:block h-full">
+        <div className="w-full relative z-50 flex justify-center items-center hidden sm:hidden md:block lg:block h-full">
         {gameOfDay?.coverUrl && (
               <div>
                 <GameCard
@@ -271,9 +271,9 @@ const GameOfTheDay = () => {
                 />
               </div>
             )}
-          </div> */}
+          </div> 
 
-          <div className="h-full flex flex-col ml-2 rounded bg-customGray-900/50 p-2 relative">
+          <div className="h-full ml-2 flex flex-col rounded bg-customGray-900/50 p-2 relative">
             <div>
               {gameOfDay?.logos ? (
                 <DynamicLogo
@@ -368,7 +368,7 @@ const GameOfTheDay = () => {
                   <img
                     src={gameOfDay?.screenshots?.[mainScreenshotIndex]}
                     alt="Game Screenshot"
-                      className="relative w-full h-full object-contain"
+                      className="relative w-full h-auto object-contain cursor-pointer"
                       onClick={() => setOverlayOpen(true)}
                     />
                   
