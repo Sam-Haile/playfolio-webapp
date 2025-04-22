@@ -77,9 +77,9 @@ const HomePage = () => {
     const fetchGames = async () => {
       try {
         const trendingData = await fetchTrendingGames(20);
+        const currentEvents = await fetchEvents(20);
 
-        console.log("Trending Data:", trendingData);
-        const currentEvents = await fetchEvents(4);
+        console.log("Event data:", currentEvents);
         setTrendingGames(Array.isArray(trendingData) ? trendingData : []);
         setEvents(Array.isArray(currentEvents) ? currentEvents : []);
       } catch (error) {

@@ -71,7 +71,7 @@ const SearchBar = ({ width = "100%", margin = "0", padding = "0", className = ""
   useEffect(() => {
     const debounceTimeout = setTimeout(() => {
       fetchSuggestions(searchTerm);
-    }, 0); // Adjust debounce delay as needed
+    }, 0); 
 
     return () => clearTimeout(debounceTimeout);
   }, [searchTerm]);

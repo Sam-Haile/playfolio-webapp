@@ -225,7 +225,7 @@ console.log(displayName);
         <Header showSearchBar showNavButtons showLoginButtons showProfileIcon />
 
         {/* Banner Container */}
-        <div className="relative bg-white mx-[15%] h-[280px] mt-24 rounded-lg">
+        <div className="relative bg-customBlack mx-[15%] h-[280px] mt-24 rounded-lg">
           {/* Banner Image */}
           <div className="group relative">
             {!loading ? (

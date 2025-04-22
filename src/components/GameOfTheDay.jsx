@@ -77,19 +77,24 @@ const GameOfTheDay = () => {
 
   const tempGame = {
     id: 1,
-    name: "Fragpunk",
-    releaseYear: "2024",
+    name: "Nintendo Land",
+    releaseYear: "2012",
     heroes: {
       url: "https://cdn2.steamgriddb.com/hero/3bd7875f994b1dd763d668f8d4816575.png",
     },
     coverUrl: "https://images.igdb.com/igdb/image/upload/t_1080p/co1p9c.jpg",
+    developers: [
+      "Nintendo EAD Software Development Group No.2",
+      "Nintendo",
+      "Nintendo"
+    ],
     logos: {
       url: "https://cdn2.steamgriddb.com/logo/79167346cb707b193dadbd67ab20855e.png",
     },
-    genres: ["Shooter"],
+    genres: ["Shooter, Platform, Puzzle, Racing, Adventure, Arcade"],
     platforms: ["Xbox Series X|S", "PC (Microsoft Windows)", "PlayStation 5"],
     summary:
-      "FragPunk is the new free-to-play 5v5 hero shooter poised to break the rules of combat. What makes FragPunk different is the introduction of Shard Cards that can affect the playing field for all players...",
+      "Nintendo Land is a fun and lively virtual theme park filled with attractions based on popular Nintendo game worlds. Explore the Nintendo Land Plaza as your Mii character, and play in park attractions featuring unique and innovative gameplay made possible by the Wii U GamePad controller. Enjoy team, competitive, and solo gameplay experiences for up to five players!",
     totalRating: 76.5,
     rating_count: 12,
     screenshots: [
@@ -101,7 +106,7 @@ const GameOfTheDay = () => {
     ],
     backlogDate: new Date(), // Temporary backlog date for testing
   };
-  
+
   // When using temporary data, immediately set gameOfDay to tempGame.
   useEffect(() => {
     if (useTempData) {
@@ -214,206 +219,170 @@ const GameOfTheDay = () => {
     return <div>Loading game data...</div>;
   }
 
-
   return (
-    <div className="relative">
+    <div className="relative pb-8">
+      {/* Gradient and background image */}
       <div>
         {gameOfDay?.heroes && (
           <div
-            className="absolute inset-0 bg-cover z-0 bg-center bg-no-repeat opacity-70"
+            className="absolute left-0 inset-0 bg-cover z-0 bg-center bg-no-repeat opacity-50"
             style={{ backgroundImage: `url(${gameOfDay.heroes.url})` }}
           />
         )}
-        <h1 className="relative text-2xl font-bold pb-4 z-20">
-        Backlog Spotlight
+        <h1 className="mb-4 relative text-2xl font-bold z-20">
+          Backlog Spotlight
         </h1>
 
         <div
           className="absolute top-0 h-full w-[103%] pointer-events-none z-10 right-0"
           style={{
-            background: "linear-gradient(to left, #121212 0%, transparent 65%)",
+            background: "linear-gradient(to left, #121212 2%, transparent 80%)",
           }}
         ></div>
         <div
           className="absolute top-0 -mt-[1px] h-full w-[101%] pointer-events-none z-10 left-50"
           style={{
             background:
-              "linear-gradient(to right, #121212 50%, transparent 65%)",
+              "linear-gradient(to right,rgba(18, 18, 18) 5%, transparent 100%)",
           }}
         ></div>
         <div
-          className="absolute top-0 h-[50vh] w-[101%] pointer-events-none z-10"
+          className="absolute top-0 h-[50vh] -mt-[1px] w-[101%] pointer-events-none z-10"
           style={{
             background:
-              "linear-gradient(to bottom, #121212 0%, transparent 15%)",
+              "linear-gradient(to bottom, #121212 1%, transparent 50%)",
           }}
         ></div>
         <div
           className="absolute bottom-0 -mb-[1px] h-[50vh] w-[101%] pointer-events-none z-10"
           style={{
-            background: "linear-gradient(to top,#121212 0%, transparent 15%)",
+            background: "linear-gradient(to top,#121212 1%, transparent 50%)",
           }}
         ></div>
       </div>
 
-      <div className="bg-cover bg-center bg-no-repeat relative z-10 pb-10">
-        <div className="grid h-full lg:grid-cols-[auto_auto_auto] md:grid-cols-[auto_auto] sm:grid-rows-[auto_auto] z-10">
-        <div className="w-full relative z-50 flex justify-center items-center hidden sm:hidden md:block lg:block h-full">
-        {gameOfDay?.coverUrl && (
-              <div>
-                <GameCard
-                  ref={imgRef}
-                  src={gameOfDay.coverUrl}
-                  alt={`${gameOfDay.name} Logo`}
-                  gameId={gameOfDay.id}
-                  className="object-cover h-full w-full rounded"
-                />
-              </div>
-            )}
-          </div> 
+      {/* Foreground */}
+      <div className="bg-cover bg-center bg-no-repeat relative z-10 flex overflow-y-hidden overflow-x-visible" style={{ height: "18rem" }}>
+        {/* Left: Image container that grows based on image aspect ratio */}
+        <div className="h-full flex-shrink-0">
+          <img
+            src={gameOfDay?.coverUrl}
+            className="h-full object-contain rounded"
+            alt="Cover"
+          />
+        </div>
 
-          <div className="h-full ml-2 flex flex-col rounded bg-customGray-900/50 p-2 relative">
-            <div>
-              {gameOfDay?.logos ? (
-                <DynamicLogo
-                url={gameOfDay.logos.url}
-                gameName={gameOfDay.name}
-                maxSize={"w-[50%]"}
-                minSize={"w-[35%]"}
-                marginLeft={"ml-0"}
-                />
-              ) : (
-                <h1 className="font-semibold text-2xl">
-                  {gameOfDay?.name}{" "}
-                  <span className="italic">({gameOfDay?.releaseYear})</span>
-                </h1>
-              )}
-            </div>
+        {/* Right: Text/content container that shrinks if needed */}
+        <div className="flex-shrink overflow-hidden p-2 relative">
+          <div className="space-y-3">
 
-            <div className="flex pt-4 pb-2">
-              {Array(5)
-                .fill(0)
-                .map((_, i) => (
-                  <svg
-                    key={i}
-                    className={`h-6 w-6 ${
-                      i < Math.round(gameOfDay?.totalRating / 20)
-                        ? "text-yellow-400"
-                        : "text-gray-300"
-                    } fill-current`}
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M12 2l2.7 8H22l-6.9 5 2.7 8L12 18l-6.9 5 2.7-8L2 10h7.3L12 2z" />
-                  </svg>
-                ))}
-              <div className="text-sm italic text-gray-500 mt-auto pl-1">
-                {gameOfDay?.totalRating
-                  ? `(${(gameOfDay.totalRating /20).toFixed(1)}/5)`
-                  : "No ratings available"}
-              </div>
-            </div>
-
-            <p className="pt-2 text">
-              {gameOfDay?.genres?.length > 0
-                ? gameOfDay.genres.join(", ")
-                : "No genres available"}
+            {/* Game Name + Release Year */}
+            <p className="font-semibold text-2xl leading-tight">
+              {gameOfDay?.name}{" "}
+              <span className="italic font-normal text-gray-300">
+                ({gameOfDay?.releaseYear})
+              </span>
             </p>
 
-            <p className="font-light pr-4">
+            {/* Developers */}
+            <p className="text-sm text-gray-200 truncate">
+              {gameOfDay?.developers?.length > 0
+                ? gameOfDay.developers.join(", ")
+                : "No developers available"}
+            </p>
+
+            {/* Rating + Genres */}
+            <div className="flex items-center ">
+              <div className="flex items-center">
+                {Array(5)
+                  .fill(0)
+                  .map((_, i) => (
+                    <svg
+                      key={i}
+                      className={`h-5 w-5 ${i < Math.round(gameOfDay?.totalRating / 20)
+                        ? "text-yellow-400"
+                        : "text-gray-500"
+                        } fill-current`}
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12 2l2.7 8H22l-6.9 5 2.7 8L12 18l-6.9 5 2.7-8L2 10h7.3L12 2z" />
+                    </svg>
+                  ))}
+                <span className="text-sm italic text-gray-400">
+                  {gameOfDay?.totalRating
+                    ? `(${(gameOfDay.totalRating / 20).toFixed(1)}/5)`
+                    : "No ratings available"}
+                </span>
+              </div>
+
+              <p className="text-sm text-gray-300 truncate pl-2">
+                {gameOfDay?.genres?.length > 0
+                  ? gameOfDay.genres.join(", ")
+                  : "No genres available"}
+              </p>
+            </div>
+
+            {/* Summary */}
+            <p className="text-sm font-light text-gray-100 line-clamp-3">
+              {gameOfDay?.summary || "No summary available"}
+            </p>
+
+            {/* Platforms */}
+            <p className="text-sm font-light text-gray-300 truncate">
               {gameOfDay?.platforms?.length > 0
                 ? gameOfDay.platforms.join(", ")
                 : "No platforms available"}
             </p>
-
-
-            {gameOfDay?.summary ? (
-              <p className="overflow-hidden font-light pt-2 flex-grow">
-              {gameOfDay.summary}
-              </p>
-            ) : (
-              <p className="font-light">No summary available</p>
-            )}
-
-            <div className=" font-light text-xs text-right pt-2">
-              Added to backlog:{" "}
-              <span className="italic">
-                {backlogDate?.toLocaleDateString()}
-              </span>
-              <span className="mt-auto ml-4 cursor-pointer font-semibold text-primaryPurple-500">
-                Remove Title
-              </span>
-              
-            </div>
-
-
-            
           </div>
-          
-          <div className="h-full flex flex-col pl-2 h-full hidden md:hidden lg:block">
-            {/* Screenshots and other UI elements */}
-            <div className="relative h-full overflow-hidden">
-              <div className="flex flex-col h-full">
-                {/* Main Screenshot Container */}
-                <div className="flex-1 relative rounded aspect-video overflow-hidden flex justify-center items-center">
-                   {/* Background layer (blurred) */}
-                   <img
-                    src={gameOfDay?.screenshots?.[mainScreenshotIndex]}
-                    alt=""
-                      className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-50"
-                      aria-hidden="true"
-                    />
-                  {/* Foreground image */}
-                  <img
-                    src={gameOfDay?.screenshots?.[mainScreenshotIndex]}
-                    alt="Game Screenshot"
-                      className="relative w-full h-auto object-contain cursor-pointer"
-                      onClick={() => setOverlayOpen(true)}
-                    />
-                  
-                      {/* Conditionally render the overlay */}
-                      {overlayOpen && (
-                      <ImageOverlay
-                      src={gameOfDay?.screenshots?.[mainScreenshotIndex]}
-                      alt={`Screenshot of ${name}`}
-                        onClose={() => setOverlayOpen(false)}
-                      />
-                    )}
-                </div>
+
+          {/* Footer */}
+          <div className="text-xs text-gray-400 font-light absolute bottom-2 right-4 flex items-center space-x-2">
+            <span>Added: <span className="italic">{backlogDate?.toLocaleDateString()}</span></span>
+            <span className="cursor-pointer font-semibold text-primaryPurple-500 hover:underline">
+              Remove Title
+            </span>
+          </div>
+        </div>
 
 
+        <div className="flex-shrink-0 h-full hidden xl:block">
+          <img
+            src={gameOfDay?.screenshots?.[mainScreenshotIndex]}
+            alt="Game Screenshot"
+            className="relative h-[18rem] cursor-pointer rounded"
+            onClick={() =>
+              setOverlayOpen(true)}
+          />
 
-                {/* Thumbnails Container */}
-                <div className="h-20 relative mt-2">
-                  <div className="flex items-center h-full gap-2">
-                    {gameOfDay?.screenshots?.slice(0, 5).map((url, index) => (
-                      <img
-                        key={index}
-                        src={url}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setMainScreenshotIndex(index)
-                        }}
-                        className={`h-full object-contain rounded cursor-pointer transition-opacity duration-300 ${
-                          mainScreenshotIndex === index
-                            ? "brightness-100"
-                            : "brightness-50 hover:brightness-100"
-                        }`}
-                        alt={`Screenshot ${index}`}
-                      />
-                    ))}
-                  </div>
-                  {/* Optional gradient overlay */}
-                  <div
-                    className="absolute top-0 h-full w-full pointer-events-none z-10"
-                    style={{
-                      background:
-                        "linear-gradient(to left, #121212 0%, transparent 10%)",
-                    }}
-                  ></div>
-                </div>
-              </div>
-            </div>
+          {/* Conditionally render the overlay */}
+          {overlayOpen && (
+            <ImageOverlay
+              src={gameOfDay?.screenshots?.[mainScreenshotIndex]}
+              alt={`Screenshot of ${name}`}
+              onClose={() => setOverlayOpen(false)}
+            />
+          )}
+        </div>
+
+        {/* Thumbnails Container */}
+        <div className="h-20 relative hidden xl:block">
+          <div className="flex-shrink-0 h-auto flex flex-col gap-2 pl-2 overflow-y-auto">
+            {gameOfDay?.screenshots?.slice(0, 5).map((url, index) => (
+              <img
+                key={index}
+                src={url}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setMainScreenshotIndex(index)
+                }}
+                className={`w-[400px] object-contain rounded cursor-pointer transition-opacity duration-300 ${mainScreenshotIndex === index
+                  ? "brightness-100"
+                  : "brightness-50 hover:brightness-100"
+                  }`}
+                alt={`Screenshot ${index}`}
+              />
+            ))}
           </div>
         </div>
       </div>
