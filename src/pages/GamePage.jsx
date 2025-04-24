@@ -63,6 +63,8 @@ const GamePage = () => {
       // Update main game data
       setGameDetails(gameResponse.data);
 
+      console.log("Game Details:", gameResponse.data.steamAppId);
+
       // Fetch and process other data (screenshots, heroes, logos)
       let screenshotsResponse = { data: [] };
       let sortedScreenshots = [];
@@ -83,6 +85,7 @@ const GamePage = () => {
         heroesResponse = await axios.post(
           `${import.meta.env.VITE_API_URL}/api/steamgriddb/heroes`,
           {
+            steamAppId: gameResponse.data.steamAppId,
             gameName: gameResponse.data.name,
           }
         );
