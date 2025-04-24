@@ -2,48 +2,50 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-      // ✅ Allow authenticated users to read their own gameStatuses collection
-      match /users/{userId}/gameStatuses/{gameId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+    // User profiles — only the user themself may read or write
+    match /users/{userId} {
+      allow read, write: if request.auth != null 
+                         && request.auth.uid == userId;
+
+      // Game statuses (played, backlog, etc.)
+      match /gameStatuses/{gameId} {
+        allow read, write: if request.auth.uid == userId;
       }
-      
-      // ✅ Added: Allow access to user's statusesCount document
-    match /users/{userId}/statusesCount/{docId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      // Status counts
+      match /statusesCount/{docId} {
+        allow read, write: if request.auth.uid == userId;
+      }
+
+      // Daily discovery queue
+      match /discoveryQueue/{queueDate} {
+        allow read, write: if request.auth.uid == userId;
+      }
+
+      // Ratings sub-collection
+      match /ratings/{ratingId} {
+        allow read, write: if request.auth.uid == userId;
+      }
     }
 
-
-    // ✅ Allow anyone to read the "usernames" collection (safe)
+    // Usernames are public
     match /usernames/{username} {
-      allow read;
+      allow read: if true;
       allow write: if request.auth != null;
     }
 
-    // ✅ Restrict access to full user profiles
-    match /users/{userId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth.uid == userId;
-      
-    match /ratings/{userId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth.uid == userId;		
-      
-			}   
-
-    }
+    // Reviews and nested replies are public to read, only authors may write
     match /games/{gameId}/reviews/{reviewId} {
       allow read: if true;
-      allow write: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      allow write: if request.auth.uid == request.resource.data.userId;
 
-      // 🗨️ First-level replies
       match /replies/{replyId} {
         allow read: if true;
-        allow write: if request.auth != null && request.auth.uid == request.resource.data.userId;
+        allow write: if request.auth.uid == request.resource.data.userId;
 
-        // 🧵 Nested replies to replies
         match /replies/{nestedReplyId} {
           allow read: if true;
-          allow write: if request.auth != null && request.auth.uid == request.resource.data.userId;
+          allow write: if request.auth.uid == request.resource.data.userId;
         }
       }
     }

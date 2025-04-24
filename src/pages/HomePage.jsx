@@ -18,79 +18,49 @@ import { useEffect, useState, useRef } from "react";
 import { useAuth } from "../useAuth";
 import axios from "axios";
 import GameOfTheDay from "../components/GameOfTheDay";
-import { getAuth } from "firebase/auth";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { onAuthStateChanged, signOut, getAuth } from "firebase/auth";
 import { auth, db } from "../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
+import { generateDiscoveryQueueForUser } from "../services/discoveryQueue";
 
 const HomePage = () => {
-  const [trendingGames, setTrendingGames] = useState([]);
-  const [currentEvents, setEvents] = useState([]);
-  const [recommendedGames, setRecommendedGames] = useState([]);
-  const { user } = useAuth();
-  const [userData, setUserData] = useState(null);
+    const { user } = useAuth();
+    const [recommendedGames, setRecommendedGames] = useState([]);
+    const [trendingGames, setTrendingGames] = useState([]);
+    const [events, setEvents] = useState([]);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (currentUser) {
+    useEffect(() => {
+      if (!user) return;
+  
+      // 1) Generate/Fetch discovery queue IDs
+      generateDiscoveryQueueForUser(user.uid)
+        .then(async (ids) => {
+          // 2) Turn IDs into full game objects
+          const resp = await axios.post(
+            `${import.meta.env.VITE_API_URL}/api/games/ids`,
+            { ids }
+          );
+          setRecommendedGames(resp.data);
+        })
+        .catch(console.error);
+  
+      // 3) Meanwhile, load trending & events (unchanged)
+      (async () => {
         try {
-          const userDocRef = doc(db, "users", currentUser.uid);
-          const docSnap = await getDoc(userDocRef);
-          if (docSnap.exists()) {
-            setUserData(docSnap.data());
-          }
-        } catch (err) {
-          console.error("Error fetching user doc:", err);
+          const [trendingData, eventData] = await Promise.all([
+            fetchTrendingGames(20),
+            fetchEvents(4),
+          ]);
+          setTrendingGames(trendingData || []);
+          setEvents(eventData || []);
+        } catch (e) {
+          console.error(e);
+          setTrendingGames([]);
+          setEvents([]);
         }
-      } else {
-        setUserData(null);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    const loadRecommendations = async () => {
-      // Example array of IDs
-      const gameIds = [7346, 259252, 1026, 4567, 7599];
-
-      try {
-        // Send all IDs together in one request
-        const response = await axios.post(
-          `${import.meta.env.VITE_API_URL}/api/games/ids`,
-          {
-            ids: gameIds,
-          }
-        );
-
-        setRecommendedGames(response.data);
-      } catch (err) {
-        console.error("Error loading recommended games:", err.message);
-      }
-    };
-
-    loadRecommendations();
-  }, []);
-
-  // Fetch trending games and events
-  useEffect(() => {
-    const fetchGames = async () => {
-      try {
-        const trendingData = await fetchTrendingGames(20);
-        const currentEvents = await fetchEvents(20);
-
-        console.log("Event data:", currentEvents);
-        setTrendingGames(Array.isArray(trendingData) ? trendingData : []);
-        setEvents(Array.isArray(currentEvents) ? currentEvents : []);
-      } catch (error) {
-        console.error("Error fetching trending games/events:", error);
-        setTrendingGames([]);
-        setEvents([]);
-      }
-    };
-
-    fetchGames();
-  }, []);
+      })();
+  
+    }, [user]);
 
   return (
     <div className="relative">
@@ -230,7 +200,7 @@ const HomePage = () => {
           <HorizontalLine width="full" marginBottom="mb-4" marginTop="mt-4" zIndex="z-0"/>
 
           <h1 className="relative text-2xl font-bold pb-4 z-20">Events</h1>
-          <Event events={currentEvents} />
+          <Event events={events} />
 
           <HorizontalLine width="full" marginBottom="mb-4" marginTop="mt-4" zIndex="z-0"/>
 
