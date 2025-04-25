@@ -1,13 +1,14 @@
 import React, { forwardRef } from "react";
 import { useNavigate } from "react-router-dom";
+import {slugify} from "../services/slugify.js";
 
 const GameCard = forwardRef(
-  ({ src, alt, className = "", gameId, showSheen = true, isLoading }, ref) => {
+  ({ src, alt, className = "", gameId, showSheen = true, isLoading, gameName }, ref) => {
     const navigate = useNavigate();
 
     if (!gameId) return null;
 
-    const gameUrl = `/game/${gameId}`;
+    const gameUrl = `/game/${gameId}/${slugify(gameName)}`;
 
     const handleCardClick = (event) => {
       if (isLoading) return;
@@ -16,6 +17,7 @@ const GameCard = forwardRef(
         return;
       }
       event.preventDefault();
+      
       navigate(gameUrl);
     };
 

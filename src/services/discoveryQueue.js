@@ -33,6 +33,7 @@ import {
     const todaySnap = await getDoc(todayRef);
     if (todaySnap.exists()) {
       const existing = todaySnap.data().games;
+      console.log("[DQ] Found existing queue:", existing);
       return existing;
     }
   
@@ -60,8 +61,6 @@ import {
     const poolIds = pool
       .map((game) => game.igdb_id)
       .filter((id) => id !== undefined && id != null);
-
-    //console.log("[DQ] Pool Ids:", poolIds);
 
   
     // 7. Filter out any the user’s already seen

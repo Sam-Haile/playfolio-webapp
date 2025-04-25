@@ -14,16 +14,17 @@ import {
 } from "firebase/firestore";
 import HorizontalLine from "../components/HorizontalLine";
 
-const GameStatus = ({ gameId }) => {
-  const { user } = useAuth();
+const GameStatus = ({ gameId, releaseDate }) => {
+  const isUnreleased = releaseDate && releaseDate * 1000 > Date.now();
   const [selectedStatus, setSelectedStatus] = useState("");
+  const { user } = useAuth();
 
   // Status options
   const statusOptions = [
     { name: "Played", component: PlayingIcon, color: "#4CAF50" }, // Green
+    { name: "Dropped", component: DroppedIcon, color: "#F44336" }, // Red
     { name: "Backlog", component: BacklogIcon, color: "#FF9800" }, // Orange
     { name: "Wishlist", component: WishlistIcon, color: "#03A9F4" }, // Blue
-    { name: "Dropped", component: DroppedIcon, color: "#F44336" }, // Red
   ];
 
   const defaultColor = "#FFFFFF"; // ✅ White for unselected
@@ -107,25 +108,33 @@ const GameStatus = ({ gameId }) => {
   return (
     <div className="flex flex-col w-full lg:pt-[0px] md:pt-4 sm:pt-0">
       <div className="flex flex-wrap lg:place-content-between md:justify-center">
-        {statusOptions.map(({ name, component: IconComponent, color }) => (
-          <button
-          key={name}
-          className="flex flex-col items-center w-[20%] min-w-[80px] transition-all"
-          onClick={() => updateGameStatus(name)}
-          >
-            {/* If selectedStatus === name, use the color; otherwise defaultColor */}
-            <IconComponent
-              color={selectedStatus === name ? color : defaultColor}
-            />
-            <p
-              className={`text-center uppercase text-sm sm:text-base mt-2 font-semibold ${
-                selectedStatus === name ? "text-white " : ""
-              }`}
+        {statusOptions.map(({ name, component: IconComponent, color }) => {
+          const isDisabled =
+            isUnreleased && (name === "Played" || name === "Dropped");
+
+          return (
+            <button
+              key={name}
+              disabled={isDisabled}
+              className={`flex flex-col items-center w-[20%] min-w-[80px] transition-all ${isDisabled ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              onClick={() => {
+                if (!isDisabled) updateGameStatus(name);
+              }}
             >
-              {name}
-            </p>
-          </button>
-        ))}
+              <IconComponent
+                color={selectedStatus === name && !isDisabled ? color : defaultColor}
+              />
+              <p
+                className={`text-center uppercase text-sm sm:text-base mt-2 font-semibold ${selectedStatus === name && !isDisabled ? "text-white" : ""
+                  }`}
+              >
+                {name}
+              </p>
+            </button>
+          );
+        })}
+
       </div>
     </div>
   );

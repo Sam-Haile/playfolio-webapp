@@ -4,13 +4,14 @@ import { Tilt } from "react-tilt";
 import GameCard from "./GameCard";
 import HorizontalLine from "./HorizontalLine";
 import axios from "axios";
+import { slugify } from "../services/slugify";
 
 const ResultCard = ({ game, visualType }) => {
   const navigate = useNavigate();
   const [icons, setIcons] = useState([]);
 
   const handleClick = () => {
-    navigate(`/game/${game.id}`);
+    navigate(`/game/${game.id}/${slugify(game.name)}`);
   };
 
   useEffect(() => {
@@ -36,14 +37,11 @@ const ResultCard = ({ game, visualType }) => {
     }
   };
 
-  const handleDeveloperClick = (companyId) => {
-    navigate(`/developer/${companyId}?tab=developed`);
+  const handleDeveloperClick = (companyId, companyName ) => {
+    const slug = slugify(companyName);
+    navigate(`/company/${companyId}/${slug}?tab=developed`);
   };
 
-  const handlePublisherClick = (companyId) => {
-    navigate(`/developer/${companyId}?tab=published`);
-  };
-  
   const defaultOptions = {
     reverse: false,
     max: 20,
@@ -213,7 +211,7 @@ const ResultCard = ({ game, visualType }) => {
                   <p className="pt-1 font-light italic">
                     {Array.isArray(game.developers) && game.developers.length > 0 ? (
                       game.developers.map((dev, index) => (
-                        <span key={dev} onClick={() => handleDeveloperClick( dev.id)} className="cursor-pointer hover:text-primaryPurple-500">{dev.name} {index < game.developers.length - 1 && ", "}</span>
+                        <span key={dev.id} onClick={() => handleDeveloperClick(dev.id, dev.name)} className="cursor-pointer hover:text-primaryPurple-500">{dev.name} {index < game.developers.length - 1 && ", "}</span>
                       ))
                     ) : ("No Developers Found")
                     }

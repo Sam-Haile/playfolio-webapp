@@ -6,17 +6,18 @@ import ProfileIcon from "../assets/icons/pfp.svg";
 
 
 
-const ReviewBox = ({ gameDetails }) => {
-  const { user } = useAuth();
-  const [review, setReview] = useState("");
+const ReviewBox = ({ gameDetails, releaseDate }) => {
+  const isUnreleased = releaseDate && releaseDate * 1000 > Date.now();
+  const [saveSuccess, setSaveSuccess] = useState(false);
   const [ratingValue, setRatingValue] = useState(null);
   const [savedReview, setSavedReview] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [review, setReview] = useState("");
   const textareaRef = useRef(null);
+  const { user } = useAuth();
 
   useEffect(() => {
-    if(isEditing && textareaRef.current) {
+    if (isEditing && textareaRef.current) {
       const textarea = textareaRef.current;
       textarea.focus();
 
@@ -153,11 +154,18 @@ const ReviewBox = ({ gameDetails }) => {
             You haven't reviewed this game yet.
           </p>
           <button
-            onClick={() => setIsEditing(true)}
-            className="bg-primaryPurple-500 text-sm rounded px-4 py-2 hover:bg-primaryPurple-600"
+            onClick={() => {
+              if (!isUnreleased) setIsEditing(true);
+            }}
+            disabled={isUnreleased}
+            className={`text-sm rounded px-4 py-2 transition-all ${isUnreleased
+                ? "bg-gray-600 cursor-not-allowed opacity-60"
+                : "bg-primaryPurple-500 hover:bg-primaryPurple-600"
+              }`}
           >
             Write Review
           </button>
+
         </>
       )}
     </div>

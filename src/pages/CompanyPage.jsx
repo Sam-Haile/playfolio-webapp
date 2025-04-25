@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import HorizontalLine from "../components/HorizontalLine";
-import ResultCard from "../components/ResultCard";
-import Pagination from "../components/Pagination";
-import useWindowWidth from "../components/useWindowWidth";
-import MasonryBoxArtGrid from "../components/MasonryBoxArtGrid";
+import Header from "../components/Header.jsx";
+import Footer from "../components/Footer.jsx";
+import HorizontalLine from "../components/HorizontalLine.jsx";
+import ResultCard from "../components/ResultCard.jsx";
+import Pagination from "../components/Pagination.jsx";
+import useWindowWidth from "../components/useWindowWidth.jsx";
+import MasonryBoxArtGrid from "../components/MasonryBoxArtGrid.jsx";
 import { trimImages } from "../services/helperFunctions.js";
-
+import newTabIcon from "../assets/icons/newTab.svg"; // Import the new tab icon
 // Array to hold the visual type options and corresponding icons
 const visualTypes = [
   { type: "detailed", icon: "/src/assets/icons/detailedView.svg" },
@@ -17,7 +17,7 @@ const visualTypes = [
   { type: "list", icon: "/src/assets/icons/listView.svg" },
 ];
 
-const DeveloperPage = () => {
+const CompanyPage = () => {
   const navigate = useNavigate();
   const { id } = useParams(); // Get company ID from URL
   const [loading, setLoading] = useState(true);
@@ -33,9 +33,6 @@ const DeveloperPage = () => {
   const [trimmedCount, setTrimmedCount] = useState(0);
   const [paginatedGames, setPaginatedGames] = useState([]);
   const totalPages = companyDetails?.pagination?.totalPages || 1;
-  const [headerImagesCount, setHeaderImagesCount] = useState(0);
-  const [developedGames, setDevelopedGames] = useState([]);
-  const [publishedGames, setPublishedGames] = useState([]);
   const windowWidth = useWindowWidth();
   const trimmedImages = useMemo(() => trimImages(allGames), [allGames]);
   const [totalPublished, setTotalPublished] = useState(0);
@@ -70,8 +67,6 @@ const DeveloperPage = () => {
       setTotalDeveloped(response.data.totalDeveloped);
       setTotalPublished(response.data.totalPublished);
 
-      setDevelopedGames(developedGames);
-      setPublishedGames(publishedGames);
       setAllGames(allGames);
 
       //console.log("Combined Games:", combinedGames);
@@ -160,14 +155,8 @@ const DeveloperPage = () => {
     navigate(`/game/${gameId}`);
   };
 
-  //console.log("Company Details", companyDetails);
-  //console.log("All Games", allGames);
-  //console.log("Paginated Games", paginatedGames);
-  //console.log(publishedGames);
-
   useEffect(() => {
     setTrimmedCount(trimmedImages.length);
-    console.log("Computed trimmed count:", trimmedImages.length);
   }, [trimmedImages]);
 
   // Determine the number of columns based on trimmedCount and screen width
@@ -245,7 +234,7 @@ const DeveloperPage = () => {
                 companyDetails.websites.length > 0 && (
                   <div className="italic font-light text-s flex items-center pt-2">
                     <img
-                      src="./../public/icons/newTab.svg"
+                      src={newTabIcon}
                       alt="Ico"
                       className="pr-2 w-[40px]"
                     />
@@ -417,4 +406,4 @@ const DeveloperPage = () => {
   );
 };
 
-export default DeveloperPage;
+export default CompanyPage;

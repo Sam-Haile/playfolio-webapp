@@ -71,7 +71,8 @@ const saveRatingToFirestore = async (userId, gameId, ratingValue) => {
 };
 
 
-const StarRating = ({gameId}) => {
+const StarRating = ({gameId, releaseDate}) => {
+  const isUnreleased = releaseDate && releaseDate * 1000 > Date.now();
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [starColor] = useState("#FFD700");
@@ -100,6 +101,7 @@ const StarRating = ({gameId}) => {
   }, [user, gameId]);
 
   const handleRating = async (value) => {
+    if (isUnreleased) return; // Don't allow rating if the game is unreleased
     setRating(value);
     if (user) {
       await saveRatingToFirestore(user.uid, gameId, value);
@@ -119,6 +121,7 @@ const StarRating = ({gameId}) => {
   };
 
   const handleHover = (value) => {
+    if(isUnreleased) return; // Don't allow hover if the game is unreleased
     if (hoverRating !== value) {
       setHoverRating(value);
     }
@@ -138,29 +141,30 @@ const StarRating = ({gameId}) => {
 
 return (
   <div className="flex justify-center px-4">
-    <div
-      className="flex gap-2 relative"
-      onMouseLeave={() => setHoverRating(0)}
-    >
-      {[1, 2, 3, 4, 5].map((star) => (
-        <div key={star} className="relative w-full h-full">
-          <Star value={star} />
-          {/* Left half for 0.5 rating */}
-          <div
-            className="absolute left-0 top-0 w-1/2 h-full z-10"
-            onClick={() => handleRating(star - 0.5)}
-            onMouseEnter={() => handleHover(star - 0.5)}
-          />
-          {/* Right half for full rating */}
-          <div
-            className="absolute right-0 top-0 w-1/2 h-full z-10"
-            onClick={() => handleRating(star)}
-            onMouseEnter={() => handleHover(star)}
-          />
-        </div>
-      ))}
-    </div>
+  <div
+    className={`flex gap-2 relative cursor-pointer ${
+      isUnreleased ? "opacity-50 cursor-not-allowed " : ""
+    }`}
+    onMouseLeave={() => setHoverRating(0)}
+  >
+    {[1, 2, 3, 4, 5].map((star) => (
+      <div key={star} className="relative w-full h-full">
+        <Star value={star} />
+        <div
+          className="absolute left-0 top-0 w-1/2 h-full z-10"
+          onClick={() => handleRating(star - 0.5)}
+          onMouseEnter={() => handleHover(star - 0.5)}
+        />
+        <div
+          className="absolute right-0 top-0 w-1/2 h-full z-10"
+          onClick={() => handleRating(star)}
+          onMouseEnter={() => handleHover(star)}
+        />
+      </div>
+    ))}
   </div>
+</div>
+
 );
 };
 

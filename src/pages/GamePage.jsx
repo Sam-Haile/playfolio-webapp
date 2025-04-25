@@ -17,6 +17,7 @@ import ReviewEntry from "../components/ReviewEntry";
 import ImageOverlay from "../components/ImageOverlay";
 import ReviewBox from "../components/ReviewBox";
 import GameReviews from "../components/GameReviews";
+import {slugify} from "../services/slugify.js";
 
 const GamePage = () => {
   const { id } = useParams(); // Get the game ID from the URL
@@ -42,14 +43,16 @@ const GamePage = () => {
     }
   }, [id]);
 
-  const handleDeveloperClick = (companyId) => {
-    navigate(`/developer/${companyId}?tab=developed`);
+  const handleDeveloperClick = (companyId, companyName) => {
+    const slug = slugify(companyName);
+    navigate(`/company/${companyId}/${slug}?tab=developed`);
   };
 
-  const handlePublisherClick = (companyId) => {
-    navigate(`/developer/${companyId}?tab=published`);
+  const handlePublisherClick = (companyId, companyName) => {
+    const slug = slugify(companyName);
+    navigate(`/company/${companyId}/${slug}?tab=published`);
   };
-
+  
   const fetchGameData = async () => {
     try {
       const gameResponse = await axios.post(
@@ -60,8 +63,7 @@ const GamePage = () => {
 
       // Update main game data
       setGameDetails(gameResponse.data);
-      console.log(gameResponse.data);
-
+      console.log("Game Details:", gameResponse.data);
 
       setHeroes(gameResponse.data.heroes.url || null);
       setLogos(gameResponse.data.logos.url || null);
@@ -272,7 +274,7 @@ const GamePage = () => {
               <div className="flex flex-col items-start gap-2">
                 {/* Developer Logo */}
                 {developers[0].logo && !developerError ? (
-                  <button onClick={() => handleDeveloperClick(developers[0].id)}>
+                  <button onClick={() => handleDeveloperClick(developers[0].id, developers[0].name)}>
                     <DynamicLogo
                       url={developers[0].logo}
                       onError={() => setDeveloperError(true)}
@@ -288,7 +290,7 @@ const GamePage = () => {
                     {developers.length > 0 &&
                       developers.map((developer, index) => (
                         <button
-                          onClick={() => handlePublisherClick(developer.id)}
+                          onClick={() => handleDeveloperClick(developer.id, developer.name)}
                           key={index}
                           className="italic font-light text-sm hover:text-primaryPurple-500"
                         >
@@ -387,7 +389,7 @@ const GamePage = () => {
                       <span key={index}>
                         <span
 
-                          onClick={() => handleDeveloperClick(developer.id)}
+                          onClick={() => handleDeveloperClick(developer.id, developer.name)}
                           key={index}
                           className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline "
                         >
@@ -404,7 +406,7 @@ const GamePage = () => {
                     publishers.map((publisher, index) => (
                       <span key={index}>
                         <span
-                          onClick={() => handlePublisherClick(publisher.id)}
+                          onClick={() => handlePublisherClick(publisher.id, publisher.name)}
                           className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline "
                         >
                           {publisher.name}
@@ -472,37 +474,35 @@ const GamePage = () => {
                 <h1 className="text-base font-semibold mb-2">Media</h1>
 
                 <div className="flex flex-col gap-2">
-              {/* Main Screenshot Container */}
-              <div className="flex-1 relative rounded aspect-video overflow-hidden flex justify-center items-center">
-                {/* Background layer (blurred) */}
-                <img
-                  src={gameDetails.screenshots?.[mainScreenshotIndex]}
-                  alt=""
-                  className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-50"
-                  aria-hidden="true"
-                />
-                {/* Foreground image */}
-                <img
-                  src={gameDetails.screenshots?.[mainScreenshotIndex]}
-                  alt="Game Screenshot"
-                  className="relative w-full h-full object-contain"
-                  onClick={() => setOverlayOpen(true)}
-                />
+                  {/* Main Screenshot Container */}
+                  <div className="flex-1 relative rounded aspect-video overflow-hidden flex justify-center items-center">
+                    {/* Background layer (blurred) */}
+                    <img
+                      src={gameDetails.screenshots?.[mainScreenshotIndex]}
+                      alt=""
+                      className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-50"
+                      aria-hidden="true"
+                    />
+                    {/* Foreground image */}
+                    <img
+                      src={gameDetails.screenshots?.[mainScreenshotIndex]}
+                      alt="Game Screenshot"
+                      className="relative w-full h-full object-contain"
+                      onClick={() => setOverlayOpen(true)}
+                    />
 
-                {/* Conditionally render the overlay */}
-                {overlayOpen && (
-                  <ImageOverlay
-                    src={gameDetails.screenshots?.[mainScreenshotIndex]}
-                    alt={`Screenshot of ${name}`}
-                    onClose={() => setOverlayOpen(false)}
-                  />
-                )}
-              </div>
-
+                    {/* Conditionally render the overlay */}
+                    {overlayOpen && (
+                      <ImageOverlay
+                        src={gameDetails.screenshots?.[mainScreenshotIndex]}
+                        alt={`Screenshot of ${name}`}
+                        onClose={() => setOverlayOpen(false)}
+                      />
+                    )}
+                  </div>
 
                   {/* Screenshot Carousel */}
                   <div className="px-6 pt-2">
-
                     <Slider {...settings}>
                       {gameDetails.screenshots.slice(0, 8).map((shot, index) => (
                         <div key={index} className=" px-1 border-0">
@@ -513,9 +513,9 @@ const GamePage = () => {
                               e.stopPropagation()
                               setMainScreenshotIndex(index)
                             }}
-                              className={`rounded cursor-pointer transition-all duration-200 outline-none focus:outline-none ring-0 border-0 ${mainScreenshotIndex === index
-                                ? "opacity-100 border-primaryPurple-500"
-                                : "brightness-50 hover:brightness-100"
+                            className={`rounded cursor-pointer transition-all duration-200 outline-none focus:outline-none ring-0 border-0 ${mainScreenshotIndex === index
+                              ? "opacity-100 border-primaryPurple-500"
+                              : "brightness-50 hover:brightness-100"
                               }`}
                             loading="lazy"
                           />
@@ -523,63 +523,8 @@ const GamePage = () => {
                       ))}
                     </Slider>
                   </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                  
                 </div>
               </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
               <div className="lg:block md:hidden sm:hidden">
                 <h1 className="text-base font-semibold">Reviews</h1>
@@ -629,7 +574,7 @@ const GamePage = () => {
                 <div className="flex flex-col gap-2 lg:px-4 lg:py-8 md:p-2">
                   {/* Options */}
                   <div className="flex px-2 flex-cols-4 justify-center w-full">
-                    <GameStatus gameId={String(gameDetails.id)} />
+                    <GameStatus gameId={String(gameDetails.id)} releaseDate={gameDetails.rawReleaseDate} />
                   </div>
 
                   <div className="px-2 w-full">
@@ -637,13 +582,13 @@ const GamePage = () => {
                       Rate
                     </p>
                     <div className="lex justify-center items-center w-full">
-                      <StarRating gameId={String(gameDetails.id)} />
+                      <StarRating gameId={String(gameDetails.id)} releaseDate={gameDetails.rawReleaseDate}/>
                     </div>
                   </div>
 
                   <div className="px-2 w-full">
                     <p className="text-sm font-semibold uppercase mt-4 pl-4 mb-2">Review</p>
-                    <ReviewBox gameDetails={gameDetails} />
+                    <ReviewBox gameDetails={gameDetails} releaseDate={gameDetails.rawReleaseDate}  />
                   </div>
                 </div>
               </div>

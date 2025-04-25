@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Tilt } from "react-tilt";
 import GameCard from "./GameCard";
+import { slugify } from "../services/slugify.js";
 
 const defaultOptions = {
   reverse: false,
@@ -46,13 +47,14 @@ const TrendingGamesCarousel = ({ slides }) => {
           <div
             className="px-2 cursor-pointer  "
             key={index}
-            onClick={() => slide.igdb_id ? navigate(`/game/${slide.igdb_id}`) : null}
+            onClick={() => slide.igdb_id ? navigate(`/game/${slide.igdb_id}/${slugify(gameName)}`) : null}
           >
             <Tilt options={defaultOptions} style={{ width: "100%" }}>
               {slide.cover ? (
                 <GameCard
                   src={slide.cover}
                   alt={`${slide.name} Cover`}
+                  gameName={slide.name}
                   gameId={slide.igdb_id}
                   className="w-full h-auto rounded-lg shadow-md"
                 />

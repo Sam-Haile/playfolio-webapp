@@ -185,12 +185,11 @@ const Results = () => {
                   : "grid grid-cols-7 gap-4 md:grid-cols-5 sm:grid-cols-3 xs:grid-cols-2"
                 }`}>
 
-                {console.log("PaginatedGames from Results:", paginatedResults)}
-
                 {paginatedResults.map((game) => (
                   <ResultCard
                     key={game.id}
                     game={game}
+                    gameName={game.name}
                     id={game.id}
                     visualType={visualType}
                   />
@@ -219,8 +218,6 @@ const Results = () => {
             </>
           )}
         </div>
-
-
       </div>
       <Footer />
     </div>
