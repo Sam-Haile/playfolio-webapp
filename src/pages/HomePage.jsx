@@ -18,9 +18,6 @@ import { useEffect, useState, useRef } from "react";
 import { useAuth } from "../useAuth";
 import axios from "axios";
 import GameOfTheDay from "../components/GameOfTheDay";
-import { onAuthStateChanged, signOut, getAuth } from "firebase/auth";
-import { auth, db } from "../firebaseConfig";
-import { doc, getDoc } from "firebase/firestore";
 import { generateDiscoveryQueueForUser } from "../services/discoveryQueue";
 
 const HomePage = () => {
@@ -38,7 +35,8 @@ const HomePage = () => {
           // 2) Turn IDs into full game objects
           const resp = await axios.post(
             `${import.meta.env.VITE_API_URL}/api/games/ids`,
-            { ids }
+            { ids },
+            { params: { slim: false } }
           );
           setRecommendedGames(resp.data);
         })

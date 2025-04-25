@@ -61,7 +61,7 @@ import {
       .map((game) => game.igdb_id)
       .filter((id) => id !== undefined && id != null);
 
-    console.log("[DQ] Pool Ids:", poolIds);
+    //console.log("[DQ] Pool Ids:", poolIds);
 
   
     // 7. Filter out any the user’s already seen

@@ -21,10 +21,9 @@ import GameReviews from "../components/GameReviews";
 const GamePage = () => {
   const { id } = useParams(); // Get the game ID from the URL
   const [gameDetails, setGameDetails] = useState(null); // Store details about the game
-  const [screenshots, setScreenshots] = useState([]); // Store artworks separately
-  const [logos, setLogos] = useState([]); // Store SteamGridDB logos
+  const [logos, setLogos] = useState(null); // Store SteamGridDB logos
+  const [heroes, setHeroes] = useState(null); // Store heroes
   const [loading, setLoading] = useState(true); // Tracks if data is being fetched
-  const [heroes, setHeroes] = useState([]); // Store heroes
   const [showMore, setShowMore] = useState(false);
   const navigate = useNavigate();
   const [logoError, setLogoError] = useState(false);
@@ -55,55 +54,17 @@ const GamePage = () => {
     try {
       const gameResponse = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/game`,
-        {
-          id,
-        }
+        { id },
+        { params: { includeScreenshots: true } }
       );
 
       // Update main game data
       setGameDetails(gameResponse.data);
+      console.log(gameResponse.data);
 
-      console.log("Game Details:", gameResponse.data.steamAppId);
 
-      // Fetch and process other data (screenshots, heroes, logos)
-      let screenshotsResponse = { data: [] };
-      let sortedScreenshots = [];
-      let heroesResponse = { data: { heroes: [] } };
-      let logosResponse = { data: { logos: [] } };
-
-      try {
-        screenshotsResponse = await axios.post(
-          `${import.meta.env.VITE_API_URL}/api/screenshots`,
-          { gameId: id }
-        );
-        sortedScreenshots = [...screenshotsResponse.data].sort((a, b) => {
-          return a.id - b.id; // Sort by ID for stable ordering
-        });
-      } catch (err) { }
-
-      try {
-        heroesResponse = await axios.post(
-          `${import.meta.env.VITE_API_URL}/api/steamgriddb/heroes`,
-          {
-            steamAppId: gameResponse.data.steamAppId,
-            gameName: gameResponse.data.name,
-          }
-        );
-      } catch (err) { }
-
-      try {
-        logosResponse = await axios.post(
-          `${import.meta.env.VITE_API_URL}/api/steamgriddb/logos`,
-          {
-            gameName: gameResponse.data.name,
-          }
-        );
-      } catch (err) { }
-
-      // Update state with processed data
-      setScreenshots(sortedScreenshots);
-      setHeroes(heroesResponse.data.heroes || []);
-      setLogos(logosResponse.data.logos || []);
+      setHeroes(gameResponse.data.heroes.url || null);
+      setLogos(gameResponse.data.logos.url || null);
     } catch (err) {
       console.error("Error fetching game data:", err);
     } finally {
@@ -253,16 +214,16 @@ const GamePage = () => {
 
       <div className="bg-white h-[75vh] mt-8 ">
         <div className="pt-18 bg-white h-[75vh] absolute top-0 w-full flex items-center justify-center overflow-hidden pointer-event:none">
-          {heroes && heroes.length > 0 ? (
+          {heroes ? (
             <img
-              src={heroes[0].url} // Use the first hero
+              src={heroes} // Use the first hero
               alt="Game Hero"
               className="w-full h-full object-cover " // Adjust height for proportional scaling
               draggable="false"
             />
-          ) : screenshots && screenshots.length > 0 ? (
+          ) : gameDetails.screenshots && gameDetails.screenshots.length > 0 ? (
             <img
-              src={screenshots[0].imageUrl} // Use the first screenshot as a fallback
+              src={gameDetails.screenshots[0]} // Use the first screenshot as a fallback
               alt={`${name} Screenshot`}
               className="w-full h-full object-cover" // Adjust height for proportional scaling
             />
@@ -338,9 +299,9 @@ const GamePage = () => {
                 )}
 
                 {/* Game Logo */}
-                {logos && logos.length > 0 && !logoError ? (
+                {logos && !logoError ? (
                   <DynamicLogo
-                    url={logos[0].url}
+                    url={logos}
                     draggable="false"
                     gameName={name}
                     maxSize={"w-96"}
@@ -515,14 +476,14 @@ const GamePage = () => {
               <div className="flex-1 relative rounded aspect-video overflow-hidden flex justify-center items-center">
                 {/* Background layer (blurred) */}
                 <img
-                  src={screenshots?.[mainScreenshotIndex]?.imageUrl}
+                  src={gameDetails.screenshots?.[mainScreenshotIndex]}
                   alt=""
                   className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-50"
                   aria-hidden="true"
                 />
                 {/* Foreground image */}
                 <img
-                  src={screenshots?.[mainScreenshotIndex]?.imageUrl}
+                  src={gameDetails.screenshots?.[mainScreenshotIndex]}
                   alt="Game Screenshot"
                   className="relative w-full h-full object-contain"
                   onClick={() => setOverlayOpen(true)}
@@ -531,7 +492,7 @@ const GamePage = () => {
                 {/* Conditionally render the overlay */}
                 {overlayOpen && (
                   <ImageOverlay
-                    src={screenshots?.[mainScreenshotIndex]?.imageUrl}
+                    src={gameDetails.screenshots?.[mainScreenshotIndex]}
                     alt={`Screenshot of ${name}`}
                     onClose={() => setOverlayOpen(false)}
                   />
@@ -543,10 +504,10 @@ const GamePage = () => {
                   <div className="px-6 pt-2">
 
                     <Slider {...settings}>
-                      {screenshots.slice(0, 8).map((shot, index) => (
+                      {gameDetails.screenshots.slice(0, 8).map((shot, index) => (
                         <div key={index} className=" px-1 border-0">
                           <img
-                            src={shot.imageUrl}
+                            src={shot}
                             alt={`Screenshot ${index + 1} of ${name}`}
                             onClick={(e) => {
                               e.stopPropagation()
