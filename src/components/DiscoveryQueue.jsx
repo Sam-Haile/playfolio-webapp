@@ -8,6 +8,7 @@ import ThumbsDown from "../assets/icons/ThumbsDown.jsx";
 import DynamicLogo from "./DynamicLogo.jsx";
 import ImageOverlay from "./ImageOverlay.jsx";
 import ReactDOM from "react-dom";
+import { slugify } from "../services/slugify.js";
 
 function DiscoveryQueue({ games = [] }) {
   const navigate = useNavigate();
@@ -30,19 +31,6 @@ function DiscoveryQueue({ games = [] }) {
             <GameSlide key={game.id} game={game} navigate={navigate} />
           ))}
         </Slider>
-        {/* Gradients */}
-        {/* <div
-          className="absolute top-0 h-full w-[103%] pointer-events-none z-10 right-0"
-          style={{
-            background: "linear-gradient(to left, #121212 0%, transparent 5%)",
-          }}
-        ></div>
-        <div
-          className="absolute top-0 h-full w-[101%] pointer-events-none z-10 left-0"
-          style={{
-            background: "linear-gradient(to right, #121212 0%, transparent 5%)",
-          }}
-        ></div> */}
       </div>
     </div>
   );
@@ -54,10 +42,6 @@ function GameSlide({ game, navigate }) {
   const [mainScreenshotIndex, setMainScreenshotIndex] = useState(0);
   const [overlayOpen, setOverlayOpen] = useState(false);
 
-  const handleClick = () => {
-    navigate(`/game/${game.id}`);
-  };
-
   return (
     <div className="relative px-4">
       <div className="h-96 flex flex-cols-2">
@@ -67,45 +51,71 @@ function GameSlide({ game, navigate }) {
             <img
               src={game.heroes.url}
               alt={`${game.name} hero`}
-              className="absolute brightness-[.65] rounded"
+              className="absolute brightness-[.35] rounded"
             />
           ) : (
             <div className="absolute bg-customBlack-500 w-full h-1/2 rounded"></div>
           )}
 
-          <div className="flex h-[60%] cursor-pointer" onClick={handleClick}>
+          <a className="flex h-[50%] cursor-pointer" href={`/game/${game.id}`}>
             <div className="flex z-20 items-end w-full">
               {/* <img
                 src={game.coverUrl}
                 alt={`${game.name} cover`}
-                className="w-auto h-48 ml-12 z-1000 rounded"
-              /> */}
+                className="w-auto h-36 ml-8 z-1000 rounded"
+              />   */}
               {game.logos?.url && (
                 <DynamicLogo
                   url={game.logos.url}
                   gameName={game.name}
-                  maxSize={"w-96"}
-                  minSize={"w-60"}
+                  maxSize={"w-80"}
+                  minSize={"w-48"}
                 />
               )}
             </div>
-          </div>
+          </a>
 
-          <div className="flex h-[40%] mt-auto w-full rounded">
+          <div className="flex h-[50%] mt-auto w-full rounded">
             <div className="mt-auto bg-customGray-900/50 w-full rounded p-4 relative">
               <div className="flex overflow-hidden">
                 {/* <h2 className="font-semibold text-lg pb-2">{`${game.name} (${game.releaseYear})`}</h2> */}
-                <div className="pb-2 lg:w-[70%] md:w-[40%]">
+                <div className="pb-2 lg:w-[70%] md:w-[75%]">
+                  <p className="text-sm pb-1 truncate ">
+                    {Array.isArray(game.genres) && game.genres.length > 0 ? (
+                      game.genres.map((genre, i) => (
+                        <React.Fragment key={genre.id}>
+                          <a
+                            href={`/genre/${genre.id}/${slugify(genre.name)}`}
+                            className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer"
+                          >
+                            {genre.name}
+                          </a>
+                          {i < game.genres.length - 1 && ", "}
+                        </React.Fragment>
+                      ))
+                    ) : (
+                      "No platforms available"
+                    )}
+                  </p>
+
                   <p className="text-sm pb-1 truncate">
-                    {game.genres?.length > 0
-                      ? game.genres.join(", ")
-                      : "No genres available"}
+                    {Array.isArray(game.platforms) && game.platforms.length > 0 ? (
+                      game.platforms.map((plat, i) => (
+                        <React.Fragment key={plat.id}>
+                          <a
+                            href={`/platform/${plat.id}/${slugify(plat.name)}`}
+                            className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer"
+                          >
+                            {plat.name}
+                          </a>
+                          {i < game.platforms.length - 1 && ", "}
+                        </React.Fragment>
+                      ))
+                    ) : (
+                      "No platforms available"
+                    )}
                   </p>
-                  <p className="font-light text-sm truncate">
-                    {game.platforms?.length > 0
-                      ? game.platforms.join(", ")
-                      : "No platforms available"}
-                  </p>
+
                 </div>
 
                 <div className="ml-auto">
@@ -115,11 +125,10 @@ function GameSlide({ game, navigate }) {
                       .map((_, i) => (
                         <svg
                           key={i}
-                          className={`h-6 w-6 ${
-                            i < Math.round(game.rating_count / 20)
-                              ? "text-yellow-400"
-                              : "text-gray-300"
-                          } fill-current`}
+                          className={`h-6 w-6 ${i < Math.round(game.totalRating / 20)
+                            ? "text-yellow-400"
+                            : "text-gray-300"
+                            } fill-current`}
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
                         >
@@ -143,8 +152,8 @@ function GameSlide({ game, navigate }) {
                   className="flex gap-2 ml-auto pb-2 mr-2 overflow-hidden"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <ThumbsUp className="mt-auto h-6 w-6"/>
-                  <ThumbsDown className="mt-auto h-6 w-6"/>
+                  {/* <ThumbsUp className="mt-auto h-6 w-6" />
+                  <ThumbsDown className="mt-auto h-6 w-6" /> */}
                 </div>
               </div>
             </div>
@@ -188,15 +197,14 @@ function GameSlide({ game, navigate }) {
                 <img
                   key={index}
                   src={url}
-                  onClick={(e) => { 
+                  onClick={(e) => {
                     e.stopPropagation()
                     setMainScreenshotIndex(index)
                   }}
-                  className={`w-auto object-contain mb-1 mt-1 h-full rounded cursor-pointer transition-opacity duration-300 ${
-                    mainScreenshotIndex === index
-                      ? "opacity-100"
-                      : "brightness-50 hover:brightness-100"
-                  }`}
+                  className={`w-auto object-contain mb-1 mt-1 h-full rounded cursor-pointer transition-opacity duration-300 ${mainScreenshotIndex === index
+                    ? "opacity-100"
+                    : "brightness-50 hover:brightness-100"
+                    }`}
                   alt={`Screenshot ${index}`}
                 />
               ))}

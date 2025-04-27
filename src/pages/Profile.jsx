@@ -5,16 +5,9 @@ import { db } from "../firebaseConfig"; // Ensure Firestore is imported
 import { useAuth } from "../useAuth";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import GameCard from "../components/GameCard";
 import EditBannerModal from "../components/EditBannerModal"; // <--- new separate file
 import EditIconModal from "../components/EditIconModal";
-import { Tilt } from "react-tilt";
 import axios from "axios";
-import HorizontalLine from "../components/HorizontalLine";
-import WishlistIcon from "../assets/icons/WishlistIcon";
-import PlayingIcon from "../assets/icons/PlayingIcon";
-import DroppedIcon from "../assets/icons/DroppedIcon";
-import BacklogIcon from "../assets/icons/BacklogIcon";
 import RatingGraph from "../components/RatingGraph";
 import Collections from "./Collections";
 
@@ -24,25 +17,9 @@ const Profile = () => {
   const [userData, setUserData] = useState({ firstName: "", lastName: "", username: "" });
   const [setError] = useState(null);
   const [preloadedGames, setPreloadedGames] = useState({});
-  const [wishlistColor, setWishlistColor] = useState("#ffffff");
-  const [playingColor, setPlayingColor] = useState("#ffffff");
-  const [backlogColor, setBacklogColor] = useState("#ffffff");
-  const [droppedColor, setDroppedColor] = useState("#ffffff");
   const [isEditBannerOpen, setIsEditBannerOpen] = useState(false);
   const [isEditIconOpen, setIsEditIconOpen] = useState(false);
   const [loading, setLoading] = useState(true); // Track loading state
-
-  const [wishlistGames, setWishlistGames] = useState([]);
-  const [wishlistCount, setWishlistCount] = useState(0);
-
-  const [playingGames, setPlayingGames] = useState([]);
-  const [playingCount, setPlayingCount] = useState(0);
-
-  const [droppedGames, setDroppedGames] = useState([]);
-  const [droppedCount, setDroppedCount] = useState(0);
-
-  const [backlogGames, setBacklogGames] = useState([]);
-  const [backlogCount, setBacklogCount] = useState(0);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -59,10 +36,6 @@ const Profile = () => {
       fetchUserData();
     }
   }, [user]);
-
-  const handleNavigateToCollections = (type) => {
-    navigate(`/profile/collections?type=${type}`);
-  };
 
   const handleBannerUpdate = (newBannerUrl) => {
     setUserData((prev) => ({ ...prev, bannerImage: newBannerUrl }));
@@ -94,7 +67,6 @@ const Profile = () => {
       }
 
       try {
-        console.log("🔄 Fetching user data from Firestore...");
         const userDocRef = doc(db, "users", user.uid);
         const userDocSnap = await getDoc(userDocRef);
 
@@ -102,7 +74,6 @@ const Profile = () => {
           const data = userDocSnap.data();
           setUserData(data); // Store Firestore data
           localStorage.setItem(`userData_${user.uid}`, JSON.stringify(data)); // Cache data
-          console.log("✅ Cached user data in localStorage");
         } else {
           console.error("❌ No user found in Firestore");
           setError("User data not found.");
@@ -133,15 +104,6 @@ const Profile = () => {
         });
 
         // Fetch game covers from IGDB
-        const updatedWishlist = await fetchGameCovers(wishlist);
-        const updatedPlaying = await fetchGameCovers(playing);
-        const updatedDropped = await fetchGameCovers(dropped);
-        const updatedBacklog = await fetchGameCovers(backlog);
-
-        setWishlistGames(wishlist);
-        setPlayingGames(playing);
-        setDroppedGames(dropped);
-        setBacklogGames(backlog);
 
         setWishlistCount(wishlist.length);
         setPlayingCount(playing.length);
@@ -217,7 +179,6 @@ const Profile = () => {
   }
 
   const displayName = capitalizeName(userData?.firstName) + " " + capitalizeName(userData?.lastName);
-console.log(displayName);
   return (
     <div className="relative min-h-screen flex flex-col">
       <div className="mx-[]">

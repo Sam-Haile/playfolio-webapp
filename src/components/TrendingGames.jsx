@@ -68,9 +68,10 @@ const TrendingGamesCarousel = ({ slides }) => {
         ))}
 
       </div>
-      <div className="flex flex-row-reverse">
+
+      {/* <div className="flex flex-row-reverse">
         <a href="/" className="text-right pt-4 hover:text-primaryPurple-500">View More Trending </a>
-      </div>
+      </div> */}
     </div>
   );
 };

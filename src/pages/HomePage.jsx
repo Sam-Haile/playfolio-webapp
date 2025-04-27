@@ -1,7 +1,7 @@
 import Header from "../components/Header";
 import HorizontalLine from "../components/HorizontalLine";
 import TrendingGames from "../components/TrendingGames";
-import Event from "../components/Events";
+import EventCard from "../components/EventCard";
 import Footer from "../components/Footer";
 import PlayingIcon from "../assets/icons/PlayingIcon";
 import BacklogIcon from "../assets/icons/BacklogIcon";
@@ -198,7 +198,7 @@ const HomePage = () => {
           <HorizontalLine width="full" marginBottom="mb-4" marginTop="mt-4" zIndex="z-0"/>
 
           <h1 className="relative text-2xl font-bold pb-4 z-20">Events</h1>
-          <Event events={events} />
+          <EventCard events={events} />
 
           <HorizontalLine width="full" marginBottom="mb-4" marginTop="mt-4" zIndex="z-0"/>
 

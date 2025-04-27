@@ -6,7 +6,10 @@ import Explore from "./pages/Explore";
 import Results from "./pages/Results";
 import GamePage from "./pages/GamePage";
 import SignIn from "./pages/SignIn";
-import CompanyPage from "./pages/CompanyPage";
+import Company from "./pages/Company";
+import Event from "./pages/Event";
+import Genre from "./pages/Genre";
+import Platform from "./pages/Platform";
 import ScrollToTop from "./services/ScrollToTop";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./pages/ProtectedRoute";
@@ -15,7 +18,6 @@ import './styles/global.css';
 
 const App = () => {
   return (
-
     <AuthProvider>
       <Router>
         <ScrollToTop />
@@ -26,7 +28,10 @@ const App = () => {
           <Route path="/results" element={<Results />} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/game/:id/:slug?" element={<GamePage />} />
-          <Route path="/company/:id/:slug?" element={<CompanyPage />} />
+          <Route path="/company/:id/:slug?" element={<Company />} />
+          <Route path="/event/:id/:slug?" element={<Event />} />
+          <Route path="/genre/:id/:slug?" element={<Genre />} />
+          <Route path="/platform/:id/:slug?" element={<Platform />} />
           <Route path="signup" element={<SignIn />} />
         </Routes>
       </Router>

@@ -1,85 +1,84 @@
 import React, { useState, useEffect, useMemo } from "react";
 
 const MasonryBoxArtGrid = ({
-    images,
-    columns = 10,
-    minHeight = 160,
-    offset = 90, // amount to raise alternate columns (in pixels)
-  }) => {
-    // Set initial container width based on current window size.
-    const getContainerWidth = () => {
-      const containerPadding = 32 + (columns - 1) * 16; // Tailwind's gap & padding estimates
-      return typeof window !== "undefined"
-        ? window.innerWidth - containerPadding
-        : 1200;
-    };
+  images,
+  columns    = 10,
+  minHeight  = 160,
+  offset     = 90,     // amount to raise alternate columns (in px)
+  widthRatio = 3,      // default box–art ratio: width∶height = 3∶4
+  heightRatio= 4,
+}) => {
+  // compute containerWidth as before…
+  const getContainerWidth = () => {
+    const containerPadding = 32 + (columns - 1) * 16;
+    return typeof window !== "undefined"
+      ? window.innerWidth - containerPadding
+      : 1200;
+  };
+  const [containerWidth, setContainerWidth] = useState(getContainerWidth());
+  useEffect(() => {
+    const handleResize = () => setContainerWidth(getContainerWidth());
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [columns]);
 
-    const [containerWidth, setContainerWidth] = useState(getContainerWidth());
+  // columnWidth stays the same
+  const columnWidth = containerWidth / columns;
 
-    useEffect(() => {
-      const handleResize = () => {
-        setContainerWidth(getContainerWidth());
-      };
-      window.addEventListener("resize", handleResize);
-      return () => window.removeEventListener("resize", handleResize);
-    }, [columns]);
+  // now height = columnWidth * (heightRatio/widthRatio)
+  const calculatedHeight = Math.max(
+    minHeight,
+    (columnWidth * heightRatio) / widthRatio
+  );
+  // width is exactly columnWidth
+  const calculatedWidth = columnWidth;
 
-    // Compute dimensions using current containerWidth
-    const columnWidth = containerWidth / columns;
-    const calculatedHeight = Math.max(minHeight, (columnWidth * 4) / 3);
-    const calculatedWidth = (calculatedHeight * 3) / 4;
+  // trimmedImages & distribution logic is unchanged…
+  const trimmedImages = useMemo(() => {
+    let valid = images.filter(img => img.coverUrl);
+    // … your existing slice logic …
+    if (valid.length > 30) return valid.slice(0,30);
+    if (valid.length >=15)  return valid.slice(0,15);
+    if (valid.length >=10)  return valid.slice(0,10);
+    if (valid.length >=5)   return valid.slice(0,5);
+    return valid.slice(0,1);
+  }, [images]);
 
-    // Compute trimmed images using useMemo to prevent duplicate filtering
-    const trimmedImages = useMemo(() => {
-      let validImages = images.filter(img => img.coverUrl);
-      if (validImages.length > 30)
-        return validImages.slice(0, 30);
-      else if (validImages.length < 30 && validImages.length >= 15)
-        return validImages.slice(0, 15);
-      else if (validImages.length < 15 && validImages.length >= 10)
-        return validImages.slice(0, 10);
-      else if (validImages.length < 10 && validImages.length >= 5)
-        return validImages.slice(0, 5);
-      else
-        return validImages.slice(0, 1);
-    }, [images]);
+  const colImages = Array.from({length:columns},()=>[]);
+  trimmedImages.forEach((img,i) => {
+    colImages[i % columns].push(img);
+  });
 
-    // Distribute trimmedImages among columns using a round-robin approach
-    const colImages = new Array(columns).fill(null).map(() => []);
-    trimmedImages.forEach((img, index) => {
-      const colIndex = index % columns;
-      colImages[colIndex].push(img);
-    });
-
-    return (
-      <div>
-      <div className="flex justify-center gap-2 overflow-hidden">
-        {colImages.map((col, i) => (
+  return (
+    <div className="overflow-hidden">
+      <div className="flex justify-center gap-2">
+        {colImages.map((col,i) => (
           <div
             key={i}
             className="flex flex-col gap-2"
-            style={{ transform: i % 2 === 1 ? `translateY(-${offset}px)` : "none" }}
+            style={{ transform: i % 2 ? `translateY(-${offset}px)` : undefined }}
           >
-            {col.map((img, j) => (
+            {col.map((img,j) => (
               <div
                 key={j}
-                style={{ height: `${calculatedHeight}px`, width: `${calculatedWidth}px` }}
                 className="rounded overflow-hidden"
+                style={{
+                  width:  `${calculatedWidth}px`,
+                  height: `${calculatedHeight}px`
+                }}
               >
                 <img
                   src={img.coverUrl}
-                  alt={`Box Art ${j}`}
-                  className="rounded w-full h-full object-cover opacity-20"
+                  alt=""
+                  className="w-full h-full object-cover opacity-20"
                 />
               </div>
-              
             ))}
           </div>
         ))}
       </div>
+    </div>
+  );
+};
 
-        </div>
-    );
-  };
-
-  export default MasonryBoxArtGrid;
+export default MasonryBoxArtGrid;

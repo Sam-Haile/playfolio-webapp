@@ -25,6 +25,8 @@ export const fetchEvents = async (limit) => {
       `${import.meta.env.VITE_API_URL}/api/events?limit=${limit}`
     );
     const data = await response.json();
+    console.log(data);
+
     if (Array.isArray(data)) {
       return data;
     } else {
@@ -78,5 +80,19 @@ export const trimImages = (allGames) => {
     return validImages.slice(0, 5);
   } else {
     return validImages.slice(0, 1);
+  }
+};
+
+
+export const fetchEventCovers = async () => {
+  try {
+    const res = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/events/covers`
+    );
+    if (!res.ok) throw new Error("Network response was not ok");
+    return await res.json(); // [{ id, cover_url }, …]
+  } catch (err) {
+    console.error("Error fetching event covers:", err);
+    return [];
   }
 };

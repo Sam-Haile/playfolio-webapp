@@ -10,6 +10,7 @@ import useWindowWidth from "../components/useWindowWidth.jsx";
 import MasonryBoxArtGrid from "../components/MasonryBoxArtGrid.jsx";
 import { trimImages } from "../services/helperFunctions.js";
 import newTabIcon from "../assets/icons/newTab.svg"; // Import the new tab icon
+
 // Array to hold the visual type options and corresponding icons
 const visualTypes = [
   { type: "detailed", icon: "/src/assets/icons/detailedView.svg" },
@@ -17,7 +18,7 @@ const visualTypes = [
   { type: "list", icon: "/src/assets/icons/listView.svg" },
 ];
 
-const CompanyPage = () => {
+const Company = () => {
   const navigate = useNavigate();
   const { id } = useParams(); // Get company ID from URL
   const [loading, setLoading] = useState(true);
@@ -68,8 +69,6 @@ const CompanyPage = () => {
       setTotalPublished(response.data.totalPublished);
 
       setAllGames(allGames);
-
-      //console.log("Combined Games:", combinedGames);
 
       if (response.data) {
         setCompanyDetails(response.data.companyDetails); // if your backend returns companyDetails separately
@@ -225,7 +224,7 @@ const CompanyPage = () => {
                 />
               )}
               <div className="flex flex-col items-start mt-4">
-                <p className="text-xl">{companyDetails?.name}</p>
+                <p className="text-xl font-semibold">{companyDetails?.name}</p>
                 <p className="italic text-lg">
                   ({companyDetails?.startDate || ""})
                 </p>
@@ -406,4 +405,4 @@ const CompanyPage = () => {
   );
 };
 
-export default CompanyPage;
+export default Company;

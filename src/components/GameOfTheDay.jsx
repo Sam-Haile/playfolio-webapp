@@ -11,10 +11,10 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import { useAuth } from "../useAuth";
-import GameCard from "./GameCard";
 import { useNavigate } from "react-router-dom";
 import React from "react";
-import DynamicLogo from "./DynamicLogo";
+import { slugify } from "../services/slugify.js";
+import GameCard from "./GameCard.jsx";
 
 // Helper functions…
 async function fetchBacklogGames(user) {
@@ -59,6 +59,18 @@ function storeRandomGame(game) {
   localStorage.setItem("dailyRandomGame", JSON.stringify(payload));
 }
 
+const defaultOptions = {
+  reverse: false,
+  max: 20,
+  perspective: 1000,
+  scale: 1.05,
+  speed: 500,
+  transition: true,
+  axis: null,
+  reset: true,
+  easing: "cubic-bezier(.03,.98,.52,.99)",
+};
+
 const GameOfTheDay = () => {
   const { user } = useAuth();
   const [backlogGames, setBacklogGames] = useState([]);
@@ -73,7 +85,7 @@ const GameOfTheDay = () => {
   const [overlayOpen, setOverlayOpen] = useState(false);
 
   // Flag to control use of temporary data
-  const useTempData = true;
+  const useTempData = false;
 
   const tempGame = {
     id: 1,
@@ -152,8 +164,10 @@ const GameOfTheDay = () => {
           `${import.meta.env.VITE_API_URL}/api/games/ids`,
           { ids: [gameOfDay.id] }
         );
-        console.log("Fetched Game Data:", gameResponse.data);
+
         setGameOfDay(gameResponse.data[0]);
+
+        console.log("Game of the Day:", gameResponse.data[0]);
         setDetailsFetched(true);
       } catch (err) {
         console.error("Error fetching game data:", err.message);
@@ -208,12 +222,25 @@ const GameOfTheDay = () => {
     fetchAddedDate();
   }, [user, gameOfDay, useTempData]);
 
-  const navigateToGamePage = () => {
-    if (!gameOfDay || !gameOfDay.id) {
-      return;
-    }
-    navigate(`/game/${gameOfDay.id}`);
+  const navigateToGamePage = (gameId, gameName) => {
+    const slug = slugify(gameName);
+    navigate(`/game/${gameOfDay.id}/${gameOfDay.name}`);
   };
+
+  const handleDeveloperClick = (developerId, developerName) => {
+    const slug = slugify(developerName);
+    navigate(`/company/${developerId}/${slug}`);
+  }
+
+  const handleGenreClick = (genreId, genreName) => {
+    const slug = slugify(genreName);
+    navigate(`/genre/${genreId}/${slug}`);
+  }
+
+  const handlePlatformClick = (platformId, platformName) => {
+    const slug = slugify(platformName);
+    navigate(`/platform/${platformId}/${slug}`);
+  }
 
   if (loading) {
     return <div>Loading game data...</div>;
@@ -265,31 +292,44 @@ const GameOfTheDay = () => {
       <div className="bg-cover bg-center bg-no-repeat relative z-10 flex overflow-y-hidden overflow-x-visible" style={{ height: "18rem" }}>
         {/* Left: Image container that grows based on image aspect ratio */}
         <div className="h-full flex-shrink-0">
-          <img
+          <GameCard 
             src={gameOfDay?.coverUrl}
+            alt={`Cover image of ${gameOfDay?.name}`}
             className="h-full object-contain rounded"
-            alt="Cover"
+            gameId={gameOfDay?.id}
           />
         </div>
 
         {/* Right: Text/content container that shrinks if needed */}
-        <div className="flex-shrink overflow-hidden p-2 relative">
+        <div className="flex-shrink overflow-hidden px-4 relative">
           <div className="space-y-3">
 
             {/* Game Name + Release Year */}
-            <p className="font-semibold text-2xl leading-tight">
+            <p className="font-semibold text-2xl leading-tight hover:text-primaryPurple-500 cursor-pointer group"
+              onClick={() => navigateToGamePage(gameOfDay.id, gameOfDay.name)}>
               {gameOfDay?.name}{" "}
-              <span className="italic font-normal text-gray-300">
+              <span className="italic font-normal text-gray-300 group-hover:text-primaryPurple-500">
                 ({gameOfDay?.releaseYear})
               </span>
             </p>
 
             {/* Developers */}
-            <p className="text-sm text-gray-200 truncate">
-              {gameOfDay?.developers?.length > 0
-                ? gameOfDay.developers.join(", ")
-                : "No developers available"}
-            </p>
+            {Array.isArray(gameOfDay?.developers) && gameOfDay?.developers.length > 0 ? (
+              gameOfDay.developers.map((developer, index) => (
+                <span key={developer.id}>
+                  <span
+                    onClick={() => handleDeveloperClick(developer.id, developer.name)}
+                    className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline"
+                  >
+                    {developer.name}
+                  </span>
+                  {index < developer.length - 1 && ", "}
+                </span>
+              ))
+            ) : (
+              <span className="italic font-light">Unknown Developers</span>
+            )}
+
 
             {/* Rating + Genres */}
             <div className="flex items-center ">
@@ -311,29 +351,54 @@ const GameOfTheDay = () => {
                   ))}
                 <span className="text-sm italic text-gray-400">
                   {gameOfDay?.totalRating
-                    ? `(${(gameOfDay.totalRating / 20).toFixed(1)}/5)`
+                    ? `(${(gameOfDay.totalRating / 20).toFixed(1)})`
                     : "No ratings available"}
                 </span>
               </div>
 
-              <p className="text-sm text-gray-300 truncate pl-2">
-                {gameOfDay?.genres?.length > 0
-                  ? gameOfDay.genres.join(", ")
-                  : "No genres available"}
-              </p>
+              <div className="pl-2 whitespace-nowrap overflow-hidden text-ellipsis">
+                {Array.isArray(gameOfDay?.genres) && gameOfDay.genres.length > 0 ? (
+                  gameOfDay.genres.map((genre, index) => (
+                    <span key={genre.id}>
+                      <span
+                        onClick={() => handleGenreClick(genre.id, genre.name)}
+                        className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer"
+                      >
+                        {genre.name}
+                      </span>
+                      {index < gameOfDay.genres.length - 1 && ", "}
+                    </span>
+                  ))
+                ) : (
+                  <span className="italic font-light">Unknown Genres</span>
+                )}
+              </div>
             </div>
 
+
             {/* Summary */}
-            <p className="text-sm font-light text-gray-100 line-clamp-3">
+            <p className="text-med font-light text-gray-100 line-clamp-3">
               {gameOfDay?.summary || "No summary available"}
             </p>
 
             {/* Platforms */}
-            <p className="text-sm font-light text-gray-300 truncate">
-              {gameOfDay?.platforms?.length > 0
-                ? gameOfDay.platforms.join(", ")
-                : "No platforms available"}
-            </p>
+            <div className="pt-2">
+            {Array.isArray(gameOfDay?.platforms) && gameOfDay?.platforms.length > 0 ? (
+              gameOfDay.platforms.map((platform, index) => (
+                <span key={platform.id}>
+                  <span
+                    onClick={() => handlePlatformClick(platform.id, platform.name)}
+                    className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer"
+                    >
+                    {platform.name}
+                  </span>
+                  {index < gameOfDay.platforms.length - 1 && ", "}
+                </span>
+              ))
+            ) : (
+              <span className="italic font-light">Unknown Developers</span>
+            )}
+            </div>
           </div>
 
           {/* Footer */}

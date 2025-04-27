@@ -11,7 +11,7 @@ import SearchBar from "./SearchBar";
 import HorizontalLine from "../components/HorizontalLine";
 import { useAuth } from "../useAuth";
 import DownArrow from "../assets/icons/downArrow.svg";
-  
+
 const Header = ({
   showSearchBar = false,
   showNavButtons = false,
@@ -80,10 +80,12 @@ const Header = ({
       <div className="mx-[15%] text-white h-auto flex items-center justify-between">
         <div className="flex items-center">
           <button onClick={handleLogoClick}>
-            <img src={LogoIcon} alt="Playfolio Logo" className="h-10 mr-4" />
+            <img src={LogoIcon} alt="Playfolio Logo" className="h-10 mr-4" onContextMenu={(e) => e.preventDefault()}
+            />
           </button>
           <button onClick={handleLogoClick}>
-            <img src={Logo} alt="Playfolio" className="h-5 mr-10" />
+            <img src={Logo} alt="Playfolio" className="h-5 mr-10" onContextMenu={(e) => e.preventDefault()}
+            />
           </button>
           <img src={VerticalLine} alt="Vertical Line" className="hidden lg:block md:block sm:hidden mr-10" />
           {showNavButtons && (
@@ -134,27 +136,27 @@ const Header = ({
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
             >
-             <button className="flex items-center px-2 py-1 focus:outline-none">
-  {user?.profileIcon ? (
-    <img
-      src={user.profileIcon}
-      alt="Profile Icon"
-      className="w-8 h-8 rounded-full object-cover shadow-lg flex-shrink-0"
-    />
-  ) : (
-    <img
-      src={ProfileIco}
-      alt="Default Profile"
-      className="w-8 h-8 rounded-full object-cover shadow-lg flex-shrink-0"
-    />
-  )}
-  <p className="ml-2 flex-grow text-right">{user.username}</p>
-  <img
-    src={DownArrow}
-    alt="Down arrow"
-    className="w-[20px] ml-1 flex-shrink-0"
-  />
-</button>
+              <button className="flex items-center px-2 py-1 focus:outline-none">
+                {user?.profileIcon ? (
+                  <img
+                    src={user.profileIcon}
+                    alt="Profile Icon"
+                    className="w-8 h-8 rounded-full object-cover shadow-lg flex-shrink-0"
+                  />
+                ) : (
+                  <img
+                    src={ProfileIco}
+                    alt="Default Profile"
+                    className="w-8 h-8 rounded-full object-cover shadow-lg flex-shrink-0"
+                  />
+                )}
+                <p className="ml-2 flex-grow text-right">{user.username}</p>
+                <img
+                  src={DownArrow}
+                  alt="Down arrow"
+                  className="w-[20px] ml-1 flex-shrink-0"
+                />
+              </button>
 
               <div
                 className={`absolute mt-2 w-32 bg-customGray-500 text-sm text-black rounded shadow-lg z-[1000] ${showDropdown ? "block" : "hidden"

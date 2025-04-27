@@ -8,7 +8,7 @@ import GameCard from "../components/GameCard";
 import HorizontalLine from "../components/HorizontalLine";
 import TrendingGames from "../components/TrendingGames";
 import { fetchTrendingGames, fetchEvents } from "../services/helperFunctions";
-import Events from "../components/Events";
+import EventsCard from "../components/EventCard";
 
 const HomePage = () => {
   const [trendingGames, setTrendingGames] = useState([]);
@@ -181,7 +181,7 @@ const HomePage = () => {
           {/* Left Section */}
           <div className="mx-[10%] ">
               <div>
-                <Events events={events} />
+                <EventsCard events={events} />
               </div>
           </div>
       </div>

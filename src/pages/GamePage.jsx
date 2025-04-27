@@ -17,7 +17,7 @@ import ReviewEntry from "../components/ReviewEntry";
 import ImageOverlay from "../components/ImageOverlay";
 import ReviewBox from "../components/ReviewBox";
 import GameReviews from "../components/GameReviews";
-import {slugify} from "../services/slugify.js";
+import { slugify } from "../services/slugify.js";
 
 const GamePage = () => {
   const { id } = useParams(); // Get the game ID from the URL
@@ -48,11 +48,7 @@ const GamePage = () => {
     navigate(`/company/${companyId}/${slug}?tab=developed`);
   };
 
-  const handlePublisherClick = (companyId, companyName) => {
-    const slug = slugify(companyName);
-    navigate(`/company/${companyId}/${slug}?tab=published`);
-  };
-  
+
   const fetchGameData = async () => {
     try {
       const gameResponse = await axios.post(
@@ -274,7 +270,7 @@ const GamePage = () => {
               <div className="flex flex-col items-start gap-2">
                 {/* Developer Logo */}
                 {developers[0].logo && !developerError ? (
-                  <button onClick={() => handleDeveloperClick(developers[0].id, developers[0].name)}>
+                  <a href={`/company/${developers[0].id}/${slugify(developers[0].name)}?tab=developed`}>
                     <DynamicLogo
                       url={developers[0].logo}
                       onError={() => setDeveloperError(true)}
@@ -283,19 +279,19 @@ const GamePage = () => {
                       maxSize={"w-24"}
                       minSize={"w-12"}
                     />
-                  </button>
+                  </a>
                 ) : (
                   <div className="flex gap-2">
                     {/* Developer Names */}
                     {developers.length > 0 &&
                       developers.map((developer, index) => (
-                        <button
-                          onClick={() => handleDeveloperClick(developer.id, developer.name)}
+                        <a
+                          href={`/company/${developer.id}/${slugify(developer.name)}?tab=developed`}
                           key={index}
                           className="italic font-light text-sm hover:text-primaryPurple-500"
                         >
                           {developer.name}
-                        </button>
+                        </a>
                       ))}
                   </div>
                 )}
@@ -331,12 +327,27 @@ const GamePage = () => {
               <div className="grid grid-cols-3 ">
                 <div className="w-[80%] flex-col self-center pr-2">
                   <h3 className="font-">Genres</h3>
-                  <p className="italic font-light">
-                    {genres.length > 0
-                      ? genres.map((genre) => genre.name).join(", ")
-                      : "No genres available"}
-                  </p>
+                  {Array.isArray(genres) && genres.length > 0 ? (
+                    genres.map((genre, index) => (
+                      <span key={genre.id}>
+                        <a
+                            href={`/genre/${genre.id}/${slugify(genre.name)}`}
+                          className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline"
+                        >
+                          {genre.name}
+                        </a>
+                        {index < genres.length - 1 && ", "}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="italic font-light">Unknown Genre</span>
+                  )}
+
+
                 </div>
+
+
+
 
                 <div className="flex-col self-center pr-2 font-bold">
                   <h3>Release Date</h3>
@@ -348,12 +359,12 @@ const GamePage = () => {
                   {platforms.length > 0 &&
                     platforms.map((platform, index) => (
                       <span key={index}>
-                        <span
-                          onClick={() => console.log("Head to Console Page")}
+                        <a
+                          href={`/platform/${platform.id}/${slugify(platform.name)}`}
                           className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline"
                         >
                           {platform.name}
-                        </span>
+                        </a>
                         {index < platforms.length - 1 && ", "}
                       </span>
                     ))}
@@ -387,14 +398,13 @@ const GamePage = () => {
                   {developers.length > 0 &&
                     developers.map((developer, index) => (
                       <span key={index}>
-                        <span
-
-                          onClick={() => handleDeveloperClick(developer.id, developer.name)}
+                        <a
+                          href={`/company/${developer.id}/${slugify(developer.name)}?tab=developed`}
                           key={index}
                           className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline "
                         >
                           {developer.name}
-                        </span>
+                        </a>
                         {index < developers.length - 1 && ", "}
                       </span>
                     ))}
@@ -405,12 +415,12 @@ const GamePage = () => {
                   {publishers.length > 0 &&
                     publishers.map((publisher, index) => (
                       <span key={index}>
-                        <span
-                          onClick={() => handlePublisherClick(publisher.id, publisher.name)}
+                        <a
+                          href={`/company/${publisher.id}/${slugify(publisher.name)}?tab=published`}
                           className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline "
                         >
                           {publisher.name}
-                        </span>
+                        </a>
                         {index < publishers.length - 1 && ", "}
                       </span>
                     ))}
@@ -582,13 +592,13 @@ const GamePage = () => {
                       Rate
                     </p>
                     <div className="lex justify-center items-center w-full">
-                      <StarRating gameId={String(gameDetails.id)} releaseDate={gameDetails.rawReleaseDate}/>
+                      <StarRating gameId={String(gameDetails.id)} releaseDate={gameDetails.rawReleaseDate} />
                     </div>
                   </div>
 
                   <div className="px-2 w-full">
                     <p className="text-sm font-semibold uppercase mt-4 pl-4 mb-2">Review</p>
-                    <ReviewBox gameDetails={gameDetails} releaseDate={gameDetails.rawReleaseDate}  />
+                    <ReviewBox gameDetails={gameDetails} releaseDate={gameDetails.rawReleaseDate} />
                   </div>
                 </div>
               </div>

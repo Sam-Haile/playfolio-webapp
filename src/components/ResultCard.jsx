@@ -37,7 +37,7 @@ const ResultCard = ({ game, visualType }) => {
     }
   };
 
-  const handleDeveloperClick = (companyId, companyName ) => {
+  const handleDeveloperClick = (companyId, companyName) => {
     const slug = slugify(companyName);
     navigate(`/company/${companyId}/${slug}?tab=developed`);
   };
@@ -142,12 +142,15 @@ const ResultCard = ({ game, visualType }) => {
 
             {/* Score */}
             <div>
-              <p className="font-light italic ">
+              <p className="font-light italic">
                 {Array.isArray(game.developers)
-                  ? game.developers.join(", ")
-                  : "Unknown Developer"}
+                  ? game.developers.map((dev) =>
+                    typeof dev === "string" ? dev : dev?.name
+                  ).join(", ")
+                  : game.developers || "Unknown Developer"}
               </p>
             </div>
+
 
             {/* Genre */}
             <div>
@@ -245,7 +248,6 @@ const ResultCard = ({ game, visualType }) => {
         );
     }
   };
-
   return <div>{getCardLayout()}</div>;
 };
 
