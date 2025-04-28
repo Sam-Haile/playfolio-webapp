@@ -349,7 +349,7 @@ const GameOfTheDay = () => {
                       <path d="M12 2l2.7 8H22l-6.9 5 2.7 8L12 18l-6.9 5 2.7-8L2 10h7.3L12 2z" />
                     </svg>
                   ))}
-                <span className="text-sm italic text-gray-400">
+                <span className="pt-[1px] text-sm italic text-gray-400">
                   {gameOfDay?.totalRating
                     ? `(${(gameOfDay.totalRating / 20).toFixed(1)})`
                     : "No ratings available"}

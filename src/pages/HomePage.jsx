@@ -36,6 +36,7 @@ const HomePage = () => {
           { params: { slim: false } }
         );
         setRecommendedGames(resp.data);
+        console.log(recommendedGames);
       })
       .catch(console.error);
 

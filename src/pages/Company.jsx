@@ -26,18 +26,18 @@ const Company = () => {
   const defaultTab = queryParams.get("tab") || "developed";
 
   const [loading, setLoading] = useState(true);
-  const [sortOption, setSortOption] = useState("total_rating desc");
+  const [sortOption, setSortOption] = useState("popular");
   const [visualType, setVisualType] = useState("detailed");
   const [activeTab, setActiveTab] = useState(defaultTab);
   const [companyDetails, setCompanyDetails] = useState(null);
-  const [allGames, setAllGames] = useState([]);
+  const [headerGames, setHeaderGames] = useState([]);
   const [paginatedGames, setPaginatedGames] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPublished, setTotalPublished] = useState(0);
   const [totalDeveloped, setTotalDeveloped] = useState(0);
 
   const windowWidth = useWindowWidth();
-  const trimmedImages = useMemo(() => trimImages(allGames), [allGames]);
+  const trimmedImages = useMemo(() => trimImages(headerGames), [headerGames]);
 
   // Total pages comes from the nested pagination
   const totalPages = companyDetails?.pagination?.totalPages || 1;
@@ -45,8 +45,13 @@ const Company = () => {
   useEffect(() => {
     if (!id) return;
     fetchHeaderGames();
-    fetchPaginatedGames();
-  }, [id, sortOption, activeTab]);
+  }, [id, activeTab]);
+
+  // keep paged list on its own effect
+  useEffect(() => {
+    if (!id) return;
+    fetchPaginatedGames(currentPage);
+  }, [id, sortOption, activeTab, currentPage]);
 
   const fetchHeaderGames = async () => {
     try {
@@ -54,7 +59,7 @@ const Company = () => {
         `${import.meta.env.VITE_API_URL}/api/companyGames`,
         {
           id,
-          sortOption,
+          sortOption: "popular",
           page: 1,
           limit: 30,
           gameType: activeTab,
@@ -63,8 +68,8 @@ const Company = () => {
 
       setTotalDeveloped(data.totalDeveloped);
       setTotalPublished(data.totalPublished);
-      setAllGames(data.combinedGames || []);
       setCompanyDetails(data.companyDetails);
+      setHeaderGames(data.combinedGames || []);
     } catch (err) {
       console.error("Error fetching header games:", err.response?.data || err);
     }
@@ -127,7 +132,7 @@ const Company = () => {
       {/* background grid */}
       <div className="relative w-full h-[700px] overflow-hidden z-0">
         <div className="absolute top-0 left-0 w-full">
-          <MasonryBoxArtGrid images={allGames} columns={getColumns()} />
+          <MasonryBoxArtGrid images={headerGames} columns={getColumns()} />
         </div>
         <div
           className="absolute top-0 h-full w-full pointer-events-none z-10"
@@ -200,7 +205,7 @@ const Company = () => {
       {companyDetails?.description && (
         <div className="mx-[15%] mt-6">
           <h1 className="text-xl font-semibold">About {companyDetails.name}</h1>
-          <p className="mr-[5%] mt-2">{companyDetails.description}</p>
+          <p className="mr-[50%] mt-2">{companyDetails.description}</p>
         </div>
       )}
 
@@ -238,7 +243,10 @@ const Company = () => {
             <p>Sort by:</p>
             <select
               value={sortOption}
-              onChange={(e) => setSortOption(e.target.value)}
+              onChange={(e) => {
+                setSortOption(e.target.value);
+                setCurrentPage(1);
+              }}
               className="ml-2 px-2 h-8 bg-customBlack border text-white rounded"
             >
               <option value="popular">Popularity</option>

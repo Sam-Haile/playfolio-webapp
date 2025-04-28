@@ -18,6 +18,7 @@ import ImageOverlay from "../components/ImageOverlay";
 import ReviewBox from "../components/ReviewBox";
 import GameReviews from "../components/GameReviews";
 import { slugify } from "../services/slugify.js";
+import { getEmbedUrl } from "../services/getEmbedUrl.js";
 
 const GamePage = () => {
   const { id } = useParams(); // Get the game ID from the URL
@@ -27,13 +28,15 @@ const GamePage = () => {
   const [loading, setLoading] = useState(true); // Tracks if data is being fetched
   const [showMore, setShowMore] = useState(false);
   const navigate = useNavigate();
+  const [trailer, setTrailer]               = useState(null);
   const [logoError, setLogoError] = useState(false);
   const [developerError, setDeveloperError] = useState(false);
   const [showSeeMoreButton, setShowSeeMoreButton] = useState(false);
   const synopsisRef = useRef(null);
   const safeSummary = gameDetails?.summary || "";
-  const [mainScreenshotIndex, setMainScreenshotIndex] = useState(0);
+  const [mainMediaIndex, setMainMediaIndex] = useState(0);  
   const [overlayOpen, setOverlayOpen] = useState(false);
+  const [showVideoPlayer, setShowVideo]  = useState(false); 
 
   useEffect(() => {
     fetchGameData();
@@ -42,12 +45,6 @@ const GamePage = () => {
       scrollContainer.scrollTo({ top: 0, behavior: "auto" });
     }
   }, [id]);
-
-  const handleDeveloperClick = (companyId, companyName) => {
-    const slug = slugify(companyName);
-    navigate(`/company/${companyId}/${slug}?tab=developed`);
-  };
-
 
   const fetchGameData = async () => {
     try {
@@ -63,6 +60,8 @@ const GamePage = () => {
 
       setHeroes(gameResponse.data.heroes.url || null);
       setLogos(gameResponse.data.logos.url || null);
+      setTrailer(gameResponse.data.video || null); 
+
     } catch (err) {
       console.error("Error fetching game data:", err);
     } finally {
@@ -174,6 +173,17 @@ const GamePage = () => {
     return <p>Game not found.</p>;
   }
 
+  const buildMediaArray = () => {
+    const media = [];
+    if (trailer) media.push({ type: "video", data: trailer });
+    if (gameDetails?.screenshots?.length) {
+      media.push(
+        ...gameDetails.screenshots.map((src) => ({ type: "img", data: src }))
+      );
+    }
+    return media;
+  };
+
   const {
     name,
     summary,
@@ -189,7 +199,7 @@ const GamePage = () => {
     platforms,
   } = gameDetails;
 
-  const settings = {
+  const sliderSettings = {
     centerMode: false,
     infinite: true,
     centerPadding: "0px",
@@ -200,8 +210,9 @@ const GamePage = () => {
     arrows: true,
     swipeToSlide: true,
   };
-  
-  const hasAgeRating = ageRatings.some(r => r.category === 1);
+
+  const hasAgeRating = ageRatings.some((r) => r.category === 1);
+  const media = buildMediaArray();
 
   return (
     <div className="h-[100%]">
@@ -253,10 +264,7 @@ const GamePage = () => {
         <div className="absolute inset-0 bg-customBlack bg-opacity-0 z-30">
           <div className="h-auto mt-64 grid grid grid-cols-1 sm:grid-cols-[auto_50%] lg:grid-cols-[auto_35%_45%] mx-[15%]">
             <div className="relative self-end">
-              <Tilt
-                options={defaultOptions}
-                className="inline-block relative"
-              >
+              <Tilt options={defaultOptions} className="inline-block relative">
                 {" "}
                 {cover && (
                   <img
@@ -272,7 +280,11 @@ const GamePage = () => {
               <div className="flex flex-col items-start gap-2">
                 {/* Developer Logo */}
                 {developers[0].logo && !developerError ? (
-                  <a href={`/company/${developers[0].id}/${slugify(developers[0].name)}?tab=developed`}>
+                  <a
+                    href={`/company/${developers[0].id}/${slugify(
+                      developers[0].name
+                    )}?tab=developed`}
+                  >
                     <DynamicLogo
                       url={developers[0].logo}
                       onError={() => setDeveloperError(true)}
@@ -288,7 +300,9 @@ const GamePage = () => {
                     {developers.length > 0 &&
                       developers.map((developer, index) => (
                         <a
-                          href={`/company/${developer.id}/${slugify(developer.name)}?tab=developed`}
+                          href={`/company/${developer.id}/${slugify(
+                            developer.name
+                          )}?tab=developed`}
                           key={index}
                           className="italic font-light text-sm hover:text-primaryPurple-500"
                         >
@@ -333,7 +347,7 @@ const GamePage = () => {
                     genres.map((genre, index) => (
                       <span key={genre.id}>
                         <a
-                            href={`/genre/${genre.id}/${slugify(genre.name)}`}
+                          href={`/genre/${genre.id}/${slugify(genre.name)}`}
                           className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline"
                         >
                           {genre.name}
@@ -346,9 +360,6 @@ const GamePage = () => {
                   )}
                 </div>
 
-
-
-
                 <div className="flex-col self-center pr-2 font-bold">
                   <h3>Release Date</h3>
                   <p className="italic font-light">{releaseDate}</p>
@@ -360,7 +371,9 @@ const GamePage = () => {
                     platforms.map((platform, index) => (
                       <span key={index}>
                         <a
-                          href={`/platform/${platform.id}/${slugify(platform.name)}`}
+                          href={`/platform/${platform.id}/${slugify(
+                            platform.name
+                          )}`}
                           className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline"
                         >
                           {platform.name}
@@ -399,7 +412,9 @@ const GamePage = () => {
                     developers.map((developer, index) => (
                       <span key={index}>
                         <a
-                          href={`/company/${developer.id}/${slugify(developer.name)}?tab=developed`}
+                          href={`/company/${developer.id}/${slugify(
+                            developer.name
+                          )}?tab=developed`}
                           key={index}
                           className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline "
                         >
@@ -416,7 +431,9 @@ const GamePage = () => {
                     publishers.map((publisher, index) => (
                       <span key={index}>
                         <a
-                          href={`/company/${publisher.id}/${slugify(publisher.name)}?tab=published`}
+                          href={`/company/${publisher.id}/${slugify(
+                            publisher.name
+                          )}?tab=published`}
                           className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline "
                         >
                           {publisher.name}
@@ -427,11 +444,13 @@ const GamePage = () => {
                 </div>
 
                 <div
-    className={
-      `flex items-center pr-2 ` +
-      (hasAgeRating ? "justify-center" : "justify-start")
-    }
-  >                  {hasAgeRating ? (
+                  className={
+                    `flex items-center pr-2 ` +
+                    (hasAgeRating ? "justify-center" : "justify-start")
+                  }
+                >
+                  {" "}
+                  {hasAgeRating ? (
                     ageRatings
                       .filter((rating) => rating.category === 1)
                       .map((rating) => (
@@ -462,8 +481,9 @@ const GamePage = () => {
                 <h3 className="font-bold pb-2">Synopsis</h3>
                 <p
                   ref={synopsisRef}
-                  className={`font-light ${showMore ? "" : "line-clamp-3 overflow-hidden"
-                    }`}
+                  className={`font-light ${
+                    showMore ? "" : "line-clamp-3 overflow-hidden"
+                  }`}
                   style={{
                     display: "-webkit-box",
                     WebkitBoxOrient: "vertical",
@@ -485,64 +505,62 @@ const GamePage = () => {
 
               {/* Additional Media */}
               <div className="my-8">
-                <h1 className="text-base font-semibold mb-2">Media</h1>
+            <h2 className="text-base font-semibold mb-2">Media</h2>
 
-                <div className="flex flex-col gap-2">
-                  {/* Main Screenshot Container */}
-                  <div className="flex-1 relative rounded aspect-video overflow-hidden flex justify-center items-center">
-                    {/* Background layer (blurred) */}
+            {/* Main viewer */}
+            <div className="relative rounded aspect-video overflow-hidden flex justify-center items-center mb-2">
+              {media[mainMediaIndex]?.type === "video" ? (
+                showVideoPlayer ? (
+                  <iframe
+                    src={`${getEmbedUrl(media[0].data)}?autoplay=1&modestbranding=1`}
+                    title={media[0].data.name}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full"
+                  />
+                ) : (
+                  <button className="relative w-full h-full group" onClick={() => setShowVideo(true)}>
                     <img
-                      src={gameDetails.screenshots?.[mainScreenshotIndex]}
-                      alt=""
-                      className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-50"
-                      aria-hidden="true"
-                    />
-                    {/* Foreground image */}
-                    <img
-                      src={gameDetails.screenshots?.[mainScreenshotIndex]}
-                      alt="Game Screenshot"
-                      className="relative w-full h-full object-contain"
-                      onClick={() => setOverlayOpen(true)}
-                    />
-
-                    {/* Conditionally render the overlay */}
-                    {overlayOpen && (
-                      <ImageOverlay
-                        src={gameDetails.screenshots?.[mainScreenshotIndex]}
-                        alt={`Screenshot of ${name}`}
-                        onClose={() => setOverlayOpen(false)}
-                      />
-                    )}
-                  </div>
-
-                  {/* Screenshot Carousel */}
-                  <div className="px-6 pt-2">
-                    <Slider {...settings}>
-                      {gameDetails.screenshots.slice(0, 8).map((shot, index) => (
-                        <div key={index} className=" px-1 border-0">
-                          <img
-                            src={shot}
-                            alt={`Screenshot ${index + 1} of ${name}`}
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              setMainScreenshotIndex(index)
-                            }}
-                            className={`rounded cursor-pointer transition-all duration-200 outline-none focus:outline-none ring-0 border-0 ${mainScreenshotIndex === index
-                              ? "opacity-100 border-primaryPurple-500"
-                              : "brightness-50 hover:brightness-100"
-                              }`}
-                            loading="lazy"
-                          />
-                        </div>
-                      ))}
-                    </Slider>
-                  </div>
+                      src={`https://img.youtube.com/vi/${media[0].data.video_id}/hqdefault.jpg`}
+                      alt={media[0].data.name}
+                      className="absolute inset-0 w-full h-full object-cover"/>
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-20 h-20 text-white/90 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    </div>
+                  </button>
+                )
+              ) : (
+                <>
+                  {/* blurred background */}
+                  <img src={media[mainMediaIndex].data} alt="" className="absolute w-full h-full object-cover blur-md scale-110 opacity-50" />
+                  <img src={media[mainMediaIndex].data} alt="Game Screenshot" className="relative w-full h-full object-contain" onClick={() => setOverlayOpen(true)} />
+                  {overlayOpen && <ImageOverlay src={media[mainMediaIndex].data} alt={`Screenshot of ${name}`} onClose={() => setOverlayOpen(false)} />}
+                </>
+              )}
+            </div>
+             {/* Thumbnails carousel */}
+             <Slider {...sliderSettings} className="px-6">
+              {media.slice(0, 8).map((m, idx) => (
+                <div key={idx} className="px-1 cursor-pointer" onClick={() => { setMainMediaIndex(idx); setShowVideo(false); }}>
+                  {m.type === "video" ? (
+                    <img src={`https://img.youtube.com/vi/${m.data.video_id}/default.jpg`} alt={m.data.name} className={`rounded ${idx===mainMediaIndex?"opacity-100":"brightness-50 hover:brightness-100"}`} />
+                  ) : (
+                    <img src={m.data} alt={`Screenshot ${idx+1}`} className={`h-full rounded ${idx===mainMediaIndex?"opacity-100":"brightness-50 hover:brightness-100"}`} />
+                  )}
                 </div>
-              </div>
+              ))}
+            </Slider>
+          </div>
 
               <div className="lg:block md:hidden sm:hidden">
                 <h1 className="text-base font-semibold">Reviews</h1>
-                <HorizontalLine marginTop="mt-0" width="full" marginBottom="mb-8" />
+                <HorizontalLine
+                  marginTop="mt-0"
+                  width="full"
+                  marginBottom="mb-8"
+                />
                 <GameReviews gameId={String(gameDetails.id)} />
               </div>
             </div>
@@ -563,10 +581,11 @@ const GamePage = () => {
                       .map((_, i) => (
                         <svg
                           key={i}
-                          className={`h-6 w-6 ${i < Math.round(gameDetails.rating / 20)
-                            ? "text-yellow-400"
-                            : "text-gray-300"
-                            } fill-current`}
+                          className={`h-6 w-6 ${
+                            i < Math.round(gameDetails.rating / 20)
+                              ? "text-yellow-400"
+                              : "text-gray-300"
+                          } fill-current`}
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
                         >
@@ -588,7 +607,10 @@ const GamePage = () => {
                 <div className="flex flex-col gap-2 lg:px-4 lg:py-8 md:p-2">
                   {/* Options */}
                   <div className="flex px-2 flex-cols-4 justify-center w-full">
-                    <GameStatus gameId={String(gameDetails.id)} releaseDate={gameDetails.rawReleaseDate} />
+                    <GameStatus
+                      gameId={String(gameDetails.id)}
+                      releaseDate={gameDetails.rawReleaseDate}
+                    />
                   </div>
 
                   <div className="px-2 w-full">
@@ -596,13 +618,21 @@ const GamePage = () => {
                       Rate
                     </p>
                     <div className="lex justify-center items-center w-full">
-                      <StarRating gameId={String(gameDetails.id)} releaseDate={gameDetails.rawReleaseDate} />
+                      <StarRating
+                        gameId={String(gameDetails.id)}
+                        releaseDate={gameDetails.rawReleaseDate}
+                      />
                     </div>
                   </div>
 
                   <div className="px-2 w-full">
-                    <p className="text-sm font-semibold uppercase mt-4 pl-4 mb-2">Review</p>
-                    <ReviewBox gameDetails={gameDetails} releaseDate={gameDetails.rawReleaseDate} />
+                    <p className="text-sm font-semibold uppercase mt-4 pl-4 mb-2">
+                      Review
+                    </p>
+                    <ReviewBox
+                      gameDetails={gameDetails}
+                      releaseDate={gameDetails.rawReleaseDate}
+                    />
                   </div>
                 </div>
               </div>
@@ -614,7 +644,6 @@ const GamePage = () => {
             <HorizontalLine marginTop="mt-0" width="full" marginBottom="mb-8" />
             <GameReviews gameId={String(gameDetails.id)} />
           </div>
-
 
           <div className="mt-12">
             <Footer />
