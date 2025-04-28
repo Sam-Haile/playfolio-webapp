@@ -16,10 +16,10 @@ const Platform = () => {
     const [games, setGames] = useState([]);
     const [loading, setLoading] = useState(true);
     const [visualType, setVisualType] = useState("detailed");
-    const [currentPage, setCurrentPage] = useState(1);
-    const [gamesPerPage] = useState(100); // adjust as needed
     const [sortOption, setSortOption] = useState("popular");
+    const [rawGames, setRawGames]   = useState([]);              // list from API
 
+    
     // Array to hold the visual type options and corresponding icons
     const visualTypes = [
         { type: "detailed", icon: "/src/assets/icons/detailedView.svg" },
@@ -29,39 +29,49 @@ const Platform = () => {
     const columns = 7; // Adjust grid columns for MasonryBoxArtGrid
 
     useEffect(() => {
-        setCurrentPage(1);
-        fetchPlatformData();
-    }, [id, sortOption]);
-
-    const fetchPlatformData = async () => {
-        try {
-            const platformResponse = await axios.post(
-                `${import.meta.env.VITE_API_URL}/api/platform`,
-                { id }
-            );
-            const gamesResponse = await axios.post(
-                `${import.meta.env.VITE_API_URL}/api/platform/games`,
-                { platformId: id, sortOption }
-            );
-
-            setPlatformDetails(platformResponse.data);
-            setGames(gamesResponse.data);
-        } catch (error) {
-            console.error("Error fetching platform page data:", error);
-        } finally {
+        const fetchPlatformData = async () => {
+          try {
+            const [platformRes, gamesRes] = await Promise.all([
+              axios.post(`${import.meta.env.VITE_API_URL}/api/platform`, { id }),
+              axios.post(`${import.meta.env.VITE_API_URL}/api/platform/games`, {
+                platformId: id,
+                sortOption: "popular",          // ALWAYS let backend send its Bayesian list
+              }),
+            ]);
+      
+            setPlatformDetails(platformRes.data);
+            setRawGames(gamesRes.data);
+            setGames(gamesRes.data);      
+            console.log(gamesRes.data); 
+          } catch (err) {
+            console.error("Error fetching platform page data:", err);
+          } finally {
             setLoading(false);
-        }
-    };
+          }
+        };
+      
+        fetchPlatformData();
+      }, [id]);
+      
+      const sortFns = React.useMemo(
+        () => ({
+          popular:      () => 0,   // already sorted by backend
+          rating:       (a, b) => (b.totalRating ?? 0)      - (a.totalRating ?? 0),
+          release_date: (a, b) => (b.releaseYear ?? 0) - (a.releaseYear ?? 0),
+          name:         (a, b) =>  a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
+        }),
+        []
+      );
+      
+      useEffect(() => {
+        // just copy & sort in memory – never mutate state directly
+        setGames([...rawGames].sort(sortFns[sortOption]));
+      }, [sortOption, rawGames, sortFns]);
+      
 
     const handleVisualTypeChange = (type) => {
         setVisualType(type);
     };
-
-    const handlePageClick = (page) => {
-        setCurrentPage(page);
-    };
-
-
 
     if (loading) {
         return <SkeletonLoading type="platform" />;
@@ -138,10 +148,10 @@ const Platform = () => {
                             className="ml-2 px-2 h-8 bg-customBlack border text-white rounded"
                             value={sortOption}
                         >
-                            <option value="popular">Popularity</option>
-                            <option value="rating">Rating</option>
-                            <option value="release_date">Release Date</option>
-                            <option value="name">Name A → Z</option>
+                             <option value="popular">Popularity</option>
+                             <option value="rating">Rating</option>
+                             <option value="release_date">Release Date</option>
+                             <option value="name">Name A → Z</option>
                         </select>
                     </div>
 

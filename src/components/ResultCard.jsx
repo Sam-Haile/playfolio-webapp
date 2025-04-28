@@ -18,12 +18,14 @@ const ResultCard = ({ game, visualType }) => {
     fetchIcons(game.name);
   }, [game.name, visualType]);
 
-
   const fetchIcons = async (gameName) => {
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/steamgriddb/icons`, {
-        gameName,
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/steamgriddb/icons`,
+        {
+          gameName,
+        }
+      );
 
       if (response.data && response.data.success) {
         setIcons(response.data.icons); // Save icons to state
@@ -52,7 +54,6 @@ const ResultCard = ({ game, visualType }) => {
   const imageUrl = game.coverUrl || "/path-to-placeholder-image.jpg";
 
   const getBackgroundColor = (rating, ratingCount) => {
-
     if (ratingCount == 0 || ratingCount == undefined) {
       return "#f0f0f0"; // Default color if no ratings
     }
@@ -74,13 +75,19 @@ const ResultCard = ({ game, visualType }) => {
     return `rgb(${red}, ${green}, ${blue})`;
   };
 
-  const backgroundColor = getBackgroundColor(((game.totalRating || 0) / 20), game.ratingCount|| game.rating_count);
+  const backgroundColor = getBackgroundColor(
+    (game.totalRating || 0) / 20,
+    game.ratingCount || game.rating_count
+  );
 
   const getCardLayout = () => {
     switch (visualType) {
       case "compact":
         return (
-          <div onClick={handleClick} className="h-full flex flex-col justify-between pb-2">
+          <div
+            onClick={handleClick}
+            className="h-full flex flex-col justify-between pb-2"
+          >
             <div className="flex flex-col">
               <Tilt options={defaultOptions} style={{ width: "100%" }}>
                 <div onClick={handleClick}>
@@ -92,31 +99,51 @@ const ResultCard = ({ game, visualType }) => {
                   />
                 </div>
               </Tilt>
-              <h1 className="pt-2 font-regular text-lg line-clamp-3 hover:text-primaryPurple-500 cursor-pointer">{game.name} </h1>
+              <h1 className="pt-2 font-regular text-lg line-clamp-3 hover:text-primaryPurple-500 cursor-pointer">
+                {game.name}{" "}
+              </h1>
             </div>
-            <div className="pt-1 flex self-start">
-              <div
-                className="w-[30px] h-[25px] flex items-center justify-center text-sm font-bold rounded"
-                style={{
-                  backgroundColor,
-                  color: "#121212",
-                }}
-              >
-                {((game.totalRating || 0) / 20).toFixed(1)}
-              </div>
-              <p className="pl-2 font-thin italic">
-                {game.rating_count > 0
-                  ? `(${game.rating_count})`
-                  : "(0)"}
-              </p>
-            </div>
+            {game.totalRating > 0 ? (
+                  <div className="flex self-start ">
+                    <div
+                      className="w-[30px] h-[25px] flex items-center justify-center text-sm font-bold rounded"
+                      style={{
+                        backgroundColor,
+                        color: "#121212",
+                      }}
+                    >
+                      {((game.totalRating || 0) / 20).toFixed(1)}
+                    </div>
+
+                    <p className="pl-[5px] font-thin">
+                        ({game.ratingCount})
+                    </p>
+                  </div>
+                ) : (
+                  <div className="flex self-start ">
+                    <div
+                      className="w-[30px] h-[25px] flex items-center justify-center text-sm font-bold rounded"
+                      style={{
+                        backgroundColor,
+                        color: "#121212",
+                      }}
+                    >
+                      N/A
+                    </div>
+
+                    <p className="pl-[5px] font-thin">(0)</p>
+                  </div>
+                )}
           </div>
         );
       case "list":
         return (
           <div className="grid grid-cols-[35%_25%_25%_15%] items-center gap-4 w-full text-white">
             {/* Game Image */}
-            <div className="flex-shrink-0 flex flex-row">
+            <a
+              href={`/game/${game.id}/${slugify(game.name)}`}
+              className="flex-shrink-0 flex flex-row"
+            >
               {icons.length > 0 ? (
                 <Tilt>
                   <img
@@ -128,54 +155,71 @@ const ResultCard = ({ game, visualType }) => {
                   />
                 </Tilt>
               ) : (
-                <p>No icons available</p>
+                <p className="w-[60px] m-[5px] h-[50px] bg-gray-300"></p>
               )}
-              <p className="font-bold flex items-center w-[100%] pl-2 hover:text-primaryPurple-500 cursor-pointer" onClick={handleClick}>{game.name}{" "}
+              <p
+                className="font-bold flex items-center w-[100%] p-4 hover:text-primaryPurple-500 cursor-pointer"
+                onClick={handleClick}
+              >
+                {game.name}{" "}
               </p>
-            </div>
-
+            </a>
 
             {/* Developers */}
             <div>
-              <p className="font-light italic">
+              <p className="font-light mr-6 italic">
                 {Array.isArray(game.developers)
-                  ? game.developers.map((dev) =>
-                    typeof dev === "string" ? dev : dev?.name
-                  ).join(", ")
+                  ? game.developers
+                      .map((dev) => (typeof dev === "string" ? dev : dev?.name))
+                      .join(", ")
                   : game.developers || "Unknown Developer"}
               </p>
             </div>
 
             {/* Genre */}
             <div>
-              <p className="pt-2 text-gray-300">{game.genres.join(", ")}</p>
+              <p className="pt-2 text-sm mr-6 text-gray-300">
+                {game.genres.join(", ")}
+              </p>
             </div>
 
             {/* Ratings */}
-            <div className="flex flex-row">
-              <div
-                className="w-[30px] h-[25px] flex items-center justify-center text-sm font-bold rounded"
-                style={{
-                  backgroundColor,
-                  color: "#121212",
-                }}
-              >
-                {((game.totalRating || 0) / 20).toFixed(1)}
-              </div>
-              <p className="pl-2 font-thin italic">
-                {game.rating_count > 0
-                  ? `(${game.rating_count})`
-                  : "(0)"}
-              </p>
+            {game.totalRating > 0 ? (
+                  <div className="flex flex-row ">
+                    <div
+                      className="w-[30px] h-[25px] flex items-center justify-center text-sm font-bold rounded"
+                      style={{
+                        backgroundColor,
+                        color: "#121212",
+                      }}
+                    >
+                      {((game.totalRating || 0) / 20).toFixed(1)}
+                    </div>
 
-            </div>
+                    <p className="pl-[5px] font-thin">
+                        ({game.ratingCount})
+                    </p>
+                  </div>
+                ) : (
+                  <div className="flex flex-row ">
+                    <div
+                      className="w-[30px] h-[25px] flex items-center justify-center text-sm font-bold rounded"
+                      style={{
+                        backgroundColor,
+                        color: "#121212",
+                      }}
+                    >
+                      N/A
+                    </div>
+
+                    <p className="pl-[5px] font-thin">(0)</p>
+                  </div>
+                )}
           </div>
         );
       default: // Detailed view
         return (
-          <div
-            className="result-card h-[200px] w-auto m-4 text-white relative cursor-default	"
-          >
+          <div className="result-card h-[200px] w-auto m-4 text-white relative cursor-default	">
             <div className="grid grid-cols-[auto_1fr]">
               <Tilt options={defaultOptions} style={{ width: "100%" }}>
                 <div onClick={handleClick}>
@@ -190,24 +234,29 @@ const ResultCard = ({ game, visualType }) => {
 
               <div className="pl-4 grid grid-rows-[auto_auto] gap-2">
                 <div>
-                  <a href={`/game/${game.id}/${slugify(game.name)}`} className="font-bold text-xl hover:text-primaryPurple-500 cursor-pointer">
+                  <a
+                    href={`/game/${game.id}/${slugify(game.name)}`}
+                    className="font-bold text-xl hover:text-primaryPurple-500 cursor-pointer"
+                  >
                     {game.name}{" "}
                     <span className="font-extralight italic">
                       ({game.releaseYear || "N/A"})
                     </span>
                   </a>
 
-
-
                   <p className="font-light text-sm pt-1 italic">
                     {Array.isArray(game.developers)
-                      ? game.developers.map((dev) =>
-                        typeof dev === "string" ? dev : dev?.name
-                      ).join(", ")
+                      ? game.developers
+                          .map((dev) =>
+                            typeof dev === "string" ? dev : dev?.name
+                          )
+                          .join(", ")
                       : game.developers || "Unknown Developer"}
                   </p>
 
-                  <p className="pt-1 text-gray-300 text-sm">{game.genres.join(", ")}</p>
+                  <p className="pt-1 text-gray-300 text-sm">
+                    {game.genres.join(", ")}
+                  </p>
 
                   <p className="mt-2 font-extralight truncate-text pr-24">
                     {game.storyline ||
@@ -215,22 +264,38 @@ const ResultCard = ({ game, visualType }) => {
                       "No storyline or summary available."}
                   </p>
                 </div>
-                <div className="flex self-end ">
-                  <div
-                    className="w-[30px] h-[25px] flex items-center justify-center text-sm font-bold rounded"
-                    style={{
-                      backgroundColor,
-                      color: "#121212",
-                    }}
-                  >
-                    {((game.totalRating || 0) / 20).toFixed(1)}
+
+                {game.totalRating > 0 ? (
+                  <div className="flex self-end ">
+                    <div
+                      className="w-[30px] h-[25px] flex items-center justify-center text-sm font-bold rounded"
+                      style={{
+                        backgroundColor,
+                        color: "#121212",
+                      }}
+                    >
+                      {((game.totalRating || 0) / 20).toFixed(1)}
+                    </div>
+
+                    <p className="pl-[5px] font-thin">
+                        ({game.ratingCount})
+                    </p>
                   </div>
-                  <p className="pl-2 font-thin italic">
-                    {game.ratingCount > 0
-                      ? `${game.ratingCount} Ratings`
-                      : "0 Ratings"}
-                  </p>
-                </div>
+                ) : (
+                  <div className="flex self-end ">
+                    <div
+                      className="w-[30px] h-[25px] flex items-center justify-center text-sm font-bold rounded"
+                      style={{
+                        backgroundColor,
+                        color: "#121212",
+                      }}
+                    >
+                      N/A
+                    </div>
+
+                    <p className="pl-[5px] font-thin">(0)</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

@@ -210,7 +210,7 @@ const Header = ({
                 </a>
 
                 <a
-                  href={`/profile?section=reviews`}
+                  href={`/profile?section=lists`}
                   className="block w-full text-left px-2 py-1 hover:bg-customGray-600 hover:rounded-t"
                 >
                   Lists

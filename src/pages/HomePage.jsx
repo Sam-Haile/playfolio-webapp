@@ -84,8 +84,8 @@ const HomePage = () => {
                 rounded p-4 transition-colors duration-300"
               >
                 <div className="relative z-20">
-                  <p className="text-3xl font-semibold text-white ">258</p>
-                  <h2 className="text-xl text-white">Played</h2>
+                  <p className="text-3xl font-semibold text-white group-hover:text-primaryPurple-500 transition-text duration-300">258</p>
+                  <h2 className="text-xl text-white group-hover:text-primaryPurple-500 transition-text duration-300 group-hover:text-xl group-hover:font-semibold ">Played</h2>
                 </div>
                 <div
                   className="absolute top-[-35px] right-[-45px] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"
@@ -122,14 +122,15 @@ const HomePage = () => {
 
 
 
-              <div
+              <a
+                href={`/profile?section=games&type=backlog`}
                 className="group overflow-hidden relative border border-opacity-50 border-[5px] border-footerGray
                 hover:border-primaryPurple-500    /* parent */
                 rounded p-4 transition-colors duration-300"
               >
                 <div className="relative z-20">
-                  <p className="text-3xl font-semibold text-white">12</p>
-                  <h2 className="text-xl text-white">Backlogs</h2>
+                  <p className="text-3xl font-semibold text-white group-hover:text-primaryPurple-500 transition-text duration-300">12</p>
+                  <h2 className="text-xl text-white group-hover:text-primaryPurple-500 transition-text duration-300 group-hover:text-xl group-hover:font-semibold">Backlogs</h2>
                 </div>
                 <div
                   className="absolute top-[-20px] right-[-30px] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"
@@ -153,17 +154,18 @@ const HomePage = () => {
                     viewBox="24"
                   />
                 </div>
-              </div>
+              </a>
 
-              <div
+              <a
+              href={`/profile?section=reviews`}
                 className="group overflow-hidden relative border border-opacity-50 border-[5px] border-footerGray
                 hover:border-primaryPurple-500    /* parent */
                 rounded p-4 transition-colors duration-300"
               >
                 {" "}
                 <div className="relative z-20">
-                  <p className="text-3xl font-semibold text-white">23</p>
-                  <h2 className="text-xl text-white">Reviews</h2>
+                  <p className="text-3xl font-semibold text-white group-hover:text-primaryPurple-500 transition-text duration-300">23</p>
+                  <h2 className="text-xl text-white group-hover:text-primaryPurple-500 transition-text duration-300 group-hover:text-xl group-hover:font-semibold">Reviews</h2>
                 </div>
                 <div
                   className="absolute top-[-20px] right-[-30px] pointer-events-none  opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"
@@ -187,19 +189,20 @@ const HomePage = () => {
                     viewBox="24"
                   />
                 </div>
-              </div>
+              </a>
             </div>
 
             <div className="h-1/2 gap-x-4 grid pt-2 grid-cols-3">
-              <div
+              <a
+              href={`/profile?section=games&type=wishlist`}
                 className="group overflow-hidden relative border border-opacity-50 border-[5px] border-footerGray
                 hover:border-primaryPurple-500    /* parent */
                 rounded p-4 transition-colors duration-300"
               >
                 {" "}
                 <div className="relative z-20">
-                  <p className="text-3xl font-semibold text-white">35</p>
-                  <h2 className="text-xl text-white">Wishlisted</h2>
+                  <p className="text-3xl font-semibold text-white group-hover:text-primaryPurple-500 transition-text duration-300">35</p>
+                  <h2 className="text-xl text-white group-hover:text-primaryPurple-500 transition-text duration-300 group-hover:text-xl group-hover:font-semibold">Wishlisted</h2>
                 </div>
                 <div
                   className="absolute top-[-15px] right-[-30px] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"
@@ -223,17 +226,18 @@ const HomePage = () => {
                     viewBox="24"
                   />
                 </div>
-              </div>
+              </a>
 
-              <div
+              <a
+                href={`/profile?section=games&type=dropped`}
                 className="group overflow-hidden relative border border-opacity-50 border-[5px] border-footerGray
                 hover:border-primaryPurple-500    /* parent */
                 rounded p-4 transition-colors duration-300"
               >
                 {" "}
                 <div className="relative z-20 cursor-default">
-                  <p className="text-3xl font-semibold text-white">8</p>
-                  <h2 className="text-xl text-white">Dropped</h2>
+                  <p className="text-3xl font-semibold text-white group-hover:text-primaryPurple-500 transition-text duration-300">8</p>
+                  <h2 className="text-xl text-white group-hover:text-primaryPurple-500 transition-text duration-300 group-hover:text-xl group-hover:font-semibold">Dropped</h2>
                 </div>
                 <div
                   className="absolute top-[-10px] right-[-30px] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"
@@ -257,17 +261,18 @@ const HomePage = () => {
                     viewBox="24"
                   />
                 </div>
-              </div>
+              </a>
 
-              <div
+              <a
+                href={`/profile?section=lists`}
                 className="group overflow-hidden relative border border-opacity-50 border-[5px] border-footerGray
                 hover:border-primaryPurple-500    /* parent */
                 rounded p-4 transition-colors duration-300"
               >
                 {" "}
                 <div className="relative z-20">
-                  <p className="text-3xl font-semibold text-white">258</p>
-                  <h2 className="text-xl text-white">Lists</h2>
+                  <p className="text-3xl font-semibold text-white group-hover:text-primaryPurple-500 transition-text duration-300">258</p>
+                  <h2 className="text-xl text-white group-hover:text-primaryPurple-500 transition-text duration-300 group-hover:text-xl group-hover:font-semibold">Lists</h2>
                 </div>
                 <div
                   className="absolute top-[-20px] right-[-30px] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 "
@@ -291,7 +296,7 @@ const HomePage = () => {
                     viewBox="24"
                   />
                 </div>
-              </div>
+              </a>
             </div>
           </div>
         </div>

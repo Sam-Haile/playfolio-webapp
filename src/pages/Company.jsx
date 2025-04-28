@@ -65,8 +65,6 @@ const Company = () => {
       setTotalPublished(data.totalPublished);
       setAllGames(data.combinedGames || []);
       setCompanyDetails(data.companyDetails);
-
-      console.log("Company details:", data.combinedGames);
     } catch (err) {
       console.error("Error fetching header games:", err.response?.data || err);
     }
@@ -81,7 +79,7 @@ const Company = () => {
           id,
           sortOption,
           page,
-          limit: 30,
+          limit: 20,
           gameType: activeTab,
         }
       );
@@ -91,13 +89,18 @@ const Company = () => {
       setCompanyDetails(details);
 
       // choose the right list
-      const listKey = activeTab === "published" ? data.publishedGames : data.developedGames;
+      const listKey =
+        activeTab === "published" ? data.publishedGames : data.developedGames;
       setPaginatedGames(listKey || []);
 
+      console.log(data.developedGames);
       // update page number
       setCurrentPage(details.pagination.currentPage);
     } catch (err) {
-      console.error("Error fetching paginated games:", err.response?.data || err);
+      console.error(
+        "Error fetching paginated games:",
+        err.response?.data || err
+      );
     } finally {
       setLoading(false);
     }
@@ -128,11 +131,16 @@ const Company = () => {
         </div>
         <div
           className="absolute top-0 h-full w-full pointer-events-none z-10"
-          style={{ background: "linear-gradient(to bottom, #121212 8%, transparent 50%)" }}
+          style={{
+            background:
+              "linear-gradient(to bottom, #121212 8%, transparent 50%)",
+          }}
         />
         <div
           className="absolute bottom-0 h-full w-full pointer-events-none z-10"
-          style={{ background: "linear-gradient(to top, #121212 8%, transparent 50%)" }}
+          style={{
+            background: "linear-gradient(to top, #121212 8%, transparent 50%)",
+          }}
         />
       </div>
 
@@ -155,26 +163,32 @@ const Company = () => {
                 />
               )}
               <div className="flex flex-col items-start mt-4">
-                {companyDetails.startDate &&(
-                  <p className="italic text-base py-2">Est. {companyDetails.startDate || ""}</p>
+                {companyDetails.startDate && (
+                  <p className="italic text-base py-2">
+                    Est. {companyDetails.startDate || ""}
+                  </p>
                 )}
               </div>
               {companyDetails.websites?.length > 0 && (
-                <div className="italic font-light text-sm flex items-center pt-2 w-auto">
+                <div className="italic  text-sm flex items-center pt-2 w-auto">
                   <div className="flex group">
-                  <img src={newTabIcon} alt="Ico" className="group cursor-pointer pr-2 w-[40px]" />
-                  {companyDetails.websites.map((w, i) => (
-                    <a
-                      key={i}
-                      href={w.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="pt-1 group-hover:text-primaryPurple-500 text-lg "
-                    >
-                      Official Website
-                    </a>
-                  ))}
-                </div>
+                    {companyDetails.websites.map((w, i) => (
+                      <a
+                        key={i}
+                        href={w.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="pt-1 group-hover:text-primaryPurple-500 font-light text-lg "
+                      >
+                        Official Website
+                      </a>
+                    ))}
+                    <img
+                      src={newTabIcon}
+                      alt="Ico"
+                      className="group cursor-pointer pl-2 w-[30px]"
+                    />
+                  </div>
                 </div>
               )}
             </>
@@ -195,19 +209,21 @@ const Company = () => {
         <div className="flex h-12">
           <button
             onClick={() => setActiveTab("developed")}
-            className={`font-semibold w-36 ${activeTab === "developed"
+            className={`font-semibold w-36 ${
+              activeTab === "developed"
                 ? "bg-primaryPurple-500 rounded-t cursor-default"
                 : "hover:bg-primaryPurple-800 rounded-t"
-              }`}
+            }`}
           >
             Developed {totalDeveloped}
           </button>
           <button
             onClick={() => setActiveTab("published")}
-            className={`font-semibold w-36 ${activeTab === "published"
+            className={`font-semibold w-36 ${
+              activeTab === "published"
                 ? "bg-primaryPurple-500 rounded-t cursor-default"
                 : "hover:bg-primaryPurple-800 rounded-t"
-              }`}
+            }`}
           >
             Published {totalPublished}
           </button>
@@ -225,11 +241,10 @@ const Company = () => {
               onChange={(e) => setSortOption(e.target.value)}
               className="ml-2 px-2 h-8 bg-customBlack border text-white rounded"
             >
-              <option value="total_rating desc">Top Rated</option>
-              <option value="popularity desc">Most Popular</option>
-              <option value="first_release_date desc">Newest Releases</option>
-              <option value="hypes desc">Most Hyped</option>
-              <option value="follows desc">Most Followed</option>
+              <option value="popular">Popularity</option>
+              <option value="rating">Rating</option>
+              <option value="release_date">Release Date</option>
+              <option value="name">Name A → Z</option>
             </select>
           </div>
           <div className="flex space-x-2">
@@ -237,8 +252,11 @@ const Company = () => {
               <button
                 key={type}
                 onClick={() => handleVisualTypeChange(type)}
-                className={`p-2 rounded border ${visualType === type ? "bg-primaryPurple-500" : "bg-customBlack"
-                  }`}
+                className={`p-2 rounded border ${
+                  visualType === type
+                    ? "bg-primaryPurple-500"
+                    : "bg-customBlack"
+                }`}
               >
                 <img src={icon} alt={`${type} view`} className="w-[25px]" />
               </button>
@@ -256,7 +274,11 @@ const Company = () => {
                   <p>Genre</p>
                   <p>Rating</p>
                 </div>
-                <HorizontalLine marginTop="mt-2" marginBottom="mb-2" width="full" />
+                <HorizontalLine
+                  marginTop="mt-2"
+                  marginBottom="mb-2"
+                  width="full"
+                />
               </div>
             )}
             {paginatedGames.length > 0 ? (
@@ -265,8 +287,8 @@ const Company = () => {
                   visualType === "detailed"
                     ? "grid grid-cols-1 lg:grid-cols-2 gap-4"
                     : visualType === "list"
-                      ? "grid grid-cols-1 gap-4"
-                      : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-4"
+                    ? "grid grid-cols-1 gap-4"
+                    : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-4"
                 }
               >
                 {paginatedGames.map((g) => (

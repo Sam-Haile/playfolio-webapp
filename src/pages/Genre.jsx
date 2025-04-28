@@ -163,11 +163,10 @@ const Genre = () => {
                             className="ml-2 px-2 h-8 bg-customBlack border text-white rounded"
                             value={sortOption}
                         >
-                            <option value="total_rating desc">Top Rated</option>
-                            <option value="release_dates.y desc">Newest Releases</option>
-                            <option value="popularity desc">Most Popular</option>
-                            <option value="hypes desc">Most Hyped</option>
-                            <option value="follows desc">Most Followed</option>
+                             <option value="popular">Popularity</option>
+                             <option value="rating">Rating</option>
+                             <option value="release_date">Release Date</option>
+                             <option value="name">Name A → Z</option>
                         </select>
                     </div>
 
