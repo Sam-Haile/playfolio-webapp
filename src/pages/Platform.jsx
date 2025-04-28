@@ -15,7 +15,7 @@ const Platform = () => {
     const [platformDetails, setPlatformDetails] = useState(null);
     const [games, setGames] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [visualType, setVisualType] = useState("compact");
+    const [visualType, setVisualType] = useState("detailed");
     const [currentPage, setCurrentPage] = useState(1);
     const [gamesPerPage] = useState(100); // adjust as needed
     const [sortOption, setSortOption] = useState("popular");
@@ -61,12 +61,7 @@ const Platform = () => {
         setCurrentPage(page);
     };
 
-    const paginatedGames = games.slice(
-        (currentPage - 1) * gamesPerPage,
-        currentPage * gamesPerPage
-    );
 
-    const totalPages = Math.ceil(games.length / gamesPerPage);
 
     if (loading) {
         return <SkeletonLoading type="platform" />;
@@ -103,7 +98,7 @@ const Platform = () => {
 
             {/* Platform Info */}
             <div className="absolute top-0 mx-[15%] mt-56 flex flex-col justify-center">
-                <div className="bg-customBlack w-fit p-8 rounded-lg drop-shadow-lg bg-opacity-70">
+                <div className="bg-customBlack w-fit p-8 rounded-lg drop-shadow-lg bg-opacity-90">
                     {loading ? (
                         <div className="animate-pulse space-y-4">
                             <div className="w-32 h-32 bg-gray-300 rounded"></div>
@@ -193,8 +188,8 @@ const Platform = () => {
                                     : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-4"
                         }
                     >
-                        {paginatedGames && paginatedGames.length > 0 ? (
-                            paginatedGames.map((game) => (
+                        {games && games.length > 0 ? (
+                            games.map((game) => (
                                 <ResultCard
                                     key={game.id}
                                     game={game}
@@ -209,13 +204,7 @@ const Platform = () => {
                 </div>
 
                 {/* Pagination */}
-                <div className="flex justify-center mt-4">
-                    <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={handlePageClick}
-                    />
-                </div>
+                
             </div>
 
             <Footer />

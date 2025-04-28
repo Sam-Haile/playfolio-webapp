@@ -103,7 +103,7 @@ const Results = () => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative min-h-screen">
       <Header showSearchBar={true} showNavButtons={true} showLoginButtons={true} zIndex={20} />
       <div className="pt-10 relative max-w-screen min-h-[100%] mx-[15%]">
 
@@ -219,7 +219,9 @@ const Results = () => {
           )}
         </div>
       </div>
+      <div className="absolute bottom-0 w-full">
       <Footer />
+      </div>
     </div>
   );
 };

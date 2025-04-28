@@ -27,7 +27,7 @@ const Company = () => {
 
   const [loading, setLoading] = useState(true);
   const [sortOption, setSortOption] = useState("total_rating desc");
-  const [visualType, setVisualType] = useState("compact");
+  const [visualType, setVisualType] = useState("detailed");
   const [activeTab, setActiveTab] = useState(defaultTab);
   const [companyDetails, setCompanyDetails] = useState(null);
   const [allGames, setAllGames] = useState([]);
@@ -64,8 +64,9 @@ const Company = () => {
       setTotalDeveloped(data.totalDeveloped);
       setTotalPublished(data.totalPublished);
       setAllGames(data.combinedGames || []);
-      // we already get companyDetails here; keep it around
       setCompanyDetails(data.companyDetails);
+
+      console.log("Company details:", data.combinedGames);
     } catch (err) {
       console.error("Error fetching header games:", err.response?.data || err);
     }
@@ -137,7 +138,7 @@ const Company = () => {
 
       {/* company info card */}
       <div className="absolute top-0 mx-[15%] mt-56 flex flex-col justify-center">
-        <div className="bg-customBlack w-fit p-8 rounded-lg drop-shadow-lg bg-opacity-70">
+        <div className="bg-customBlack w-fit p-8 rounded-lg drop-shadow-lg bg-opacity-90">
           {loading && !companyDetails ? (
             <div className="animate-pulse space-y-4">
               <div className="w-32 h-32 bg-gray-300 rounded"></div>
@@ -154,23 +155,26 @@ const Company = () => {
                 />
               )}
               <div className="flex flex-col items-start mt-4">
-                <p className="text-xl font-semibold">{companyDetails.name}</p>
-                <p className="italic text-lg">({companyDetails.startDate || ""})</p>
+                {companyDetails.startDate &&(
+                  <p className="italic text-base py-2">Est. {companyDetails.startDate || ""}</p>
+                )}
               </div>
               {companyDetails.websites?.length > 0 && (
-                <div className="italic font-light text-sm flex items-center pt-2">
-                  <img src={newTabIcon} alt="Ico" className="pr-2 w-[40px]" />
+                <div className="italic font-light text-sm flex items-center pt-2 w-auto">
+                  <div className="flex group">
+                  <img src={newTabIcon} alt="Ico" className="group cursor-pointer pr-2 w-[40px]" />
                   {companyDetails.websites.map((w, i) => (
                     <a
                       key={i}
                       href={w.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:text-primaryPurple-500 underline text-xl"
+                      className="pt-1 group-hover:text-primaryPurple-500 text-lg "
                     >
                       Official Website
                     </a>
                   ))}
+                </div>
                 </div>
               )}
             </>
@@ -191,21 +195,19 @@ const Company = () => {
         <div className="flex h-12">
           <button
             onClick={() => setActiveTab("developed")}
-            className={`font-semibold w-36 ${
-              activeTab === "developed"
+            className={`font-semibold w-36 ${activeTab === "developed"
                 ? "bg-primaryPurple-500 rounded-t cursor-default"
                 : "hover:bg-primaryPurple-800 rounded-t"
-            }`}
+              }`}
           >
             Developed {totalDeveloped}
           </button>
           <button
             onClick={() => setActiveTab("published")}
-            className={`font-semibold w-36 ${
-              activeTab === "published"
+            className={`font-semibold w-36 ${activeTab === "published"
                 ? "bg-primaryPurple-500 rounded-t cursor-default"
                 : "hover:bg-primaryPurple-800 rounded-t"
-            }`}
+              }`}
           >
             Published {totalPublished}
           </button>
@@ -235,9 +237,8 @@ const Company = () => {
               <button
                 key={type}
                 onClick={() => handleVisualTypeChange(type)}
-                className={`p-2 rounded border ${
-                  visualType === type ? "bg-primaryPurple-500" : "bg-customBlack"
-                }`}
+                className={`p-2 rounded border ${visualType === type ? "bg-primaryPurple-500" : "bg-customBlack"
+                  }`}
               >
                 <img src={icon} alt={`${type} view`} className="w-[25px]" />
               </button>
@@ -258,28 +259,30 @@ const Company = () => {
                 <HorizontalLine marginTop="mt-2" marginBottom="mb-2" width="full" />
               </div>
             )}
-            <div
-              className={
-                visualType === "detailed"
-                  ? "grid grid-cols-1 lg:grid-cols-2 gap-4"
-                  : visualType === "list"
-                  ? "grid grid-cols-1 gap-4"
-                  : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-4"
-              }
-            >
-              {paginatedGames.length > 0 ? (
-                paginatedGames.map((g) => (
+            {paginatedGames.length > 0 ? (
+              <div
+                className={
+                  visualType === "detailed"
+                    ? "grid grid-cols-1 lg:grid-cols-2 gap-4"
+                    : visualType === "list"
+                      ? "grid grid-cols-1 gap-4"
+                      : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-4"
+                }
+              >
+                {paginatedGames.map((g) => (
                   <ResultCard
                     key={g.id}
                     game={g}
                     onClick={() => handleClick(g.id)}
                     visualType={visualType}
                   />
-                ))
-              ) : (
-                <p>No games found.</p>
-              )}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="h-20 border-dashed border w-full text-center flex items-center justify-center">
+                No games found.
+              </div>
+            )}
 
             <div className="flex justify-center mt-4">
               <Pagination

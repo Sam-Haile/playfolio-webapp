@@ -17,7 +17,7 @@ const Header = ({
   showNavButtons = false,
   showLoginButtons = false,
 }) => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [userData, setUserData] = useState(null); // Store user profile data
   const location = useLocation();
   const navigate = useNavigate();
@@ -109,8 +109,13 @@ const Header = ({
             </div>
           )}
 
-          {/* Login/Sign Up if not user */}
-          {!user && showLoginButtons && (
+          {/* placeholder keeps this entire box the same width during load */}
+          {loading && (
+            <div className="w-40 h-8" aria-hidden="true" />
+          )}
+
+           {/* Login/Sign Up */}
+            {!loading && !user && showLoginButtons && (
             <div className="relative pl-4 w-[100%] h-[auto] flex space-x-4">
               <button
                 className="text-primaryPurple-500 hover:text-primaryPurple-700"
@@ -132,7 +137,7 @@ const Header = ({
           {/* Profile dropdown (if user is logged in) */}
           {user && (
             <div
-              className="relative pl-4 z-50 "
+              className="relative pl-4 w-40 z-50 "
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
             >
@@ -162,54 +167,54 @@ const Header = ({
                 className={`absolute mt-2 w-32 bg-customGray-500 text-sm text-black rounded shadow-lg z-[1000] ${showDropdown ? "block" : "hidden"
                   }`}
               >
-                <button
-                  onClick={() => navigate("/profile")}
+                <a
+                  href="/profile"
                   className="block w-full text-left px-2 py-1 hover:bg-customGray-600 hover:rounded-t"
                 >
                   Profile
-                </button>
+                </a>
 
-                <button
-                  onClick={() => navigate("/profile?section=games&type=played")}
+                <a
+                  href={`/profile?section=games&type=played`}
                   className="block w-full text-left px-2 py-1 hover:bg-customGray-600 hover:rounded-t"
                 >
                   Played
-                </button>
+                </a>
 
-                <button
-                  onClick={() => navigate("/profile?section=games&type=wishlist")}
+                <a
+                  href={`/profile?section=games&type=wishlist`}
                   className="block w-full text-left px-2 py-1 hover:bg-customGray-600 hover:rounded-t"
                 >
                   Wishlist
-                </button>
+                </a>
 
-                <button
-                  onClick={() => navigate("/profile?section=games&type=backlog")}
+                <a
+                  href={`/profile?section=games&type=backlog`}
                   className="block w-full text-left px-2 py-1 hover:bg-customGray-600 hover:rounded-t"
                 >
                   Backlog
-                </button>
+                </a>
 
-                <button
-                  onClick={() => navigate("/profile?section=games&type=dropped")}
+                <a
+                  href={`/profile?section=games&type=dropped`}          
                   className="block w-full text-left px-2 py-1 hover:bg-customGray-600 hover:rounded-t"
                 >
                   Dropped
-                </button>
+                </a>
 
-                <button
-                  onClick={() => navigate("/profile?section=reviews")}
+                <a
+                  href={`/profile?section=reviews`}
                   className="block w-full text-left px-2 py-1 hover:bg-customGray-600 hover:rounded-t"
                 >
                   Reviews
-                </button>
+                </a>
 
-                <button
-                  onClick={() => navigate("/profile?section=lists")}
+                <a
+                  href={`/profile?section=reviews`}
                   className="block w-full text-left px-2 py-1 hover:bg-customGray-600 hover:rounded-t"
                 >
                   Lists
-                </button>
+                </a>
 
                 <HorizontalLine
                   marginTop="mt-0"

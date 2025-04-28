@@ -51,7 +51,12 @@ const ResultCard = ({ game, visualType }) => {
 
   const imageUrl = game.coverUrl || "/path-to-placeholder-image.jpg";
 
-  const getBackgroundColor = (rating) => {
+  const getBackgroundColor = (rating, ratingCount) => {
+
+    if (ratingCount == 0 || ratingCount == undefined) {
+      return "#f0f0f0"; // Default color if no ratings
+    }
+
     rating = Math.max(0, Math.min(5, rating));
 
     if (rating <= 2.5) {
@@ -69,9 +74,7 @@ const ResultCard = ({ game, visualType }) => {
     return `rgb(${red}, ${green}, ${blue})`;
   };
 
-  const backgroundColor = getBackgroundColor((game.totalRating || 0) / 20);
-
-  //console.log("gane", id);
+  const backgroundColor = getBackgroundColor(((game.totalRating || 0) / 20), game.ratingCount|| game.rating_count);
 
   const getCardLayout = () => {
     switch (visualType) {
@@ -89,7 +92,7 @@ const ResultCard = ({ game, visualType }) => {
                   />
                 </div>
               </Tilt>
-              <h1 className="pt-2 font-regular text-lg line-clamp-3 hover:text-primaryPurple-500 cursor-pointer">{game.name} <span className="font-light italic">({game.releaseYear})</span></h1>
+              <h1 className="pt-2 font-regular text-lg line-clamp-3 hover:text-primaryPurple-500 cursor-pointer">{game.name} </h1>
             </div>
             <div className="pt-1 flex self-start">
               <div
@@ -101,20 +104,19 @@ const ResultCard = ({ game, visualType }) => {
               >
                 {((game.totalRating || 0) / 20).toFixed(1)}
               </div>
-              <p className="pl-1 font-thin text-sm italic self-center">
-                {game.rating_count} <span className="hidden lg:inline">Ratings</span>{" "}
+              <p className="pl-2 font-thin italic">
+                {game.rating_count > 0
+                  ? `(${game.rating_count})`
+                  : "(0)"}
               </p>
             </div>
           </div>
         );
-
       case "list":
         return (
           <div className="grid grid-cols-[35%_25%_25%_15%] items-center gap-4 w-full text-white">
             {/* Game Image */}
             <div className="flex-shrink-0 flex flex-row">
-
-
               {icons.length > 0 ? (
                 <Tilt>
                   <img
@@ -129,13 +131,11 @@ const ResultCard = ({ game, visualType }) => {
                 <p>No icons available</p>
               )}
               <p className="font-bold flex items-center w-[100%] pl-2 hover:text-primaryPurple-500 cursor-pointer" onClick={handleClick}>{game.name}{" "}
-                <span className="font-extralight italic">
-                  ({game.releaseYear || "N/A"})
-                </span></p>
+              </p>
             </div>
 
 
-            {/* Score */}
+            {/* Developers */}
             <div>
               <p className="font-light italic">
                 {Array.isArray(game.developers)
@@ -146,10 +146,9 @@ const ResultCard = ({ game, visualType }) => {
               </p>
             </div>
 
-
             {/* Genre */}
             <div>
-              <p className="pt-2 text-gray-400">{game.genres.join(", ")}</p>
+              <p className="pt-2 text-gray-300">{game.genres.join(", ")}</p>
             </div>
 
             {/* Ratings */}
@@ -164,13 +163,14 @@ const ResultCard = ({ game, visualType }) => {
                 {((game.totalRating || 0) / 20).toFixed(1)}
               </div>
               <p className="pl-2 font-thin italic">
-                {game.rating_count} Ratings{" "}
+                {game.rating_count > 0
+                  ? `(${game.rating_count})`
+                  : "(0)"}
               </p>
+
             </div>
           </div>
         );
-
-
       default: // Detailed view
         return (
           <div
@@ -190,34 +190,26 @@ const ResultCard = ({ game, visualType }) => {
 
               <div className="pl-4 grid grid-rows-[auto_auto] gap-2">
                 <div>
-                  <h1
-                    className="font-bold text-xl hover:text-primaryPurple-500 cursor-pointer"
-                    onClick={handleClick}
-                    onMouseDown={(event) => {
-                      if (event.button === 1) {
-                        // Allow middle-click to open in a new tab
-                        window.open(`/game/${game.id}`, "_blank");
-                      }
-                    }}
-                  >
+                  <a href={`/game/${game.id}/${slugify(game.name)}`} className="font-bold text-xl hover:text-primaryPurple-500 cursor-pointer">
                     {game.name}{" "}
                     <span className="font-extralight italic">
                       ({game.releaseYear || "N/A"})
                     </span>
-                  </h1>
+                  </a>
 
-                  <p className="pt-1 font-light italic">
-                    {Array.isArray(game.developers) && game.developers.length > 0 ? (
-                      game.developers.map((dev, index) => (
-                        <a key={dev.id} href={`/company/${dev.id}/${slugify(dev.name)}?tab=developed`} className="cursor-pointer hover:text-primaryPurple-500">{dev.name} {index < game.developers.length - 1 && ", "}</a>
-                      ))
-                    ) : ("No Developers Found")
-                    }
+
+
+                  <p className="font-light text-sm pt-1 italic">
+                    {Array.isArray(game.developers)
+                      ? game.developers.map((dev) =>
+                        typeof dev === "string" ? dev : dev?.name
+                      ).join(", ")
+                      : game.developers || "Unknown Developer"}
                   </p>
 
-                  <p className="pt-1 text-gray-400">{game.genres.join(", ")}</p>
+                  <p className="pt-1 text-gray-300 text-sm">{game.genres.join(", ")}</p>
 
-                  <p className="pt-1 font-extralight truncate-text pr-24">
+                  <p className="mt-2 font-extralight truncate-text pr-24">
                     {game.storyline ||
                       game.summary ||
                       "No storyline or summary available."}
@@ -234,7 +226,9 @@ const ResultCard = ({ game, visualType }) => {
                     {((game.totalRating || 0) / 20).toFixed(1)}
                   </div>
                   <p className="pl-2 font-thin italic">
-                    {game.rating_count} Ratings{" "}
+                    {game.ratingCount > 0
+                      ? `${game.ratingCount} Ratings`
+                      : "0 Ratings"}
                   </p>
                 </div>
               </div>

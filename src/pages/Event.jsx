@@ -47,9 +47,6 @@ const Event = () => {
     })();
   }, []);
 
-  if (loading) return <p>Loading…</p>;
-  if (!event) return <p>Event not found.</p>;
-
   return (
     <div className="h-[100%] relative">
       <Header showSearchBar={true} showNavButtons={true} showLoginButtons={true} />
@@ -112,7 +109,7 @@ const Event = () => {
               </div>
 
               {event.event_networks?.length > 0 && (
-                <div className="flex items-center space-x-4 pt-2">
+                <div className="flex items-center space-x-4 pt-2 justify-end">
                   {event.event_networks.map((network, idx) => {
                     const src = networkIcons[network.type] || LinkIconURL;
                     return (

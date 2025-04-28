@@ -15,7 +15,7 @@ const Genre = () => {
     const [genreDetails, setGenreDetails] = useState(null);
     const [games, setGames] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [visualType, setVisualType] = useState("compact");
+    const [visualType, setVisualType] = useState("detailed");
     const [currentPage, setCurrentPage] = useState(1);
     const [gamesPerPage] = useState(24); // adjust as needed
     const [sortOption, setSortOption] = useState("total_rating desc");
@@ -45,6 +45,7 @@ const Genre = () => {
 
             setGenreDetails(genreResponse.data);
             setGames(gamesResponse.data);
+            console.log("Genre Details:", gamesResponse.data);
         } catch (error) {
             console.error("Error fetching genre page data:", error);
         } finally {
@@ -102,7 +103,7 @@ const Genre = () => {
 
             {/* Genre Info */}
             <div className="absolute top-0 mx-[15%] mt-56 flex flex-col justify-center">
-                <div className="bg-customBlack w-fit p-8 rounded-lg drop-shadow-lg bg-opacity-70">
+                <div className="bg-customBlack w-fit p-8 rounded-lg drop-shadow-lg bg-opacity-90">
                     {loading ? (
                         <div className="animate-pulse space-y-4">
                             <div className="w-32 h-32 bg-gray-300 rounded"></div>
@@ -118,11 +119,8 @@ const Genre = () => {
                                     className="w-74"
                                 />
                             )}
-                            <div className="flex flex-col items-start mt-4">
-                                <p className="text-xl font-semibold">{genreDetails?.name}</p>
-                                <p className="italic text-lg">
-                                    ({genreDetails?.startDate || ""})
-                                </p>
+                            <div className="flex flex-col items-start">
+                                <p className="text-2xl font-semibold">{genreDetails?.name} Games</p>
                             </div>
                             {genreDetails?.websites && genreDetails.websites.length > 0 && (
                                 <div className="italic font-light text-s flex items-center pt-2">

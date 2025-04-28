@@ -200,6 +200,8 @@ const GamePage = () => {
     arrows: true,
     swipeToSlide: true,
   };
+  
+  const hasAgeRating = ageRatings.some(r => r.category === 1);
 
   return (
     <div className="h-[100%]">
@@ -342,8 +344,6 @@ const GamePage = () => {
                   ) : (
                     <span className="italic font-light">Unknown Genre</span>
                   )}
-
-
                 </div>
 
 
@@ -426,8 +426,12 @@ const GamePage = () => {
                     ))}
                 </div>
 
-                <div className="flex justify-center items-center pr-2">
-                  {ageRatings.some((rating) => rating.category === 1) ? (
+                <div
+    className={
+      `flex items-center pr-2 ` +
+      (hasAgeRating ? "justify-center" : "justify-start")
+    }
+  >                  {hasAgeRating ? (
                     ageRatings
                       .filter((rating) => rating.category === 1)
                       .map((rating) => (
@@ -443,7 +447,7 @@ const GamePage = () => {
                         </div>
                       ))
                   ) : (
-                    <p>Rating Unavailable</p>
+                    <p className="justid">Rating Unavailable</p>
                   )}
                 </div>
               </div>
@@ -571,10 +575,10 @@ const GamePage = () => {
                       ))}
                   </div>
 
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-gray-500 pt-1">
                     {gameDetails.totalRatings
                       ? `${gameDetails.totalRatings} Ratings`
-                      : "No ratings available"}
+                      : "Be the first to rate!"}
                   </div>
                 </div>
               </div>
