@@ -137,7 +137,7 @@ function GameSlide({ game, navigate }) {
                       ))}
                     <div className="text-sm italic text-gray-500 mt-auto pl-1">
                       {game.totalRating
-                        ? `(${game.rating_count})`
+                        ? `(${game.ratingCount})`
                         : "No ratings available"}
                     </div>
                   </div>
