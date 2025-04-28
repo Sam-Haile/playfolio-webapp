@@ -11,7 +11,7 @@ import SkeletonLoading from "../components/SkeletonLoading";
 import newTabIcon from "../assets/icons/newTab.svg"; // Import the new tab icon
 
 const Platform = () => {
-    const { id, slug } = useParams();
+    const { id } = useParams();
     const [platformDetails, setPlatformDetails] = useState(null);
     const [games, setGames] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -45,7 +45,6 @@ const Platform = () => {
             );
 
             setPlatformDetails(platformResponse.data);
-            console.log("Platform Details:", platformResponse.data);
             setGames(gamesResponse.data);
         } catch (error) {
             console.error("Error fetching platform page data:", error);

@@ -37,11 +37,6 @@ const ResultCard = ({ game, visualType }) => {
     }
   };
 
-  const handleDeveloperClick = (companyId, companyName) => {
-    const slug = slugify(companyName);
-    navigate(`/company/${companyId}/${slug}?tab=developed`);
-  };
-
   const defaultOptions = {
     reverse: false,
     max: 20,
@@ -214,7 +209,7 @@ const ResultCard = ({ game, visualType }) => {
                   <p className="pt-1 font-light italic">
                     {Array.isArray(game.developers) && game.developers.length > 0 ? (
                       game.developers.map((dev, index) => (
-                        <span key={dev.id} onClick={() => handleDeveloperClick(dev.id, dev.name)} className="cursor-pointer hover:text-primaryPurple-500">{dev.name} {index < game.developers.length - 1 && ", "}</span>
+                        <a key={dev.id} href={`/company/${dev.id}/${slugify(dev.name)}?tab=developed`} className="cursor-pointer hover:text-primaryPurple-500">{dev.name} {index < game.developers.length - 1 && ", "}</a>
                       ))
                     ) : ("No Developers Found")
                     }
