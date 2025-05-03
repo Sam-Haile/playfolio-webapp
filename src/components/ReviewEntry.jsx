@@ -1,4 +1,3 @@
-// ReviewEntry.jsx
 import { doc, updateDoc, arrayUnion, arrayRemove, collection, getDocs, query, orderBy } from "firebase/firestore";
 import { useAuth } from "../useAuth";
 import ThumbsUpIcon from "../assets/icons/ThumbsUp";
@@ -14,6 +13,7 @@ const ReviewEntry = ({ pfp, reviewerName, rating, reviewText, gameId, reviewId, 
   const [replies, setReplies] = useState([]);
   const [showReplyBox, setShowReplyBox] = useState(false);
   const [visibleRepliesCount, setVisibleRepliesCount] = useState(1);
+  const [isExpanded, setIsExpanded] = useState(false);  // for read more
 
   useEffect(() => {
     fetchReplies();
@@ -53,7 +53,7 @@ const ReviewEntry = ({ pfp, reviewerName, rating, reviewText, gameId, reviewId, 
 
   const formatMentions = (text) => {
     if (!text) return null;
-    const parts = text.split(/(@\w+)/g); // Split on @mentions
+    const parts = text.split(/(@\w+)/g);
     return parts.map((part, i) => {
       if (part.startsWith("@")) {
         return (
@@ -81,7 +81,7 @@ const ReviewEntry = ({ pfp, reviewerName, rating, reviewText, gameId, reviewId, 
         )}
       </div>
 
-      <div className="grid grid-rows-3 pl-4">
+      <div className=" pl-4">
         <div className="text-xs font-bold flex items-center">
           <div className="pt-2 mr-2 h-full items-center items-start flex">
             {reviewerName}
@@ -111,7 +111,15 @@ const ReviewEntry = ({ pfp, reviewerName, rating, reviewText, gameId, reviewId, 
           </div>
 
         </div>
-        <div className="text-sm">{reviewText}</div>
+        {/* Review text with clamp and toggle */}
+        <div className={`w-auto text-sm ${!isExpanded ? 'line-clamp-4' : ''}`}>{reviewText}</div>
+        <button
+          onClick={() => setIsExpanded(prev => !prev)}
+          className="text-xs text-primaryPurple-500 hover:font-semibold mt-1"
+        >
+          {isExpanded ? 'Show less' : 'Read more'}
+        </button>
+
         <div className="flex flex-row gap-x-4 mt-1">
           {/* Buttons for likes, comments, etc. */}
           <div
@@ -125,12 +133,11 @@ const ReviewEntry = ({ pfp, reviewerName, rating, reviewText, gameId, reviewId, 
           </div>
 
 
-          <div onClick={() => { console.log("test"); setShowReplyBox(true); }} className="flex items-center cursor-pointer group">
+          <div onClick={() => setShowReplyBox(true)} className="flex items-center cursor-pointer group">
             <CommentIcon className="w-5 h-5 text-white group-hover:text-primaryPurple-500 transition-colors duration-200" />
-            <p className="pl-1 text-xs text-white group-hover:text-primaryPurple-500 hover:cursor-pointer transition-colors duration-100">Reply</p>
+            <p className="pl-1 text-xs text-white group-hover:text-primaryPurple-500 hover:cursor-pointer group-hover:font-semibold transition-colors duration-100">Reply</p>
           </div>
 
-          {/* List replies */}
         </div>
         <div className="mt-4">
         {replies.slice(0, visibleRepliesCount).map (reply => {
@@ -203,7 +210,7 @@ const ReviewEntry = ({ pfp, reviewerName, rating, reviewText, gameId, reviewId, 
             <ReplyBox
               gameId={gameId}
               reviewId={reviewId}
-              onReply={() => {console.log("replyingg"), setShowReplyBox(false)}}
+              onReply={() => {setShowReplyBox(false)}}
               onCancel={() => setShowReplyBox(false)}
               addReplyToList={(reply) =>
                 setReplies((prev) => [...prev, reply])

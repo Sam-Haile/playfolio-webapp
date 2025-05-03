@@ -15,3 +15,34 @@
     overflow: hidden;
   }
   
+  /* index.css */
+.slick-dots li.slick-active div {
+    @apply bg-primaryPurple-500;
+  }
+  
+
+  /* use your own SVG via mask-image */
+.slick-prev:before {
+  mask-image: url("/src/assets/icons/backArrow.svg");
+}
+.slick-next:before {
+  mask-image: url("/src/assets/icons/forwardArrow.svg");
+}
+
+/* index.css or a Tailwind @layer components block */
+
+/* make the prev/next buttons bigger, repositioned, tinted */
+.slick-prev,
+.slick-next {
+  @apply w-12 h-12 bg-customGray-800 rounded-full flex items-center justify-center opacity-75 hover:opacity-100;
+}
+
+/* change the arrow “chevron” inside them */
+.slick-prev:before,
+.slick-next:before {
+  content: "";            /* remove default text */
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  background-color: white;
+}

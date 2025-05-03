@@ -36,7 +36,6 @@ const HomePage = () => {
           { params: { slim: false } }
         );
         setRecommendedGames(resp.data);
-        console.log(recommendedGames);
       })
       .catch(console.error);
 
@@ -344,7 +343,7 @@ const HomePage = () => {
           zIndex="z-0"
         />
 
-        <h1 className="relative text-2xl font-bold pb-4 z-20">Events</h1>
+        {/* <h1 className="relative text-2xl font-bold pb-4 z-20">Events</h1> */}
         <EventCard events={events} />
 
         <HorizontalLine
@@ -360,8 +359,8 @@ const HomePage = () => {
             View handpicked titles based on your interests
           </p>
 
-          <DiscoveryQueue games={recommendedGames} />
         </div>
+          <DiscoveryQueue games={recommendedGames} />
       </div>
 
       <Footer />

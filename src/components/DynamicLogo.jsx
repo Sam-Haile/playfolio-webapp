@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const DynamicLogo = ({ url, gameName, maxSize, minSize, marginLeft = "ml-4" }) => {
+const DynamicLogo = ({ url, gameName, maxSize, minSize, marginLeft = "ml-4", className }) => {
   const [widthClass, setWidthClass] = useState("w-60");
 
   const handleLoad = (e) => {
@@ -18,7 +18,7 @@ const DynamicLogo = ({ url, gameName, maxSize, minSize, marginLeft = "ml-4" }) =
       src={url}
       alt={`${gameName} logo`}
       onLoad={handleLoad}
-      className={`${marginLeft} h-auto self-auto ${widthClass} `}
+      className={`${marginLeft} ${className} h-auto self-auto ${widthClass} `}
     />
   );
 };

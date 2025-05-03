@@ -1,4 +1,10 @@
-import { doc, getDoc, collection, getDocs, updateDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  collection,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebaseConfig"; // Ensure Firestore is imported
@@ -10,16 +16,22 @@ import EditIconModal from "../components/EditIconModal";
 import axios from "axios";
 import RatingGraph from "../components/RatingGraph";
 import Collections from "./Collections";
+import bannerPlaceholder from "../assets/icons/pfp.svg";
 
 const Profile = () => {
   const navigate = useNavigate();
   const { user, updateUserData } = useAuth();
-  const [userData, setUserData] = useState({ firstName: "", lastName: "", username: "" });
+  const [userData, setUserData] = useState({
+    firstName: "",
+    lastName: "",
+    username: "",
+  });
   const [setError] = useState(null);
   const [preloadedGames, setPreloadedGames] = useState({});
   const [isEditBannerOpen, setIsEditBannerOpen] = useState(false);
   const [isEditIconOpen, setIsEditIconOpen] = useState(false);
   const [loading, setLoading] = useState(true); // Track loading state
+  const [src, setSrc] = useState(user?.profileIcon || bannerPlaceholder);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -88,7 +100,12 @@ const Profile = () => {
       if (!user) return;
 
       try {
-        const gameStatusesRef = collection(db, "users", user.uid, "gameStatuses");
+        const gameStatusesRef = collection(
+          db,
+          "users",
+          user.uid,
+          "gameStatuses"
+        );
         const querySnapshot = await getDocs(gameStatusesRef);
         let wishlist = [];
         let playing = [];
@@ -102,14 +119,6 @@ const Profile = () => {
           if (gameData.status === "Dropped") dropped.push(gameData);
           if (gameData.status === "Backlog") backlog.push(gameData);
         });
-
-        // Fetch game covers from IGDB
-
-        setWishlistCount(wishlist.length);
-        setPlayingCount(playing.length);
-        setDroppedCount(dropped.length);
-        setBacklogCount(backlog.length);
-
       } catch (err) {
         console.error("❌ Error fetching game statuses:", err);
       }
@@ -123,12 +132,15 @@ const Profile = () => {
 
   const fetchGameCovers = async (gamesList) => {
     try {
-      const missingGames = gamesList.filter(game => !preloadedGames[game.id]);
+      const missingGames = gamesList.filter((game) => !preloadedGames[game.id]);
 
       if (missingGames.length > 0) {
-        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/gameDetails`, {
-          ids: missingGames.map(game => game.id),
-        });
+        const response = await axios.post(
+          `${import.meta.env.VITE_API_URL}/api/gameDetails`,
+          {
+            ids: missingGames.map((game) => game.id),
+          }
+        );
 
         const fetchedGames = response.data;
         const newPreloadedGames = { ...preloadedGames };
@@ -143,10 +155,12 @@ const Profile = () => {
         setPreloadedGames((prev) => ({ ...prev, ...newPreloadedGames }));
       }
 
-      return gamesList.map(game => ({
+      return gamesList.map((game) => ({
         ...game,
         name: preloadedGames[game.id]?.name || "Unknown Game",
-        coverImage: preloadedGames[game.id]?.coverImage || "/images/default_game_cover.png",
+        coverImage:
+          preloadedGames[game.id]?.coverImage ||
+          "/images/default_game_cover.png",
       }));
     } catch (error) {
       console.error("Error fetching game covers:", error);
@@ -155,7 +169,9 @@ const Profile = () => {
   };
 
   const useResponsiveSlice = () => {
-    const [itemsToShow, setItemsToShow] = useState(window.innerWidth >= 1024 ? 4 : 3); // lg breakpoint: 1024px
+    const [itemsToShow, setItemsToShow] = useState(
+      window.innerWidth >= 1024 ? 4 : 3
+    ); // lg breakpoint: 1024px
 
     useEffect(() => {
       const handleResize = () => {
@@ -173,16 +189,19 @@ const Profile = () => {
 
   function capitalizeName(name) {
     return name
-      .split(' ')
+      .split(" ")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+      .join(" ");
   }
 
-  const displayName = capitalizeName(userData?.firstName) + " " + capitalizeName(userData?.lastName);
+  const displayName =
+    capitalizeName(userData?.firstName) +
+    " " +
+    capitalizeName(userData?.lastName);
+
   return (
     <div className="relative min-h-screen flex flex-col">
       <div className="mx-[]">
-
         <Header showSearchBar showNavButtons showLoginButtons showProfileIcon />
 
         {/* Banner Container */}
@@ -220,9 +239,14 @@ const Profile = () => {
           <div className="absolute bottom-0 left-[5%] transform translate-y-1/2">
             <div className="group">
               <img
-                src={userData.profileIcon || "/images/default_profile.png"}
+                src={src}
                 alt="Profile"
                 className="w-[150px] h-[150px] rounded-full object-cover shadow-lg"
+                onError={(e) => {
+                  // only run once
+                  e.currentTarget.onerror = null;
+                  setSrc(bannerPlaceholder);
+                }}
               />
 
               <div
@@ -247,11 +271,8 @@ const Profile = () => {
               <h1 className="text-2xl font-semibold"> {displayName} </h1>
               <h4 className="text-lg">@{userData.username}</h4>
             </div>
-          </div>
-            
-          {/* Right Collumn */}
-          <div className="pl-8">
-            <div className="flex gap-4 justify-center align-center items-center">
+            {/* Right Collumn */}
+            <div className="w-72 mt-4">
               <RatingGraph />
             </div>
           </div>
@@ -260,7 +281,6 @@ const Profile = () => {
         <div className="mx-[15%]">
           <Collections showProfile={true} />
         </div>
-
 
         {/* Edit Banner Modal */}
         {isEditBannerOpen && (
@@ -280,7 +300,6 @@ const Profile = () => {
           />
         )}
       </div>
-
 
       <Footer />
     </div>

@@ -11,6 +11,7 @@ const ReplyEntry = ({ gameId, reviewId, reply, addReplyToList }) => {
     const [showReplyBox, setShowReplyBox] = useState(false);
     const [hasLiked, setHasLiked] = useState(reply.likes?.includes(user?.uid));
     const [likesCount, setLikesCount] = useState(reply.likes?.length || 0);
+    const [isExpanded, setIsExpanded] = useState(false);  // for read more
 
     const handleLike = async () => {
         if (!user) return;
@@ -58,9 +59,9 @@ const ReplyEntry = ({ gameId, reviewId, reply, addReplyToList }) => {
                 )}
             </div>
 
-            <div className="grid grid-rows-[auto_auto_auto] pl-2">
+            <div className="pl-2">
                 <div className="text-xs font-bold flex leading-tight">{reply.userDisplayName}</div>
-                <div className="text-sm leading-snug">
+                <div className={`text-sm ${!isExpanded ? 'line-clamp-4' : ''} leading-snug`}>
                     {reply.replyToDisplayName && (
                         <span className="text-primaryPurple-500 text-sm">
                             {" "}
@@ -68,6 +69,12 @@ const ReplyEntry = ({ gameId, reviewId, reply, addReplyToList }) => {
                     )}
                     {formatMentions(reply.text)}
                 </div>
+                <button
+          onClick={() => setIsExpanded(prev => !prev)}
+          className="text-xs text-primaryPurple-500 hover:font-semibold mt-1"
+        >
+          {isExpanded ? 'Show less' : 'Read more'}
+        </button>
 
                 {/* Like and Reply buttons */}
                 <div className="flex flex-row gap-x-4 pt-1 ">
@@ -86,7 +93,7 @@ const ReplyEntry = ({ gameId, reviewId, reply, addReplyToList }) => {
                         className="flex items-center cursor-pointer group"
                     >
                         <CommentIcon className="w-4 h-4 text-white group-hover:text-primaryPurple-500 transition-colors duration-200" />
-                        <p className="pl-1 text-xs text-gray-300 group-hover:text-primaryPurple-500 transition-colors duration-100 leading-none">
+                        <p className="pl-1 text-xs text-gray-300 group-hover:font-semibold group-hover:text-primaryPurple-500 transition-colors duration-100 leading-none">
                             Reply
                         </p>
 

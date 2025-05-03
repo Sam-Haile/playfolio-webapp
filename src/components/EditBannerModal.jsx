@@ -55,8 +55,22 @@ const EditBannerModal = ({ onClose, user, onBannerUpdate }) => {
     }
   };
 
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5mb
+
   const handleFile = async (file) => {
     if (!file || !user) return;
+
+    if(!file.type.startsWith("image/")){
+      alert("Only image files are allowed");
+      return;
+    }
+    
+    if(file.size > MAX_FILE_SIZE){
+      alert("Please pick an image smaller then 5 MB.");
+      return;
+    }
+    
+
     try {
       setUploading(true);
       // Put in a per‑user folder – helps keep Storage tidy

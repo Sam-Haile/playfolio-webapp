@@ -25,7 +25,6 @@ export const fetchEvents = async (limit) => {
       `${import.meta.env.VITE_API_URL}/api/events?limit=${limit}`
     );
     const data = await response.json();
-    console.log(data);
 
     if (Array.isArray(data)) {
       return data;

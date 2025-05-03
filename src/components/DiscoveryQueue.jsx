@@ -20,204 +20,176 @@ function DiscoveryQueue({ games = [] }) {
     centerPadding: "0px",
     slidesToShow: 1,
     speed: 500,
-    draggable: false,
+    draggable: true,
+    dots: true,
+    customPaging: (i) => (
+      <div className="h-4 w-4 mt-6 bg-customGray-800 hover:bg-primaryPurple-700 rounded-sm" />
+    ),
   };
 
   return (
-    <div className="w-full h-96 ">
-      <div className="relative">
-        <Slider {...settings}>
-          {games.map((game) => (
-            <GameSlide key={game.id} game={game} navigate={navigate} />
-          ))}
-        </Slider>
-      </div>
+    <div className="w-full h-[400px]">
+      <Slider {...settings}>
+        {games.map((game) => (
+          <GameSlide key={game.id} game={game} />
+        ))}
+      </Slider>
     </div>
   );
 }
 
 export default DiscoveryQueue;
 
-function GameSlide({ game, navigate }) {
+function GameSlide({ game }) {
   const [mainScreenshotIndex, setMainScreenshotIndex] = useState(0);
   const [overlayOpen, setOverlayOpen] = useState(false);
 
   return (
-    <div className="relative px-4">
-      <div className="h-96 flex flex-cols-2">
-        {/* LEFT HALF */}
-        <div className="lg:w-1/2 md:w-full z-0 relative">
+    <div className="h-[400px] px-2 w-full grid lg:grid-cols-[40%_60%]">
+      {/* Left Column */}
+      <div className="grid grid-rows-[200px_200px]">
+        {/* Top Left Column */}
+        <div className="relative ">
           {game.heroes?.url ? (
             <img
               src={game.heroes.url}
               alt={`${game.name} hero`}
-              className="absolute brightness-[.35] rounded"
+              className="absolute brightness-[.35] h-full w-full object-cover rounded"
             />
           ) : (
-            <div className="absolute bg-customBlack-500 w-full h-1/2 rounded"></div>
+            <div className="absolute bg-customBlack-500"></div>
           )}
 
-          <a className="flex h-[50%] cursor-pointer" href={`/game/${game.id}`}>
-            <div className="flex z-20 items-end w-full">
-              {/* <img
-                src={game.coverUrl}
-                alt={`${game.name} cover`}
-                className="w-auto h-36 ml-8 z-1000 rounded"
-              />   */}
-              {game.logos?.url && (
-                <DynamicLogo
-                  url={game.logos.url}
-                  gameName={game.name}
-                  maxSize={"w-80"}
-                  minSize={"w-48"}
-                />
-              )}
+          <a className="relative cursor-pointer" href={`/game/${game.id}`}>
+            <div className="flex h-full z-50 items-center w-full">
+              <div className="flex h-full w-full justify-center items-center z-50 p-8">
+                {game.logos.url ? (
+                  <DynamicLogo
+                    url={game.logos.url}
+                    gameName={game.name}
+                    marginLeft={0}
+                    className="max-h-full max-w-full h-auto object-contain"
+                  />
+                ) : (
+                  <span className="text-4xl font-semibold text-white text-center">
+                    {game.name}
+                  </span>
+                )}
+              </div>
             </div>
           </a>
+        </div>
+        {/* Bottom Left Column */}
+        <div className="bg-customGray-900/50 relative p-4 mt-2 rounded ">
+          <p className="text-sm pb-1 truncate w-[75%]">
+            {Array.isArray(game.genres) && game.genres.length > 0
+              ? game.genres.map((genre, i) => (
+                  <React.Fragment key={genre.id}>
+                    <a
+                      href={`/genre/${genre.id}/${slugify(genre.name)}`}
+                      className="italic font-light hover:underline hover:text-primaryPurple-500 hover:font-semibold cursor-pointer"
+                    >
+                      {genre.name}
+                    </a>
+                    {i < game.genres.length - 1 && ", "}
+                  </React.Fragment>
+                ))
+              : "No platforms available"}
+          </p>
 
-          <div className="flex h-[50%] mt-auto w-full rounded">
-            <div className="mt-auto bg-customGray-900/50 w-full rounded p-4 relative">
-              <div className="flex overflow-hidden">
-                {/* <h2 className="font-semibold text-lg pb-2">{`${game.name} (${game.releaseYear})`}</h2> */}
-                <div className="pb-2 lg:w-[70%] md:w-[75%]">
-                  <p className="text-sm pb-1 truncate ">
-                    {Array.isArray(game.genres) && game.genres.length > 0 ? (
-                      game.genres.map((genre, i) => (
-                        <React.Fragment key={genre.id}>
-                          <a
-                            href={`/genre/${genre.id}/${slugify(genre.name)}`}
-                            className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer"
-                          >
-                            {genre.name}
-                          </a>
-                          {i < game.genres.length - 1 && ", "}
-                        </React.Fragment>
-                      ))
-                    ) : (
-                      "No platforms available"
-                    )}
-                  </p>
+          <p className="pt-2 line-clamp-4 cursor-text select-text text-md font-light w-[98%]">
+            {game.storyline || game.summary || "No summary available."}
+          </p>
 
-                  <p className="text-sm pb-1 truncate">
-                    {Array.isArray(game.platforms) && game.platforms.length > 0 ? (
-                      game.platforms.map((plat, i) => (
-                        <React.Fragment key={plat.id}>
-                          <a
-                            href={`/platform/${plat.id}/${slugify(plat.name)}`}
-                            className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer"
-                          >
-                            {plat.name}
-                          </a>
-                          {i < game.platforms.length - 1 && ", "}
-                        </React.Fragment>
-                      ))
-                    ) : (
-                      "No platforms available"
-                    )}
-                  </p>
+          <p className="absolute bottom-0 pb-4 text-sm line-clamp-2 w-[80%]">
+            {Array.isArray(game.platforms) && game.platforms.length > 0
+              ? game.platforms.map((plat, i) => (
+                  <React.Fragment key={plat.id}>
+                    <a
+                      href={`/platform/${plat.id}/${slugify(plat.name)}`}
+                      className="line italic font-light hover:underline hover:text-primaryPurple-500 hover:font-semibold cursor-pointer"
+                    >
+                      {plat.name}
+                    </a>
+                    {i < game.platforms.length - 1 && ", "}
+                  </React.Fragment>
+                ))
+              : "No platforms available"}
+          </p>
 
-                </div>
-
-                <div className="ml-auto">
-                  <div className="flex">
-                    {Array(5)
-                      .fill(0)
-                      .map((_, i) => (
-                        <svg
-                          key={i}
-                          className={`h-6 w-6 ${i < Math.round(game.totalRating / 20)
-                            ? "text-yellow-400"
-                            : "text-gray-300"
-                            } fill-current`}
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M12 2l2.7 8H22l-6.9 5 2.7 8L12 18l-6.9 5 2.7-8L2 10h7.3L12 2z" />
-                        </svg>
-                      ))}
-                    <div className="text-sm italic text-gray-500 mt-auto pl-1">
-                      {game.totalRating
-                        ? `(${game.ratingCount})`
-                        : "No ratings available"}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex">
-                <p className="line-clamp-3 cursor-text select-text text-md font-light w-[80%]">
-                  {game.storyline || game.summary || "No summary available."}
-                </p>
-                <div
-                  className="flex gap-2 ml-auto pb-2 mr-2 overflow-hidden"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {/* <ThumbsUp className="mt-auto h-6 w-6" />
-                  <ThumbsDown className="mt-auto h-6 w-6" /> */}
-                </div>
+          <div className="absolute top-0 right-0 p-4">
+            <div className="flex">
+              {Array(5)
+                .fill(0)
+                .map((_, i) => (
+                  <svg
+                    key={i}
+                    className={`h-4 w-4 ${
+                      i < Math.round(game.totalRating / 20)
+                        ? "text-yellow-400"
+                        : "text-gray-300"
+                    } fill-current`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 2l2.7 8H22l-6.9 5 2.7 8L12 18l-6.9 5 2.7-8L2 10h7.3L12 2z" />
+                  </svg>
+                ))}
+              <div className="text-sm italic text-gray-500 mt-auto pl-1">
+                {game.totalRating
+                  ? `(${game.ratingCount})`
+                  : "No ratings available"}
               </div>
             </div>
+          </div>
+
+          <div className="flex absolute bottom-0 right-0 p-4 gap-x-4">
+            <ThumbsUp className="mt-auto h-6 w-6" />
+            <ThumbsDown className="mt-auto h-6 w-6" />
           </div>
         </div>
+      </div>
 
-        {/* RIGHT HALF */}
-        <div className="hidden lg:flex w-1/2 flex flex-col ml-2 h-full ">
-          <div className="relative w-full aspect-video overflow-hidden rounded">
-            {/* Background layer (blurred) */}
+      {/* Right Column */}
+      <div className="hidden lg:grid pl-2 grid-cols-[auto_auto]">
+        <div className="rounded">
+          {/* Foreground image */}
+          <img
+            src={game.screenshots?.[mainScreenshotIndex]}
+            alt="Game Screenshot"
+            className="w-full h-full object-cover cursor-zoom-in rounded"
+            onClick={() => setOverlayOpen(true)}
+          />
+
+          {/* Conditionally render the overlay */}
+          {overlayOpen &&
+            ReactDOM.createPortal(
+              <ImageOverlay
+                src={game.screenshots?.[mainScreenshotIndex]}
+                alt={`Screenshot of ${game.name}`}
+                onClose={() => setOverlayOpen(false)}
+              />,
+              document.body
+            )}
+        </div>
+
+        <div className="max-w-24 gap-y-2 flex flex-col pl-2">
+          {game.screenshots?.slice(0, 7).map((url, index) => (
             <img
-              src={game.screenshots?.[mainScreenshotIndex]}
-              alt=""
-              className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-50"
-              aria-hidden="true"
+              key={index}
+              src={url}
+              onClick={(e) => {
+                e.stopPropagation();
+                setMainScreenshotIndex(index);
+              }}
+              className={`w-24 object-contain rounded cursor-pointer transition-opacity duration-300 ${
+                mainScreenshotIndex === index
+                  ? "opacity-100"
+                  : "brightness-50 hover:brightness-100"
+              }`}
+              alt={`Screenshot ${index}`}
             />
-
-            {/* Foreground image */}
-            <img
-              src={game.screenshots?.[mainScreenshotIndex]}
-              alt="Game Screenshot"
-              className="relative z-10 w-full h-full object-contain"
-              onClick={() => setOverlayOpen(true)}
-            />
-
-            {/* Conditionally render the overlay */}
-            {overlayOpen &&
-              ReactDOM.createPortal(
-                <ImageOverlay
-                  src={game.screenshots?.[mainScreenshotIndex]}
-                  alt={`Screenshot of ${game.name}`}
-                  onClose={() => setOverlayOpen(false)}
-                />,
-                document.body
-              )}
-          </div>
-
-          <div className="relative h-[20%] overflow-hidden">
-            <div className="py-1 flex h-full gap-2 w-full ">
-              {game.screenshots?.slice(0, 5).map((url, index) => (
-                <img
-                  key={index}
-                  src={url}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setMainScreenshotIndex(index)
-                  }}
-                  className={`w-auto object-contain mb-1 mt-1 h-full rounded cursor-pointer transition-opacity duration-300 ${mainScreenshotIndex === index
-                    ? "opacity-100"
-                    : "brightness-50 hover:brightness-100"
-                    }`}
-                  alt={`Screenshot ${index}`}
-                />
-              ))}
-
-              <div
-                className="absolute top-0 h-full w-[103%] pointer-events-none z-10 right-0"
-                style={{
-                  background:
-                    "linear-gradient(to left, #121212 0%, transparent 10%)",
-                }}
-              ></div>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </div>

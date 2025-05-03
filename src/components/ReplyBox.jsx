@@ -70,7 +70,7 @@ const ReplyBox = ({
       <textarea
         value={text}
         onChange={handleChange}
-        className="w-full min-h-[2rem] resize-none bg-customBlack text-white p-2 pl-4 border-b-2 border-primaryPurple-500 focus:outline-none focus:ring-0 placeholder:text-customGray-500 overflow-hidden"
+        className="text-sm w-full min-h-[2rem] resize-none bg-customBlack text-white p-2 pl-4 border-b-2 border-primaryPurple-500 focus:outline-none focus:ring-0 placeholder:text-customGray-500 overflow-hidden"
         placeholder="Write a reply..."
         rows={1}
       />

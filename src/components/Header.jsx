@@ -5,7 +5,7 @@ import { auth, db } from "../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 import Logo from "../assets/icons/logo.svg";
 import LogoIcon from "../assets/icons/logoicon.svg";
-import ProfileIco from "../assets/icons/profileIcon.svg";
+import bannerPlaceholder from "../assets/icons/pfp.svg";
 import VerticalLine from "../assets/icons/verticalLine.svg";
 import SearchBar from "./SearchBar";
 import HorizontalLine from "../components/HorizontalLine";
@@ -18,32 +18,13 @@ const Header = ({
   showLoginButtons = false,
 }) => {
   const { user, loading } = useAuth();
-  const [userData, setUserData] = useState(null); // Store user profile data
   const location = useLocation();
   const navigate = useNavigate();
+  const [src, setSrc] = useState(user?.profileIcon || bannerPlaceholder);
 
   // State and ref for dropdown delay logic
   const [showDropdown, setShowDropdown] = useState(false);
   const hideDropdownTimer = useRef(null);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (currentUser) {
-        try {
-          const userDocRef = doc(db, "users", currentUser.uid);
-          const docSnap = await getDoc(userDocRef);
-          if (docSnap.exists()) {
-            setUserData(docSnap.data());
-          }
-        } catch (err) {
-          console.error("Error fetching user doc:", err);
-        }
-      } else {
-        setUserData(null);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
 
   const handleLogout = async () => {
     try {
@@ -68,13 +49,10 @@ const Header = ({
     }, 300);
   };
 
-  const handleMouseClick = () => {
-    navigate("/profile");
-  }
-
   const handleLogoClick = () => {
     navigate(user ? '/home' : '/');
   };
+
   return (
     <header className="mt-4 absolute top-0 left-0 w-full bg-opacity-90 z-[9999] ">
       <div className="mx-[15%] text-white h-auto flex items-center justify-between">
@@ -84,10 +62,10 @@ const Header = ({
             />
           </button>
           <button onClick={handleLogoClick}>
-            <img src={Logo} alt="Playfolio" className="h-5 mr-10" onContextMenu={(e) => e.preventDefault()}
+            <img src={Logo} alt="Playfolio" className="h-5 mr-4" onContextMenu={(e) => e.preventDefault()}
             />
           </button>
-          <img src={VerticalLine} alt="Vertical Line" className="hidden lg:block md:block sm:hidden mr-10" />
+          <img src={VerticalLine} alt="Vertical Line" className="hidden lg:block md:block sm:hidden mr-4" />
           {showNavButtons && (
             <nav className="hidden md:flex space-x-10">
               <a href="/home" className="hover:text-primaryPurple-500">
@@ -142,25 +120,18 @@ const Header = ({
               onMouseLeave={handleMouseLeave}
             >
               <button className="flex items-center px-2 py-1 focus:outline-none">
-                {user?.profileIcon ? (
+
                   <img
-                    src={user.profileIcon}
-                    alt="Profile Icon"
-                    className="w-8 h-8 rounded-full object-cover shadow-lg flex-shrink-0"
-                  />
-                ) : (
-                  <img
-                    src={ProfileIco}
+                    src={src}
                     alt="Default Profile"
                     className="w-8 h-8 rounded-full object-cover shadow-lg flex-shrink-0"
+                    onError={(e) => {
+                      // only run once
+                      e.currentTarget.onerror = null;
+                      setSrc(bannerPlaceholder);
+                    }}
                   />
-                )}
-                <p className="ml-2 flex-grow text-right">{user.username}</p>
-                <img
-                  src={DownArrow}
-                  alt="Down arrow"
-                  className="w-[20px] ml-1 flex-shrink-0"
-                />
+
               </button>
 
               <div

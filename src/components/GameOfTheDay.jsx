@@ -167,7 +167,6 @@ const GameOfTheDay = () => {
 
         setGameOfDay(gameResponse.data[0]);
 
-        console.log("Game of the Day:", gameResponse.data[0]);
         setDetailsFetched(true);
       } catch (err) {
         console.error("Error fetching game data:", err.message);
