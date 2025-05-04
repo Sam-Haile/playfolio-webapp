@@ -20,7 +20,13 @@ const Header = ({
   const { user, loading } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const [src, setSrc] = useState(user?.profileIcon || bannerPlaceholder);
+  const [src, setSrc] = useState(bannerPlaceholder);
+
+  useEffect(() => {
+    if (user?.profileIcon) {
+      setSrc(user.profileIcon);
+    }
+  }, [user?.profileIcon]);
 
   // State and ref for dropdown delay logic
   const [showDropdown, setShowDropdown] = useState(false);
@@ -131,7 +137,12 @@ const Header = ({
                       setSrc(bannerPlaceholder);
                     }}
                   />
-
+                <p className="ml-2 flex-grow text-right">{user.username}</p>
+                <img
+                  src={DownArrow}
+                  alt="Down arrow"
+                  className="w-[20px] ml-1 flex-shrink-0"
+                />
               </button>
 
               <div

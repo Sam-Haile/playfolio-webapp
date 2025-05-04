@@ -65,7 +65,7 @@ const Company = () => {
           gameType: activeTab,
         }
       );
-
+      console.log(data);
       setTotalDeveloped(data.totalDeveloped);
       setTotalPublished(data.totalPublished);
       setCompanyDetails(data.companyDetails);
@@ -160,7 +160,7 @@ const Company = () => {
             </div>
           ) : (
             <>
-              {companyDetails.logo && (
+              {companyDetails?.logo && (
                 <img
                   src={companyDetails.logo}
                   alt={`${companyDetails.name} Logo`}
@@ -168,13 +168,13 @@ const Company = () => {
                 />
               )}
               <div className="flex flex-col items-start mt-4">
-                {companyDetails.startDate && (
+                {companyDetails?.startDate && (
                   <p className="italic text-base py-2">
                     Est. {companyDetails.startDate || ""}
                   </p>
                 )}
               </div>
-              {companyDetails.websites?.length > 0 && (
+              {companyDetails?.websites?.length > 0 && (
                 <div className="italic  text-sm flex items-center pt-2 w-auto">
                   <div className="flex group">
                     {companyDetails.websites.map((w, i) => (

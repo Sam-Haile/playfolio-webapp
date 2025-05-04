@@ -31,7 +31,13 @@ const Profile = () => {
   const [isEditBannerOpen, setIsEditBannerOpen] = useState(false);
   const [isEditIconOpen, setIsEditIconOpen] = useState(false);
   const [loading, setLoading] = useState(true); // Track loading state
-  const [src, setSrc] = useState(user?.profileIcon || bannerPlaceholder);
+  const [src, setSrc] = useState(bannerPlaceholder);
+
+  useEffect(() => {
+    if (user?.profileIcon) {
+      setSrc(user.profileIcon);
+    }
+  }, [user?.profileIcon]);
 
   useEffect(() => {
     const fetchUserData = async () => {

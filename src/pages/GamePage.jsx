@@ -348,7 +348,7 @@ const GamePage = () => {
                       <span key={genre.id}>
                         <a
                           href={`/genre/${genre.id}/${slugify(genre.name)}`}
-                          className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline"
+                          className="italic font-light hover:font-semibold hover:text-primaryPurple-500 cursor-pointer inline"
                         >
                           {genre.name}
                         </a>
@@ -374,7 +374,7 @@ const GamePage = () => {
                           href={`/platform/${platform.id}/${slugify(
                             platform.name
                           )}`}
-                          className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline"
+                          className="italic font-light hover:font-semibold hover:text-primaryPurple-500 cursor-pointer inline"
                         >
                           {platform.name}
                         </a>
@@ -416,7 +416,7 @@ const GamePage = () => {
                             developer.name
                           )}?tab=developed`}
                           key={index}
-                          className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline "
+                          className="italic font-light hover:font-semibold hover:text-primaryPurple-500 cursor-pointer inline "
                         >
                           {developer.name}
                         </a>
@@ -434,7 +434,7 @@ const GamePage = () => {
                           href={`/company/${publisher.id}/${slugify(
                             publisher.name
                           )}?tab=published`}
-                          className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline "
+                          className="italic font-light hover:font-semibold hover:text-primaryPurple-500 cursor-pointer inline "
                         >
                           {publisher.name}
                         </a>
