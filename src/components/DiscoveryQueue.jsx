@@ -63,7 +63,7 @@ function GameSlide({ game }) {
           <a className="relative cursor-pointer" href={`/game/${game.id}`}>
             <div className="flex h-full z-50 items-center w-full">
               <div className="flex h-full w-full justify-center items-center z-50 p-8">
-                {game.logos.url ? (
+                {game.logos?.url ? (
                   <DynamicLogo
                     url={game.logos.url}
                     gameName={game.name}
@@ -87,7 +87,7 @@ function GameSlide({ game }) {
                   <React.Fragment key={genre.id}>
                     <a
                       href={`/genre/${genre.id}/${slugify(genre.name)}`}
-                      className="italic font-light hover:underline hover:text-primaryPurple-500 hover:font-semibold cursor-pointer"
+                      className="italic font-light hover:text-primaryPurple-500 hover:font-semibold cursor-pointer"
                     >
                       {genre.name}
                     </a>
@@ -101,13 +101,13 @@ function GameSlide({ game }) {
             {game.storyline || game.summary || "No summary available."}
           </p>
 
-          <p className="absolute bottom-0 pb-4 text-sm line-clamp-2 w-[80%]">
+          <p className="absolute bottom-0 pb-4 text-sm truncate w-[80%] ">
             {Array.isArray(game.platforms) && game.platforms.length > 0
               ? game.platforms.map((plat, i) => (
                   <React.Fragment key={plat.id}>
                     <a
                       href={`/platform/${plat.id}/${slugify(plat.name)}`}
-                      className="line italic font-light hover:underline hover:text-primaryPurple-500 hover:font-semibold cursor-pointer"
+                      className="line italic font-light hover:text-primaryPurple-500 hover:font-semibold cursor-pointer"
                     >
                       {plat.name}
                     </a>

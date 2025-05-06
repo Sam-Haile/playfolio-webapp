@@ -15,7 +15,7 @@ const defaultOptions = {
   easing: "cubic-bezier(.03,.98,.52,.99)",
 };
 
-const EventCard = ({ events }) => {
+const EventCard = ({ events, loading }) => {
   const navigate = useNavigate();
   const [displayedEvents, setDisplayedEvents] = useState([]);
 
@@ -43,7 +43,11 @@ const EventCard = ({ events }) => {
   };
 
   return (
-    <div className="flex justify-center w-full h-auto">
+    <div>
+            {loading ? (
+        <div className="w-full h-48" /> 
+      ) : (
+        <div className="flex justify-center w-full h-auto">
       {displayedEvents.map((event) => {
         const logo = event.event_logo;
         return (
@@ -52,17 +56,17 @@ const EventCard = ({ events }) => {
               options={defaultOptions}
               style={{ width: "100%" }}
               className="hover:drop-shadow-[0_0_10px_rgba(44,44,44,255)] overflow-hidden cursor-pointer"
-            >
+              >
               <div
                 className="border border-4 border-customGray-800 rounded-lg bg-customBlack"
                 onClick={() => handleEventClick(event.id, event.name)}
-              >
+                >
                 <div className="w-full aspect-[16/9] overflow-hidden">
                   <img
                     className="w-full h-full object-cover object-top border-b-4 border-customGray-800 rounded-t"
                     src={logo}
                     alt={`${event.name} logo`}
-                  />
+                    />
                 </div>
 
                 <p className="italic font-light px-2 pt-2 truncate">
@@ -75,6 +79,8 @@ const EventCard = ({ events }) => {
         );
       })}
     </div>
+      )}
+  </div>
   );
 };
 

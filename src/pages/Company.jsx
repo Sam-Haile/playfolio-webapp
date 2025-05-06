@@ -65,7 +65,6 @@ const Company = () => {
           gameType: activeTab,
         }
       );
-      console.log(data);
       setTotalDeveloped(data.totalDeveloped);
       setTotalPublished(data.totalPublished);
       setCompanyDetails(data.companyDetails);

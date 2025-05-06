@@ -6,8 +6,8 @@ import {
   query,
   where,
   getDocs,
-  doc,
   getDoc,
+  doc,
 } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import { useAuth } from "../useAuth";
@@ -16,75 +16,48 @@ import React from "react";
 import { slugify } from "../services/slugify.js";
 import GameCard from "./GameCard.jsx";
 
-// Helper functions…
-async function fetchBacklogGames(user) {
-  if (!user) {
-    console.error("User is not logged in or user object not available");
-    return [];
-  }
-  try {
-    const userGameStatusesRef = collection(
-      db,
-      "users",
-      user.uid,
-      "gameStatuses"
-    );
-    const backlogQuery = query(
-      userGameStatusesRef,
-      where("status", "==", "Backlog")
-    );
-    const querySnapshot = await getDocs(backlogQuery);
-    const backlogGames = [];
-    querySnapshot.forEach((docSnapshot) => {
-      backlogGames.push({ id: docSnapshot.id, ...docSnapshot.data() });
-    });
-    return backlogGames;
-  } catch (error) {
-    console.error("Error fetching backlog games:", error);
-    return [];
-  }
-}
-
-function getStoredRandomGame() {
-  const stored = localStorage.getItem("dailyRandomGame");
+// Helper functions
+function getStoredRandomGameId() {
+  const stored = localStorage.getItem("dailyRandomGameId");
   if (!stored) return null;
   const parsed = JSON.parse(stored);
   const today = new Date().toISOString().split("T")[0];
-  return parsed.dateString === today ? parsed.game : null;
+  return parsed.date === today ? parsed.id : null;
 }
 
-function storeRandomGame(game) {
+function storeRandomGameId(id) {
   const today = new Date().toISOString().split("T")[0];
-  const payload = { game, dateString: today };
-  localStorage.setItem("dailyRandomGame", JSON.stringify(payload));
+  localStorage.setItem("dailyRandomGameId", JSON.stringify({ id, date: today }));
 }
 
-const defaultOptions = {
-  reverse: false,
-  max: 20,
-  perspective: 1000,
-  scale: 1.05,
-  speed: 500,
-  transition: true,
-  axis: null,
-  reset: true,
-  easing: "cubic-bezier(.03,.98,.52,.99)",
-};
+async function fetchRandomBacklogGame(user) {
+  if (!user) return null;
+  try {
+    const userGameStatusesRef = collection(db, "users", user.uid, "gameStatuses");
+    const backlogQuery = query(userGameStatusesRef, where("status", "==", "Backlog"));
+    const querySnapshot = await getDocs(backlogQuery);
+    const docs = querySnapshot.docs;
+    if (docs.length === 0) return null;
+    const randomDoc = docs[Math.floor(Math.random() * docs.length)];
+    return { id: randomDoc.id, ...randomDoc.data() };
+  } catch (err) {
+    console.error("Error fetching backlog game:", err);
+    return null;
+  }
+}
 
 const GameOfTheDay = () => {
   const { user } = useAuth();
-  const [backlogGames, setBacklogGames] = useState([]);
   const [gameOfDay, setGameOfDay] = useState(null);
-  const [platforms, setPlatforms] = useState([]);
   const [backlogDate, setBacklogDate] = useState(null);
   const [loading, setLoading] = useState(false);
   const [mainScreenshotIndex, setMainScreenshotIndex] = useState(0);
-  const [detailsFetched, setDetailsFetched] = useState(false);
+  const [platforms, setPlatforms] = useState([]);
   const imgRef = useRef(null);
   const navigate = useNavigate();
   const [overlayOpen, setOverlayOpen] = useState(false);
 
-  // Flag to control use of temporary data
+  const detailsFetchedRef = useRef(false);
   const useTempData = false;
 
   const tempGame = {
@@ -96,130 +69,113 @@ const GameOfTheDay = () => {
     },
     coverUrl: "https://images.igdb.com/igdb/image/upload/t_1080p/co1p9c.jpg",
     developers: [
-      "Nintendo EAD Software Development Group No.2",
-      "Nintendo",
-      "Nintendo"
+      { id: 1, name: "Nintendo EAD Software Development Group No.2" },
+      { id: 2, name: "Nintendo" },
     ],
     logos: {
       url: "https://cdn2.steamgriddb.com/logo/79167346cb707b193dadbd67ab20855e.png",
     },
-    genres: ["Shooter, Platform, Puzzle, Racing, Adventure, Arcade"],
-    platforms: ["Xbox Series X|S", "PC (Microsoft Windows)", "PlayStation 5"],
+    genres: [
+      { id: 1, name: "Shooter" },
+      { id: 2, name: "Platform" },
+      { id: 3, name: "Puzzle" },
+      { id: 4, name: "Racing" },
+    ],
+    platforms: [
+      { id: 1, name: "Xbox Series X|S" },
+      { id: 2, name: "PC (Microsoft Windows)" },
+    ],
     summary:
-      "Nintendo Land is a fun and lively virtual theme park filled with attractions based on popular Nintendo game worlds. Explore the Nintendo Land Plaza as your Mii character, and play in park attractions featuring unique and innovative gameplay made possible by the Wii U GamePad controller. Enjoy team, competitive, and solo gameplay experiences for up to five players!",
+      "Nintendo Land is a fun and lively virtual theme park...",
     totalRating: 76.5,
     rating_count: 12,
     screenshots: [
       "//images.igdb.com/igdb/image/upload/t_1080p/scsoeo.jpg",
       "//images.igdb.com/igdb/image/upload/t_1080p/scsoep.jpg",
-      "//images.igdb.com/igdb/image/upload/t_1080p/scsoer.jpg",
-      "//images.igdb.com/igdb/image/upload/t_1080p/scsoes.jpg",
-      "//images.igdb.com/igdb/image/upload/t_1080p/scsoeq.jpg",
     ],
-    backlogDate: new Date(), // Temporary backlog date for testing
+    backlogDate: new Date(),
   };
 
-  // When using temporary data, immediately set gameOfDay to tempGame.
   useEffect(() => {
     if (useTempData) {
       setGameOfDay(tempGame);
     }
   }, [useTempData]);
 
-  // Only run the fetch calls if not using temporary data.
   useEffect(() => {
-    if (useTempData) return;
-    async function getData() {
-      if (user) {
-        const games = await fetchBacklogGames(user);
-        setBacklogGames(games);
+    if (useTempData || !user) return;
+
+    const loadGameOfDay = async () => {
+      const storedId = getStoredRandomGameId();
+      let selectedGame;
+
+      if (storedId) {
+        const userGameRef = doc(db, "users", user.uid, "gameStatuses", storedId);
+        const docSnap = await getDoc(userGameRef);
+        if (docSnap.exists()) {
+          selectedGame = { id: docSnap.id, ...docSnap.data() };
+        }
       }
-    }
-    getData();
+
+      if (!selectedGame) {
+        selectedGame = await fetchRandomBacklogGame(user);
+        if (selectedGame) storeRandomGameId(selectedGame.id);
+      }
+
+      if (selectedGame) {
+        setGameOfDay(selectedGame);
+        setBacklogDate(selectedGame.updatedAt?.toDate?.() || null);
+      }
+    };
+
+    loadGameOfDay();
   }, [user, useTempData]);
 
   useEffect(() => {
-    if (useTempData) return;
-    if (backlogGames.length > 0) {
-      const storedGame = getStoredRandomGame();
-      if (storedGame) {
-        setGameOfDay(storedGame);
-      } else {
-        const randomIndex = Math.floor(Math.random() * backlogGames.length);
-        const selectedGame = backlogGames[randomIndex];
-        setGameOfDay(selectedGame);
-        storeRandomGame(selectedGame);
-      }
-    }
-  }, [backlogGames, useTempData]);
+    if (useTempData || !gameOfDay || !gameOfDay.id || detailsFetchedRef.current) return;
 
-  useEffect(() => {
-    if (useTempData) return;
-    if (!gameOfDay || !gameOfDay.id || detailsFetched) return;
-
-    const fetchGameData = async () => {
+    const fetchGameDetails = async () => {
       setLoading(true);
       try {
-        const gameResponse = await axios.post(
+        const response = await axios.post(
           `${import.meta.env.VITE_API_URL}/api/games/ids`,
           { ids: [gameOfDay.id] }
         );
-
-        setGameOfDay(gameResponse.data[0]);
-
-        setDetailsFetched(true);
+        if (response.data?.length) {
+          setGameOfDay((prev) => ({
+            ...prev,
+            ...response.data[0],
+          }));
+          detailsFetchedRef.current = true;
+        }
       } catch (err) {
-        console.error("Error fetching game data:", err.message);
+        console.error("Error fetching game details:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchGameData();
-  }, [gameOfDay, detailsFetched, useTempData]);
+    fetchGameDetails();
+  }, [gameOfDay, useTempData]);
 
   useEffect(() => {
-    if (useTempData) return;
+    if (useTempData || !gameOfDay?.id) return;
+
     const fetchPlatforms = async () => {
-      if (!gameOfDay || !gameOfDay.id) return;
       try {
         const response = await axios.post(
           `${import.meta.env.VITE_API_URL}/api/platforms`,
           { gameId: gameOfDay.id }
         );
         setPlatforms(response.data);
-      } catch (error) {
-        console.error("Error fetching platforms:", error);
+      } catch (err) {
+        console.error("Error fetching platforms:", err);
       }
     };
+
     fetchPlatforms();
   }, [gameOfDay, useTempData]);
 
-  useEffect(() => {
-    if (useTempData) return;
-    const fetchAddedDate = async () => {
-      if (!user || !gameOfDay || !gameOfDay.id) return;
-      try {
-        const userGameRef = doc(
-          db,
-          "users",
-          user.uid,
-          "gameStatuses",
-          String(gameOfDay.id)
-        );
-        const docSnap = await getDoc(userGameRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          setBacklogDate(data.updatedAt ? data.updatedAt.toDate() : null);
-        } else {
-          setBacklogDate(null);
-        }
-      } catch (error) {
-        console.error("Error fetching game added date:", error);
-      }
-    };
-    fetchAddedDate();
-  }, [user, gameOfDay, useTempData]);
 
   const navigateToGamePage = (gameId, gameName) => {
     const slug = slugify(gameName);
@@ -241,9 +197,59 @@ const GameOfTheDay = () => {
     navigate(`/platform/${platformId}/${slug}`);
   }
 
-  if (loading) {
-    return <div>Loading game data...</div>;
+  // if (loading || !gameOfDay) {
+  //   return (
+  //     <div className="relative pb-8 animate-pulse">
+  //       <div className="absolute left-0 inset-0  opacity-40 z-0" />
+
+  //       <h1 className="mb-4 relative text-2xl font-bold z-20 bg-gray-300 h-8 w-64 rounded" />
+
+  //       {/* Hero + fade overlays */}
+  //       <div className="absolute top-0 h-full w-full pointer-events-none z-10 right-0" />
+
+  //       <div className="bg-cover bg-center bg-no-repeat relative z-10 flex overflow-y-hidden overflow-x-visible" style={{ height: "18rem" }}>
+  //         {/* Left: Box art placeholder */}
+  //         <div className="h-full flex-shrink-0 w-[200px] bg-gray-300 rounded" />
+
+  //         {/* Right: text placeholders */}
+  //         <div className="flex-shrink px-4 relative w-full">
+  //           <div className="space-y-3">
+  //             <div className="bg-gray-300 h-6 w-1/2 rounded" />
+  //             <div className="bg-gray-300 h-4 w-1/3 rounded" />
+  //             <div className="bg-gray-300 h-4 w-2/3 rounded" />
+  //             <div className="bg-gray-300 h-4 w-3/4 rounded" />
+  //             <div className="bg-gray-300 h-4 w-2/5 rounded" />
+  //           </div>
+
+  //           {/* Footer */}
+  //           <div className="absolute bottom-2 right-4 flex items-center space-x-2">
+  //             <div className="h-3 w-20 bg-gray-600 rounded" />
+  //             <div className="h-3 w-16 bg-gray-600 rounded" />
+  //           </div>
+  //         </div>
+
+  //         {/* Screenshot */}
+  //         <div className="flex-shrink-0 h-full hidden xl:block w-[500px] bg-gray-300 rounded ml-4" />
+
+  //         {/* Screenshot thumbnails */}
+  //         <div className="h-20 hidden xl:block pl-2">
+  //           <div className="flex flex-col gap-2">
+  //             {Array(5).fill(0).map((_, index) => (
+  //               <div key={index} className="w-[125px] h-20 bg-gray-800 rounded" />
+  //             ))}
+  //           </div>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
+
+  if (loading || !gameOfDay) {
+    return (
+      <div className="h-[18rem]"> </div>
+    );
   }
+
 
   return (
     <div className="relative pb-8">
@@ -291,7 +297,7 @@ const GameOfTheDay = () => {
       <div className="bg-cover bg-center bg-no-repeat relative z-10 flex overflow-y-hidden overflow-x-visible" style={{ height: "18rem" }}>
         {/* Left: Image container that grows based on image aspect ratio */}
         <div className="h-full flex-shrink-0">
-          <GameCard 
+          <GameCard
             src={gameOfDay?.coverUrl}
             alt={`Cover image of ${gameOfDay?.name}`}
             className="h-full object-contain rounded"
@@ -382,21 +388,21 @@ const GameOfTheDay = () => {
 
             {/* Platforms */}
             <div className="pt-2">
-            {Array.isArray(gameOfDay?.platforms) && gameOfDay?.platforms.length > 0 ? (
-              gameOfDay.platforms.map((platform, index) => (
-                <span key={platform.id}>
-                  <span
-                    onClick={() => handlePlatformClick(platform.id, platform.name)}
-                    className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer"
+              {Array.isArray(gameOfDay?.platforms) && gameOfDay?.platforms.length > 0 ? (
+                gameOfDay.platforms.map((platform, index) => (
+                  <span key={platform.id}>
+                    <span
+                      onClick={() => handlePlatformClick(platform.id, platform.name)}
+                      className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer"
                     >
-                    {platform.name}
+                      {platform.name}
+                    </span>
+                    {index < gameOfDay.platforms.length - 1 && ", "}
                   </span>
-                  {index < gameOfDay.platforms.length - 1 && ", "}
-                </span>
-              ))
-            ) : (
-              <span className="italic font-light">Unknown Developers</span>
-            )}
+                ))
+              ) : (
+                <span className="italic font-light">Unknown Developers</span>
+              )}
             </div>
           </div>
 

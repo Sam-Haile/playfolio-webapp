@@ -16,7 +16,7 @@ const defaultOptions = {
   easing: "cubic-bezier(.03,.98,.52,.99)",
 };
 
-const TrendingGamesCarousel = ({ slides }) => {
+const TrendingGamesCarousel = ({ slides, loading }) => {
   const navigate = useNavigate();
   const [displayedSlides, setDisplayedSlides] = useState([]);
 
@@ -24,56 +24,53 @@ const TrendingGamesCarousel = ({ slides }) => {
     const updateDisplayedSlides = () => {
       const width = window.innerWidth;
       if (width >= 900) {
-        setDisplayedSlides(slides.slice(0, 7)); // Display 5 slides on large screens
+        setDisplayedSlides(slides.slice(0, 7));
       } else if (width >= 768) {
-        setDisplayedSlides(slides.slice(0, 5)); // Display 3 slides on medium screens
+        setDisplayedSlides(slides.slice(0, 5));
       } else if (width >= 700) {
-        setDisplayedSlides(slides.slice(0, 4)); // Display 3 slides on medium screens
+        setDisplayedSlides(slides.slice(0, 4));
       } else {
-        setDisplayedSlides(slides.slice(0, 3)); // Display 1 slide on small screens
+        setDisplayedSlides(slides.slice(0, 3));
       }
     };
 
-    updateDisplayedSlides();
+    if (!loading) updateDisplayedSlides();
     window.addEventListener("resize", updateDisplayedSlides);
-
     return () => window.removeEventListener("resize", updateDisplayedSlides);
-  }, [slides]);
+  }, [slides, loading]);
 
   return (
     <div>
-      <div className="flex justify-center">
-        {displayedSlides.filter((slide) => slide.cover).map((slide, index) => (
-          <div
-            className="px-2 cursor-pointer  "
-            key={index}
-            onClick={() => slide.igdb_id ? navigate(`/game/${slide.igdb_id}/${slugify(gameName)}`) : null}
-          >
-            <Tilt options={defaultOptions} style={{ width: "100%" }}>
-              {slide.cover ? (
-                <GameCard
-                  src={slide.cover}
-                  alt={`${slide.name} Cover`}
-                  gameName={slide.name}
-                  gameId={slide.igdb_id}
-                  className="w-full h-auto rounded-lg shadow-md"
-                />
-              ) : (
-                <div className="w-full rounded-lg flex items-center justify-center bg-gray-200">
-                  <p className="text-gray-500 text-sm">No Coverk Available</p>
-                </div>
-              )}
-            </Tilt>
-          </div>
-        ))}
-
-      </div>
-
-      {/* <div className="flex flex-row-reverse">
-        <a href="/" className="text-right pt-4 hover:text-primaryPurple-500">View More Trending </a>
-      </div> */}
+      {loading ? (
+        <div className="w-full h-40" /> 
+      ) : (
+        <div className="flex justify-center">
+          {displayedSlides
+            .filter((slide) => slide.cover)
+            .map((slide, index) => (
+              <div
+                className="px-2 cursor-pointer"
+                key={index}
+                onClick={() =>
+                  slide.igdb_id
+                    ? navigate(`/game/${slide.igdb_id}/${slugify(slide.name)}`)
+                    : null
+                }
+              >
+                <Tilt options={defaultOptions} style={{ width: "100%" }}>
+                  <GameCard
+                    src={slide.cover}
+                    alt={`${slide.name} Cover`}
+                    gameName={slide.name}
+                    gameId={slide.igdb_id}
+                    className="w-full h-auto rounded-lg shadow-md"
+                  />
+                </Tilt>
+              </div>
+            ))}
+        </div>
+      )}
     </div>
   );
 };
-
 export default TrendingGamesCarousel;

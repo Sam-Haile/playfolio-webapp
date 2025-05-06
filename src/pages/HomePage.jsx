@@ -22,39 +22,45 @@ const HomePage = () => {
   const [recommendedGames, setRecommendedGames] = useState([]);
   const [trendingGames, setTrendingGames] = useState([]);
   const [events, setEvents] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    if (!user) return;
 
-    // 1) Generate/Fetch discovery queue IDs
-    generateDiscoveryQueueForUser(user.uid)
-      .then(async (ids) => {
-        // 2) Turn IDs into full game objects
-        const resp = await axios.post(
-          `${import.meta.env.VITE_API_URL}/api/games/ids`,
-          { ids },
-          { params: { slim: false } }
-        );
-        setRecommendedGames(resp.data);
-      })
-      .catch(console.error);
+useEffect(() => {
+  if (!user) return;
 
-    // 3) Meanwhile, load trending & events (unchanged)
-    (async () => {
-      try {
-        const [trendingData, eventData] = await Promise.all([
-          fetchTrendingGames(20),
-          fetchEvents(4),
-        ]);
-        setTrendingGames(trendingData || []);
-        setEvents(eventData || []);
-      } catch (e) {
-        console.error(e);
-        setTrendingGames([]);
-        setEvents([]);
-      }
-    })();
-  }, [user]);
+  // 1) Load personalized discovery queue
+  generateDiscoveryQueueForUser(user.uid)
+    .then(async (ids) => {
+      const resp = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/games/ids`,
+        { ids },
+        { params: { slim: false } }
+      );
+      console.log("Recommended Games", resp.data);
+      setRecommendedGames(resp.data);
+    })
+    .catch(console.error);
+
+  // 2) Load trending + events in parallel
+  (async () => {
+    setIsLoading(true); // ✅ START loading
+    try {
+      const [trendingData, eventData] = await Promise.all([
+        fetchTrendingGames(20),
+        fetchEvents(4),
+      ]);
+      setTrendingGames(trendingData || []);
+      setEvents(eventData || []);
+    } catch (e) {
+      console.error(e);
+      setTrendingGames([]);
+      setEvents([]);
+    } finally {
+      setIsLoading(false); // ✅ END loading
+    }
+  })();
+}, [user]);
+
 
   return (
     <div className="relative">
@@ -310,7 +316,7 @@ const HomePage = () => {
 
         <div className="pt-8">
           {/* <h1 className="text-2xl font-bold py-4">Currently Trending</h1> */}
-          <TrendingGames slides={trendingGames} />
+          <TrendingGames slides={trendingGames} loading={isLoading}/>
         </div>
 
         <HorizontalLine
@@ -344,7 +350,7 @@ const HomePage = () => {
         />
 
         {/* <h1 className="relative text-2xl font-bold pb-4 z-20">Events</h1> */}
-        <EventCard events={events} />
+        <EventCard events={events} loading={isLoading}/>
 
         <HorizontalLine
           width="full"

@@ -103,9 +103,9 @@ const Results = () => {
   };
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative flex flex-col min-h-screen">
       <Header showSearchBar={true} showNavButtons={true} showLoginButtons={true} zIndex={20} />
-      <div className="pt-10 relative max-w-screen min-h-[100%] mx-[15%]">
+      <div className="flex-grow pt-10 relative max-w-screen min-h-[100%] mx-[15%]">
 
         <div className="flex flex-col  mt-24">
           <p className="px-0">Search Results for "{searchTerm}"</p>
@@ -219,9 +219,7 @@ const Results = () => {
           )}
         </div>
       </div>
-      <div className="absolute bottom-0 w-full">
       <Footer />
-      </div>
     </div>
   );
 };
