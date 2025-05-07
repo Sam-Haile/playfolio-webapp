@@ -150,7 +150,7 @@ const Collections = ({ user, showProfile = true }) => {
             preloadedGames[game.id]?.name || "Unknown Game",
           coverImage:
             preloadedGames[game.id]?.coverImage ||
-            "/images/default_game_cover.png",
+            "../images/coverFallback.png",
         }))
       );
     }
@@ -243,7 +243,7 @@ const Collections = ({ user, showProfile = true }) => {
                         <GameCard
                           gameId={game.id}
                           src={game.coverImage}
-                          alt={game.name}
+                          alt="../images/coverFallback.png"
                           isLoading={!game.coverImage}
                         />
                       </Tilt>

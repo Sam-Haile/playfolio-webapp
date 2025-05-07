@@ -10,7 +10,7 @@ import { useAuth } from "../useAuth";
 import axios from "axios";
 import GameOfTheDay from "../components/GameOfTheDay";
 import { generateDiscoveryQueueForUser } from "../services/discoveryQueue";
-import HomePageHeader from "../components/HomePageHeader";
+import HomePageInfo from "../components/HomePageHeader";
 
 const HomePage = () => {
   const { user } = useAuth();
@@ -69,7 +69,7 @@ useEffect(() => {
 
       <div className="mx-[15%] pt-36">
 
-        <HomePageHeader user={user}/>
+        <HomePageInfo user={user}/>
 
         <HorizontalLine
           width="full"

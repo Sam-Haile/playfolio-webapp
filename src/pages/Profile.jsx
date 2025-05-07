@@ -163,10 +163,10 @@ const Profile = () => {
 
       return gamesList.map((game) => ({
         ...game,
-        name: preloadedGames[game.id]?.name || "Unknown Game",
+        name: preloadedGames[game.id]?.name || "Unknowadklnn Game",
         coverImage:
           preloadedGames[game.id]?.coverImage ||
-          "/images/default_game_cover.png",
+          "../../images/coverFallback.png",
       }));
     } catch (error) {
       console.error("Error fetching game covers:", error);

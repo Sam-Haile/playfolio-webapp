@@ -28,15 +28,15 @@ const GamePage = () => {
   const [loading, setLoading] = useState(true); // Tracks if data is being fetched
   const [showMore, setShowMore] = useState(false);
   const navigate = useNavigate();
-  const [trailer, setTrailer]               = useState(null);
+  const [trailer, setTrailer] = useState(null);
   const [logoError, setLogoError] = useState(false);
   const [developerError, setDeveloperError] = useState(false);
   const [showSeeMoreButton, setShowSeeMoreButton] = useState(false);
   const synopsisRef = useRef(null);
   const safeSummary = gameDetails?.summary || "";
-  const [mainMediaIndex, setMainMediaIndex] = useState(0);  
+  const [mainMediaIndex, setMainMediaIndex] = useState(0);
   const [overlayOpen, setOverlayOpen] = useState(false);
-  const [showVideoPlayer, setShowVideo]  = useState(false); 
+  const [showVideoPlayer, setShowVideo] = useState(false);
 
   useEffect(() => {
     fetchGameData();
@@ -60,7 +60,7 @@ const GamePage = () => {
 
       setHeroes(gameResponse.data.heroes.url || null);
       setLogos(gameResponse.data.logos.url || null);
-      setTrailer(gameResponse.data.video || null); 
+      setTrailer(gameResponse.data.video || null);
 
     } catch (err) {
       console.error("Error fetching game data:", err);
@@ -183,6 +183,8 @@ const GamePage = () => {
     }
     return media;
   };
+
+  console.log(gameDetails?.screenshots);
 
   const {
     name,
@@ -481,9 +483,8 @@ const GamePage = () => {
                 <h3 className="font-bold pb-2">Synopsis</h3>
                 <p
                   ref={synopsisRef}
-                  className={`font-light ${
-                    showMore ? "" : "line-clamp-3 overflow-hidden"
-                  }`}
+                  className={`font-light ${showMore ? "" : "line-clamp-3 overflow-hidden"
+                    }`}
                   style={{
                     display: "-webkit-box",
                     WebkitBoxOrient: "vertical",
@@ -504,58 +505,61 @@ const GamePage = () => {
               </div>
 
               {/* Additional Media */}
-              <div className="my-8">
-            <h2 className="text-base font-semibold mb-2">Media</h2>
+              {gameDetails?.screenshots.length > 0 && (
+                <div className="my-8">
+                  <h2 className="text-base font-semibold mb-2">Media</h2>
+                  <div></div>
 
-            {/* Main viewer */}
-            <div className="relative rounded aspect-video overflow-hidden flex justify-center items-center mb-2">
-              {media[mainMediaIndex]?.type === "video" ? (
-                showVideoPlayer ? (
-                  <iframe
-                    src={`${getEmbedUrl(media[0].data)}?autoplay=1&modestbranding=1`}
-                    title={media[0].data.name}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    className="w-full h-full"
-                  />
-                ) : (
-                  <button className="relative w-full h-full group" onClick={() => setShowVideo(true)}>
-                    <img
-                      src={`https://img.youtube.com/vi/${media[0].data.video_id}/hqdefault.jpg`}
-                      alt={media[0].data.name}
-                      className="absolute inset-0 w-full h-full object-cover"/>
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="w-20 h-20 text-white/90 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                    </div>
-                  </button>
-                )
-              ) : (
-                <>
-                  {/* blurred background */}
-                  <img src={media[mainMediaIndex].data} alt="" className="absolute w-full h-full object-cover blur-md scale-110 opacity-50" />
-                  <img src={media[mainMediaIndex].data} alt="Game Screenshot" className="relative w-full h-full object-contain" onClick={() => setOverlayOpen(true)} />
-                  {overlayOpen && <ImageOverlay src={media[mainMediaIndex].data} alt={`Screenshot of ${name}`} onClose={() => setOverlayOpen(false)} />}
-                </>
-              )}
-            </div>
-             {/* Thumbnails carousel */}
-             <Slider {...sliderSettings} className="px-6">
-              {media.slice(0, 8).map((m, idx) => (
-                <div key={idx} className="px-1 cursor-pointer" onClick={() => { setMainMediaIndex(idx); setShowVideo(false); }}>
-                  {m.type === "video" ? (
-                    <img src={`https://img.youtube.com/vi/${m.data.video_id}/default.jpg`} alt={m.data.name} className={`rounded ${idx===mainMediaIndex?"opacity-100":"brightness-50 hover:brightness-100"}`} />
-                  ) : (
-                    <img src={m.data} alt={`Screenshot ${idx+1}`} className={`h-full rounded ${idx===mainMediaIndex?"opacity-100":"brightness-50 hover:brightness-100"}`} />
-                  )}
+                  {/* Main viewer */}
+                  <div className="relative rounded aspect-video overflow-hidden flex justify-center items-center mb-2">
+                    {media[mainMediaIndex]?.type === "video" ? (
+                      showVideoPlayer ? (
+                        <iframe
+                          src={`${getEmbedUrl(media[0].data)}?autoplay=1&modestbranding=1`}
+                          title={media[0].data.name}
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          className="w-full h-full"
+                        />
+                      ) : (
+                        <button className="relative w-full h-full group" onClick={() => setShowVideo(true)}>
+                          <img
+                            src={`https://img.youtube.com/vi/${media[0].data.video_id}/hqdefault.jpg`}
+                            alt={media[0].data.name}
+                            className="absolute inset-0 w-full h-full object-cover" />
+                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-20 h-20 text-white/90 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M8 5v14l11-7z" />
+                            </svg>
+                          </div>
+                        </button>
+                      )
+                    ) : (
+                      <>
+                        {/* blurred background */}
+                        <img src={media[mainMediaIndex].data} alt="" className="absolute w-full h-full object-cover blur-md scale-110 opacity-50" />
+                        <img src={media[mainMediaIndex].data} alt="Game Screenshot" className="relative w-full h-full object-contain" onClick={() => setOverlayOpen(true)} />
+                        {overlayOpen && <ImageOverlay src={media[mainMediaIndex].data} alt={`Screenshot of ${name}`} onClose={() => setOverlayOpen(false)} />}
+                      </>
+                    )}
+                  </div>
+                  {/* Thumbnails carousel */}
+                  <Slider {...sliderSettings} className="px-6">
+                    {media.slice(0, 8).map((m, idx) => (
+                      <div key={idx} className="px-1 cursor-pointer" onClick={() => { setMainMediaIndex(idx); setShowVideo(false); }}>
+                        {m.type === "video" ? (
+                          <img src={`https://img.youtube.com/vi/${m.data.video_id}/default.jpg`} alt={m.data.name} className={`rounded ${idx === mainMediaIndex ? "opacity-100" : "brightness-50 hover:brightness-100"}`} />
+                        ) : (
+                          <img src={m.data} alt={`Screenshot ${idx + 1}`} className={`h-full rounded ${idx === mainMediaIndex ? "opacity-100" : "brightness-50 hover:brightness-100"}`} />
+                        )}
+                      </div>
+                    ))}
+                  </Slider>
                 </div>
-              ))}
-            </Slider>
-          </div>
+              )}
 
-              <div className="lg:block md:hidden sm:hidden">
-                <h1 className="text-base font-semibold">Reviews</h1>
+              <div className="lg:block md:hidden sm:hidden ">
+                <h1 className="text-base font-semibold mt-4">Reviews</h1>
                 <HorizontalLine
                   marginTop="mt-0"
                   width="full"
@@ -581,11 +585,10 @@ const GamePage = () => {
                       .map((_, i) => (
                         <svg
                           key={i}
-                          className={`h-6 w-6 ${
-                            i < Math.round(gameDetails.rating / 20)
+                          className={`h-6 w-6 ${i < Math.round(gameDetails.rating / 20)
                               ? "text-yellow-400"
                               : "text-gray-300"
-                          } fill-current`}
+                            } fill-current`}
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
                         >
