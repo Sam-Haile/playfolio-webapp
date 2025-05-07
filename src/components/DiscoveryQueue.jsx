@@ -143,10 +143,10 @@ function GameSlide({ game }) {
             </div>
           </div>
 
-          <div className="flex absolute bottom-0 right-0 p-4 gap-x-4">
+          {/* <div className="flex absolute bottom-0 right-0 p-4 gap-x-4">
             <ThumbsUp className="mt-auto h-6 w-6" />
             <ThumbsDown className="mt-auto h-6 w-6" />
-          </div>
+          </div> */}
         </div>
       </div>
 

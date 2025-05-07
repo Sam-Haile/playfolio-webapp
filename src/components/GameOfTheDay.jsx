@@ -177,26 +177,6 @@ const GameOfTheDay = () => {
   }, [gameOfDay, useTempData]);
 
 
-  const navigateToGamePage = (gameId, gameName) => {
-    const slug = slugify(gameName);
-    navigate(`/game/${gameOfDay.id}/${gameOfDay.name}`);
-  };
-
-  const handleDeveloperClick = (developerId, developerName) => {
-    const slug = slugify(developerName);
-    navigate(`/company/${developerId}/${slug}`);
-  }
-
-  const handleGenreClick = (genreId, genreName) => {
-    const slug = slugify(genreName);
-    navigate(`/genre/${genreId}/${slug}`);
-  }
-
-  const handlePlatformClick = (platformId, platformName) => {
-    const slug = slugify(platformName);
-    navigate(`/platform/${platformId}/${slug}`);
-  }
-
   // if (loading || !gameOfDay) {
   //   return (
   //     <div className="relative pb-8 animate-pulse">
@@ -310,24 +290,24 @@ const GameOfTheDay = () => {
           <div className="space-y-3">
 
             {/* Game Name + Release Year */}
-            <p className="font-semibold text-2xl leading-tight hover:text-primaryPurple-500 cursor-pointer group"
-              onClick={() => navigateToGamePage(gameOfDay.id, gameOfDay.name)}>
+            <a className="mr-2 font-semibold text-2xl leading-tight hover:text-primaryPurple-500 cursor-pointer group"
+              href={`/game/${gameOfDay.id}/${slugify(gameOfDay.name)}`}>
               {gameOfDay?.name}{" "}
               <span className="italic font-normal text-gray-300 group-hover:text-primaryPurple-500">
                 ({gameOfDay?.releaseYear})
               </span>
-            </p>
+            </a>
 
             {/* Developers */}
             {Array.isArray(gameOfDay?.developers) && gameOfDay?.developers.length > 0 ? (
               gameOfDay.developers.map((developer, index) => (
                 <span key={developer.id}>
-                  <span
-                    onClick={() => handleDeveloperClick(developer.id, developer.name)}
-                    className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer inline"
+                  <a
+                  href={`/company/${developer.id}/${slugify(developer.name)}`}
+                  className="italic font-light hover:font-semibold hover:text-primaryPurple-500 cursor-pointer inline"
                   >
                     {developer.name}
-                  </span>
+                  </a>
                   {index < developer.length - 1 && ", "}
                 </span>
               ))
@@ -365,12 +345,12 @@ const GameOfTheDay = () => {
                 {Array.isArray(gameOfDay?.genres) && gameOfDay.genres.length > 0 ? (
                   gameOfDay.genres.map((genre, index) => (
                     <span key={genre.id}>
-                      <span
-                        onClick={() => handleGenreClick(genre.id, genre.name)}
-                        className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer"
+                      <a
+                        href={`/genre/${genre.id}/${slugify(genre.name)}`}
+                        className="italic font-light hover:font-semibold hover:text-primaryPurple-500 cursor-pointer"
                       >
                         {genre.name}
-                      </span>
+                      </a>
                       {index < gameOfDay.genres.length - 1 && ", "}
                     </span>
                   ))
@@ -391,12 +371,13 @@ const GameOfTheDay = () => {
               {Array.isArray(gameOfDay?.platforms) && gameOfDay?.platforms.length > 0 ? (
                 gameOfDay.platforms.map((platform, index) => (
                   <span key={platform.id}>
-                    <span
+                    <a
+                    href={`platform/${platform.id}/${slugify(platform.name)}`}
                       onClick={() => handlePlatformClick(platform.id, platform.name)}
-                      className="italic font-light hover:underline hover:text-primaryPurple-500 cursor-pointer"
+                      className="italic font-light hover:font-semibold hover:text-primaryPurple-500 cursor-pointer"
                     >
                       {platform.name}
-                    </span>
+                    </a>
                     {index < gameOfDay.platforms.length - 1 && ", "}
                   </span>
                 ))
@@ -409,7 +390,7 @@ const GameOfTheDay = () => {
           {/* Footer */}
           <div className="text-xs text-gray-400 font-light absolute bottom-2 right-4 flex items-center space-x-2">
             <span>Added: <span className="italic">{backlogDate?.toLocaleDateString()}</span></span>
-            <span className="cursor-pointer font-semibold text-primaryPurple-500 hover:underline">
+            <span className="cursor-pointer font-semibold text-primaryPurple-500 hover:font-semibold">
               Remove Title
             </span>
           </div>
