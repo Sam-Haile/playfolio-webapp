@@ -5,7 +5,7 @@ const ReviewIcon = ({
     viewBox = "24",
   }) => (
     <svg
-      xmlns="https://www.w3.org/2000/svg"
+      xmlns="http://www.w3.org/2000/svg"
       viewBox={`0 0 ${viewBox} ${viewBox}`}
       fill="none"
       width={width}

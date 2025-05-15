@@ -1,6 +1,6 @@
 const FullStar = ({ color }) => (
   <svg
-    xmlns="https://www.w3.org/2000/svg"
+    xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
     fill={"#FFD700"}
     className="w-[20px] h-full"
