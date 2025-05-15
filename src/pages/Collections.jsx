@@ -7,6 +7,7 @@ import {
   getDoc,
   doc,
 } from "firebase/firestore";
+import HorizontalLine from "../components/HorizontalLine";
 import GameCard from "../components/GameCard";
 import axios from "axios";
 import { Tilt } from "react-tilt";
@@ -149,7 +150,7 @@ const Collections = ({ user, showProfile = true }) => {
             preloadedGames[game.id]?.name || "Unknown Game",
           coverImage:
             preloadedGames[game.id]?.coverImage ||
-            "../images/coverFallback2.png",
+            "../images/coverFallback.png",
         }))
       );
     }
@@ -163,7 +164,7 @@ const Collections = ({ user, showProfile = true }) => {
   
 
   return (
-    <div className="">
+    <div className="min-h-screen">
       <div className="mt-8 w-full">
         {/* Top-level section buttons */}
         <div className="flex w-full border-b-2 border-darkGray">

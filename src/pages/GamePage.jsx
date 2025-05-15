@@ -27,6 +27,7 @@ const GamePage = () => {
   const [heroes, setHeroes] = useState(null); // Store heroes
   const [loading, setLoading] = useState(true); // Tracks if data is being fetched
   const [showMore, setShowMore] = useState(false);
+  const navigate = useNavigate();
   const [trailer, setTrailer] = useState(null);
   const [logoError, setLogoError] = useState(false);
   const [developerError, setDeveloperError] = useState(false);
@@ -57,8 +58,8 @@ const GamePage = () => {
       setGameDetails(gameResponse.data);
       console.log("Game Details:", gameResponse.data);
 
-      setHeroes(gameResponse.data.heroes?.url || "/images/default_game_cover.png");
-      setLogos(gameResponse.data.logos?.url || "/images/default_game_cover.png");
+      setHeroes(gameResponse.data.heroes.url || null);
+      setLogos(gameResponse.data.logos.url || null);
       setTrailer(gameResponse.data.video || null);
 
     } catch (err) {
@@ -183,6 +184,8 @@ const GamePage = () => {
     return media;
   };
 
+  console.log(gameDetails?.screenshots);
+
   const {
     name,
     summary,
@@ -226,7 +229,7 @@ const GamePage = () => {
         <div className="pt-18 bg-white h-[75vh] absolute top-0 w-full flex items-center justify-center overflow-hidden pointer-event:none">
           {heroes ? (
             <img
-              src={"../../images/heroFallback2.png"} // Use the first hero
+              src={heroes} // Use the first hero
               alt="Game Hero"
               className="w-full h-full object-cover " // Adjust height for proportional scaling
               draggable="false"
@@ -238,11 +241,8 @@ const GamePage = () => {
               className="w-full h-full object-cover" // Adjust height for proportional scaling
             />
           ) : (
-            <img
-              src={"../images/coverFallback.png"} // Use the first screenshot as a fallback
-              alt={`${name} Screenshot`}
-              className="w-full h-full object-cover" // Adjust height for proportional scaling
-            />          )}
+            <p>No heroes or screenshots available.</p>
+          )}
         </div>
 
         {/* Gradients */}
@@ -281,7 +281,7 @@ const GamePage = () => {
             <div className="grid grid-rows-[auto] h-auto self-end pl-4">
               <div className="flex flex-col items-start gap-2">
                 {/* Developer Logo */}
-                {Array.isArray(developers) && developers.length > 0 && developers[0].logo && !developerError ? (
+                {developers[0].logo && !developerError ? (
                   <a
                     href={`/company/${developers[0].id}/${slugify(
                       developers[0].name
