@@ -98,7 +98,7 @@ const ReviewEntry = ({ pfp, reviewerName, rating, reviewText, gameId, reviewId, 
                         ? "text-primaryPurple-500"
                         : "text-gray-300"
                         } fill-current`}
-                      xmlns="http://www.w3.org/2000/svg"
+                      xmlns="https://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
                     >
                       <path d="M12 2l2.7 8H22l-6.9 5 2.7 8L12 18l-6.9 5 2.7-8L2 10h7.3L12 2z" />

@@ -1,9 +1,12 @@
 [
-    {
-      "origin": ["http://localhost:5173"],
-      "method": ["GET", "POST", "PUT", "DELETE"],
-      "maxAgeSeconds": 3600,
-      "responseHeader": ["Content-Type", "Authorization", "x-goog-meta-foo"]
-    }
-  ]
-  
+  {
+    "origin": [
+      "http://localhost:5173",
+      "https://www.playfolio.io",
+      "https://playfolio.io"
+    ],
+    "method": ["GET", "POST", "PUT", "DELETE"],
+    "maxAgeSeconds": 3600,
+    "responseHeader": ["Content-Type", "Authorization", "x-goog-meta-foo"]
+  }
+]

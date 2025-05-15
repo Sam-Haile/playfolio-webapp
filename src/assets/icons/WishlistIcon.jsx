@@ -1,6 +1,6 @@
 const WishlistIcon = ({ color, className, width = "64px", height = "64px", viewBox ="24" }) => (
   <svg 
-    xmlns="http://www.w3.org/2000/svg" 
+    xmlns="https://www.w3.org/2000/svg" 
     viewBox={`0 0 ${viewBox} ${viewBox}`} 
     width={width} 
     height={height}

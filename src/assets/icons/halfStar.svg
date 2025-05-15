@@ -1,5 +1,5 @@
 const HalfStar = ({ activeColor, neutralColor }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-8 h-8">
+  <svg xmlns="https://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-8 h-8">
     {/* Right Half - Neutral Color */}
     <path
       d="M12 1L15.73 7.87L22.57 8.61L18.03 14.96L19.44 21.69L12 17.34V1Z"

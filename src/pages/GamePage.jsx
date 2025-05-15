@@ -528,7 +528,7 @@ const GamePage = () => {
                             alt={media[0].data.name}
                             className="absolute inset-0 w-full h-full object-cover" />
                           <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="w-20 h-20 text-white/90 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor">
+                            <svg xmlns="https://www.w3.org/2000/svg" className="w-20 h-20 text-white/90 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor">
                               <path d="M8 5v14l11-7z" />
                             </svg>
                           </div>
@@ -589,7 +589,7 @@ const GamePage = () => {
                               ? "text-yellow-400"
                               : "text-gray-300"
                             } fill-current`}
-                          xmlns="http://www.w3.org/2000/svg"
+                          xmlns="https://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
                         >
                           <path d="M12 2l2.7 8H22l-6.9 5 2.7 8L12 18l-6.9 5 2.7-8L2 10h7.3L12 2z" />
