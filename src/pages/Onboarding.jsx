@@ -2,9 +2,6 @@ import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import SearchBar from "../components/SearchBar";
-import Button from "../components/Button";
-import { Link } from "react-router-dom";
-import GameCard from "../components/GameCard";
 import HorizontalLine from "../components/HorizontalLine";
 import TrendingGames from "../components/TrendingGames";
 import { fetchTrendingGames, fetchEvents } from "../services/helperFunctions";
@@ -34,37 +31,43 @@ const HomePage = () => {
 
   return (
     <div className="relative">
-      <div className="mx-[5%]">
+      <div className="">
         {/* Header */}
         <div className="relative">
           <Header
             showSearchBar={false}
-            showNavButtons={true}
+            showNavButtons={false}
             showLoginButtons={true}
             showProfileIcon={true}
             zIndex={20}
           />
         </div>
+
+        <div className="mx-[15%]">
+
         {/* Main Content */}
-        <main className="relative grid grid-cols-[40%_60%] ml-[10%]">
-          <div className="py-[30%] mr-[10%] z-20">
+        <main className="relative md:grid md:grid-cols-[40%_60%] sm:block">
+          <div className="py-[15%] md:py-[30%] md:mr-[10%] z-20">
             {/* Content Wrapper */}
             <div className="space-y-4 ">
               <h1 className="font-bold text-4xl ">
                 Collect, review, and catalog your favorite games
               </h1>
-              <h2 className="font-light text-lg w-[75%]">
+              <h2 className="font-light text-lg md:w-[75%] w-[100%]">
                 Your personal gaming journal to track what you've played, loved,
                 and still want to explore.
               </h2>
             </div>
             {/* Search Bar */}
-            <div className="pt-6">
+            <div className="pt-6 md:block hidden">
               <SearchBar className="z-50" width="75%" />
+            </div>
+            <div className="pt-6 md:hidden block">
+              <SearchBar className="z-50" width="100%" />
             </div>
           </div>
 
-          <div className="relative w-full h-full">
+          <div className="relative w-full h-full hidden md:block">
             {/* <BoxArtColumns /> */}
 
             <img
@@ -104,32 +107,32 @@ const HomePage = () => {
           </div>
         </main>
 
-        <HorizontalLine marginTop="mt-0" className="!z-0" marginBottom="mb-0" />
+        <HorizontalLine marginTop="mt-0" className="!z-0" marginBottom="mb-0" width />
 
-        <div className="flex justify-center items-center w-[75%] mx-auto mt-8 mb-6">
+        <div className="flex justify-center items-center md:w-[75%] w-[100%] mx-auto mt-6 mb-6">
           <div className="text-center">
-            <h1 className="font-bold text-lg">
+            <h1 className="font-bold md:text-base text-sm">
               Write and share reviews. Compile your own lists. Share your life
               in games.
             </h1>
 
-            <h2 className="text-sm">
+            <h2 className="md:text-sm text-xs">
               Below are some popular reviews and lists from this week.{" "}
-              <span className="underline text-primaryPurple">Sign up</span> to
+              <a href={`/signup`} className="underline text-primaryPurple hover:font-semibold cursor-pointer">Sign up</a> to
               create your own!
             </h2>
           </div>
         </div>
 
         {/* Ensure trendingGames is passed to the carousel */}
-        <div className="mx-[10%] z-50">
+        <div className="z-50">
           <TrendingGames slides={trendingGames} />
         </div>
 
-        <HorizontalLine marginTop="mt-4" className="!z-0" marginBottom="mb-4" />
+        <HorizontalLine marginTop="mt-4" className="!z-0" marginBottom="" width />
 
-        <div className="grid lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-1 h-auto mx-[10%]">
-          <div className="p-5">
+        <div className="grid lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-1 h-auto ">
+          <div className="md:px-10 md:py-5 py-2 ">
             <div className="border border-customGray-800 rounded-lg border-4 p-4">
               <h1 className="text-2xl font-bold">Review</h1>
               <p className="font-extralight">
@@ -140,7 +143,7 @@ const HomePage = () => {
             </div>
           </div>
 
-          <div className="p-5">
+          <div className="md:px-10 md:py-5 py-2">
             <div className="border border-customGray-800 rounded-lg border-4 p-4">
               <h1 className="text-2xl font-bold">Discover</h1>
               <p className="font-extralight">
@@ -151,7 +154,7 @@ const HomePage = () => {
             </div>
           </div>
 
-          <div className="p-5">
+          <div className="md:px-10 md:py-5 py-2">
             <div className="border border-customGray-800 rounded-lg border-4 p-4">
               <h1 className="text-2xl font-bold">Backlog</h1>
               <p className="font-extralight">
@@ -162,7 +165,7 @@ const HomePage = () => {
             </div>
           </div>
 
-          <div className="p-5 ">
+          <div className="md:px-10 md:py-5 py-2">
             <div className="border border-customGray-800 rounded-lg border-4 p-4">
               <h1 className="text-2xl font-bold">Catalog</h1>
               <p className="font-extralight">
@@ -174,22 +177,21 @@ const HomePage = () => {
           </div>
         </div>
 
-        <HorizontalLine marginTop="mt-4" className="!z-0" marginBottom="mb-4" />
+        <HorizontalLine marginTop="mt-4" className="!z-0" marginBottom="mb-4" width />
 
-        <h1 className="z-50 mx-[10%] text-2xl font-bold mb-4">Events</h1>
+        <h1 className="z-50  text-2xl font-bold mb-4">Events</h1>
 
           {/* Left Section */}
-          <div className="mx-[10%] ">
               <div>
                 <EventsCard events={events} />
               </div>
-          </div>
       </div>
 
       {/* Footer */}
       <div className="relative z-20 mt-16">
         <Footer />
       </div>
+    </div>
     </div>
   );
 };

@@ -19,6 +19,20 @@ const EventCard = ({ events, loading }) => {
   const navigate = useNavigate();
   const [displayedEvents, setDisplayedEvents] = useState([]);
 
+    const getWidthClass = (count) => {
+  switch (count) {
+    case 1:
+      return "md:w-full";
+    case 2:
+      return "md:w-1/2";
+    case 3:
+      return "md:w-[33%]";  // instead of md:w-1/3
+    case 4:
+    default:
+      return "md:w-1/4";
+  }
+};
+
   useEffect(() => {
     const updateDisplayedSlides = () => {
       const width = window.innerWidth;
@@ -30,6 +44,7 @@ const EventCard = ({ events, loading }) => {
         setDisplayedEvents(events.slice(0, 2));
       }
     };
+
 
     updateDisplayedSlides();
     window.addEventListener("resize", updateDisplayedSlides);
@@ -47,11 +62,12 @@ const EventCard = ({ events, loading }) => {
             {loading ? (
         <div className="w-full h-48" /> 
       ) : (
-        <div className="flex justify-center w-full h-auto">
+        <div className="flex justify-center w-full h-auto flex-wrap md:flex-nowrap">
       {displayedEvents.map((event) => {
         const logo = event.event_logo;
         return (
-          <div key={event.id} className="w-80 p-2">
+          <div key={event.id}     className={`w-full ${getWidthClass(displayedEvents.length)} p-2`}
+>
             <Tilt
               options={defaultOptions}
               style={{ width: "100%" }}

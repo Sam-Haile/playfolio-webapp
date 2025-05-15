@@ -47,7 +47,7 @@ function GameSlide({ game }) {
   return (
     <div className="h-[400px] px-2 w-full grid lg:grid-cols-[40%_60%]">
       {/* Left Column */}
-      <div className="grid grid-rows-[200px_200px]">
+      <div className="grid grid-rows-[200px_200px] overflow-hidden">
         {/* Top Left Column */}
         <div className="relative ">
           {game.heroes?.url ? (

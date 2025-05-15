@@ -1,12 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { auth, db } from "../firebaseConfig";
-import { doc, getDoc } from "firebase/firestore";
-import Logo from "../assets/icons/logo.svg";
-import LogoIcon from "../assets/icons/logoicon.svg";
+import { signOut } from "firebase/auth";
+import { auth } from "../firebaseConfig";
 import bannerPlaceholder from "../assets/icons/pfp.svg";
-import VerticalLine from "../assets/icons/verticalLine.svg";
 import SearchBar from "./SearchBar";
 import HorizontalLine from "../components/HorizontalLine";
 import { useAuth } from "../useAuth";
@@ -56,53 +52,67 @@ const Header = ({
   };
 
   const handleLogoClick = () => {
-    navigate(user ? '/home' : '/');
+    navigate(user ? "/home" : "/");
   };
 
   return (
-    <header className="mt-4 absolute top-0 left-0 w-full bg-opacity-90 z-[9999] ">
+    <header className="md:mt-4 mt-8 md:absolute sm:block top-0 left-0 w-full bg-opacity-90 z-[9999] ">
       <div className="mx-[15%] text-white h-auto flex items-center justify-between">
         <div className="flex items-center">
           <button onClick={handleLogoClick}>
-            <img src={LogoIcon} alt="Playfolio Logo" className="h-10 mr-4" onContextMenu={(e) => e.preventDefault()}
+            <img
+              src={"/icons/logoicon.svg"}
+              alt="Playfolio Logo"
+              className="h-10 mr-4"
+              onContextMenu={(e) => e.preventDefault()}
             />
           </button>
-          <button onClick={handleLogoClick}>
-            <img src={Logo} alt="Playfolio" className="h-5 mr-4" onContextMenu={(e) => e.preventDefault()}
+          <button onClick={handleLogoClick} className="hidden md:block">
+            <img
+              src={"/icons/logo.svg"}
+              alt="Playfolio"
+              className="h-5 mr-4"
+              onContextMenu={(e) => e.preventDefault()}
             />
           </button>
-          <img src={VerticalLine} alt="Vertical Line" className="hidden lg:block md:block sm:hidden mr-4" />
-          {showNavButtons && (
-            <nav className="hidden md:flex space-x-10">
-              <a href="/home" className="hover:text-primaryPurple-500">
-                Home
-              </a>
-              {/* <a href="/explore" className="hover:text-primaryPurple-500">
+          { user && (
+            <div className="flex items-center">
+              <img
+                src={"/icons/verticalLine.svg"}
+                alt="Vertical Line"
+                className="hidden lg:block md:block sm:hidden mr-4"
+              />
+              <nav className="hidden md:flex space-x-10">
+                <a href="/home" className="hover:text-primaryPurple-500">
+                  Home
+                </a>
+                {/* <a href="/explore" className="hover:text-primaryPurple-500">
                 Explore
-              </a> */}
-            </nav>
+                </a> */}
+              </nav>
+            </div>
           )}
         </div>
 
         {/* Right side: Search bar, Login buttons, or Profile */}
         <div className="flex items-center ml-auto">
           {/* Search bar */}
+          <div className="hidden md:block">
           {showSearchBar && location.pathname !== "/" && (
             <div className="flex w-auto justify-end">
               <SearchBar width="20vw" />
             </div>
           )}
+          </div>
 
           {/* placeholder keeps this entire box the same width during load */}
-          {loading && (
-            <div className="w-40 h-8" aria-hidden="true" />
-          )}
+          {loading && <div className="w-40 h-8" aria-hidden="true" />}
 
-           {/* Login/Sign Up */}
-            {!loading && !user && showLoginButtons && (
+          {/* Login/Sign Up */}
+          {!loading && !user && showLoginButtons && (
             <div className="relative pl-4 w-[100%] h-[auto] flex space-x-4">
               <button
-                className="text-primaryPurple-500 hover:text-primaryPurple-700"
+                className="md:block hidden text-primaryPurple-500 hover:text-primaryPurple-700"
                 onClick={() =>
                   navigate("/signup", { state: { showLogin: true } })
                 }
@@ -126,17 +136,16 @@ const Header = ({
               onMouseLeave={handleMouseLeave}
             >
               <button className="flex items-center px-2 py-1 focus:outline-none">
-
-                  <img
-                    src={src}
-                    alt="Default Profile"
-                    className="w-8 h-8 rounded-full object-cover shadow-lg flex-shrink-0"
-                    onError={(e) => {
-                      // only run once
-                      e.currentTarget.onerror = null;
-                      setSrc(bannerPlaceholder);
-                    }}
-                  />
+                <img
+                  src={src}
+                  alt="Default Profile"
+                  className="w-8 h-8 rounded-full object-cover shadow-lg flex-shrink-0"
+                  onError={(e) => {
+                    // only run once
+                    e.currentTarget.onerror = null;
+                    setSrc(bannerPlaceholder);
+                  }}
+                />
                 <p className="ml-2 flex-grow text-right">{user.username}</p>
                 <img
                   src={DownArrow}
@@ -146,8 +155,9 @@ const Header = ({
               </button>
 
               <div
-                className={`absolute mt-2 w-32 bg-customGray-500 text-sm text-black rounded shadow-lg z-[1000] ${showDropdown ? "block" : "hidden"
-                  }`}
+                className={`absolute mt-2 w-32 bg-customGray-500 text-sm text-black rounded shadow-lg z-[1000] ${
+                  showDropdown ? "block" : "hidden"
+                }`}
               >
                 <a
                   href="/profile"
@@ -178,7 +188,7 @@ const Header = ({
                 </a>
 
                 <a
-                  href={`/profile?section=games&type=dropped`}          
+                  href={`/profile?section=games&type=dropped`}
                   className="block w-full text-left px-2 py-1 hover:bg-customGray-600 hover:rounded-t"
                 >
                   Dropped

@@ -67,18 +67,18 @@ useEffect(() => {
       />
 
 
-      <div className="mx-[15%] pt-36">
+      <div className="mx-[15%] md:pt-36 pt-12">
 
         <HomePageInfo user={user}/>
 
         <HorizontalLine
           width="full"
           marginBottom="0"
-          marginTop="lg:mt-12 md:mt-8"
+          marginTop="lg:mt-12 mt-8"
           zIndex="z-0"
         />
 
-        <div className="pt-8">
+        <div className="pt-4">
           {/* <h1 className="text-2xl font-bold py-4">Currently Trending</h1> */}
           <TrendingGames slides={trendingGames} loading={isLoading}/>
         </div>

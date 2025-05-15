@@ -274,9 +274,9 @@ const GameOfTheDay = () => {
       </div>
 
       {/* Foreground */}
-      <div className="bg-cover bg-center bg-no-repeat relative z-10 flex overflow-y-hidden overflow-x-visible" style={{ height: "18rem" }}>
+      <div className="bg-cover bg-center bg-no-repeat relative z-10 flex overflow-y-hidden overflow-x-visible" style={{ height: "20rem" }}>
         {/* Left: Image container that grows based on image aspect ratio */}
-        <div className="h-full flex-shrink-0">
+        <div className="hidden md:block h-full flex-shrink-0">
           <GameCard
             src={gameOfDay?.coverUrl}
             alt={`Cover image of ${gameOfDay?.name}`}
@@ -286,8 +286,8 @@ const GameOfTheDay = () => {
         </div>
 
         {/* Right: Text/content container that shrinks if needed */}
-        <div className="flex-shrink overflow-hidden px-4 relative">
-          <div className="space-y-3">
+        <div className="flex-shrink overflow-hidden md:px-4 relative">
+          <div>
 
             {/* Game Name + Release Year */}
             <a className="mr-2 font-semibold text-2xl leading-tight hover:text-primaryPurple-500 cursor-pointer group"
@@ -299,6 +299,7 @@ const GameOfTheDay = () => {
             </a>
 
             {/* Developers */}
+<div>
             {Array.isArray(gameOfDay?.developers) && gameOfDay?.developers.length > 0 ? (
               gameOfDay.developers.map((developer, index) => (
                 <span key={developer.id}>
@@ -314,10 +315,10 @@ const GameOfTheDay = () => {
             ) : (
               <span className="italic font-light">Unknown Developers</span>
             )}
-
+</div>
 
             {/* Rating + Genres */}
-            <div className="flex items-center ">
+<div className="flex flex-col md:flex-row md:items-center mt-2 gap-y-2">
               <div className="flex items-center">
                 {Array(5)
                   .fill(0)
@@ -341,7 +342,7 @@ const GameOfTheDay = () => {
                 </span>
               </div>
 
-              <div className="pl-2 whitespace-nowrap overflow-hidden text-ellipsis">
+  <div className="md:pl-2">
                 {Array.isArray(gameOfDay?.genres) && gameOfDay.genres.length > 0 ? (
                   gameOfDay.genres.map((genre, index) => (
                     <span key={genre.id}>
@@ -362,12 +363,12 @@ const GameOfTheDay = () => {
 
 
             {/* Summary */}
-            <p className="text-med font-light text-gray-100 line-clamp-3">
+            <p className="mt-4 text-med font-light text-gray-100 line-clamp-3">
               {gameOfDay?.summary || "No summary available"}
             </p>
 
             {/* Platforms */}
-            <div className="pt-2">
+            <div className="mt-4 pt-2">
               {Array.isArray(gameOfDay?.platforms) && gameOfDay?.platforms.length > 0 ? (
                 gameOfDay.platforms.map((platform, index) => (
                   <span key={platform.id}>

@@ -23,7 +23,7 @@ const HomePageInfo = ({user}) => {
           <div className="h-1/2 grid grid-cols-3 pb-2 gap-x-4">
             <a
               href={`/profile?section=games&type=played`}
-              className="group overflow-hidden relative border border-opacity-50 border-[5px] border-footerGray
+              className="group overflow-hidden relative border border-opacity-50 border-[5px] border-customGray-800
               hover:border-primaryPurple-500    /* parent */
               rounded p-4 transition-colors duration-300"
             >
@@ -48,7 +48,7 @@ const HomePageInfo = ({user}) => {
                 style={{ transform: "rotate(-35deg)" }}
               >
                 <PlayingIcon
-                  color="#2C2C2C"
+                  color="#5E5E5E"
                   width="180px"
                   height="180px"
                   viewBox="24"
@@ -58,7 +58,7 @@ const HomePageInfo = ({user}) => {
 
             <a
               href={`/profile?section=games&type=backlog`}
-              className="group overflow-hidden relative border border-opacity-50 border-[5px] border-footerGray
+              className="group overflow-hidden relative border border-opacity-50 border-[5px] border-customGray-800
               hover:border-primaryPurple-500    /* parent */
               rounded p-4 transition-colors duration-300"
             >
@@ -82,7 +82,7 @@ const HomePageInfo = ({user}) => {
                 style={{ transform: "rotate(-35deg)" }}
               >
                 <BacklogIcon
-                  color="#2C2C2C"
+                  color="#5E5E5E"
                   width="150px"
                   height="150px"
                   viewBox="24"
@@ -92,7 +92,7 @@ const HomePageInfo = ({user}) => {
 
             <a
             href={`/profile?section=reviews`}
-              className="group overflow-hidden relative border border-opacity-50 border-[5px] border-footerGray
+              className="group overflow-hidden relative border border-opacity-50 border-[5px] border-customGray-800
               hover:border-primaryPurple-500    /* parent */
               rounded p-4 transition-colors duration-300"
             >
@@ -117,7 +117,7 @@ const HomePageInfo = ({user}) => {
                 style={{ transform: "rotate(-35deg)" }}
               >
                 <ReviewIcon
-                  color="#2C2C2C"
+                  color="#5E5E5E"
                   width="150px"
                   height="150px"
                   viewBox="24"
@@ -129,7 +129,7 @@ const HomePageInfo = ({user}) => {
           <div className="h-1/2 gap-x-4 grid pt-2 grid-cols-3">
             <a
             href={`/profile?section=games&type=wishlist`}
-              className="group overflow-hidden relative border border-opacity-50 border-[5px] border-footerGray
+              className="group overflow-hidden relative border border-opacity-50 border-[5px] border-customGray-800
               hover:border-primaryPurple-500    /* parent */
               rounded p-4 transition-colors duration-300"
             >
@@ -154,7 +154,7 @@ const HomePageInfo = ({user}) => {
                 style={{ transform: "rotate(-35deg)" }}
               >
                 <WishlistIcon
-                  color="#2C2C2C"
+                  color="#5E5E5E"
                   width="150px"
                   height="150px"
                   viewBox="24"
@@ -164,7 +164,7 @@ const HomePageInfo = ({user}) => {
 
             <a
               href={`/profile?section=games&type=dropped`}
-              className="group overflow-hidden relative border border-opacity-50 border-[5px] border-footerGray
+              className="group overflow-hidden relative border border-opacity-50 border-[5px] border-customGray-800
               hover:border-primaryPurple-500    /* parent */
               rounded p-4 transition-colors duration-300"
             >
@@ -189,7 +189,7 @@ const HomePageInfo = ({user}) => {
                 style={{ transform: "rotate(-35deg)" }}
               >
                 <DroppedIcon
-                  color="#2C2C2C"
+                  color="#5E5E5E"
                   width="130px"
                   height="130px"
                   viewBox="24"
@@ -199,7 +199,7 @@ const HomePageInfo = ({user}) => {
 
             <a
               href={`/profile?section=lists`}
-              className="group overflow-hidden relative border border-opacity-50 border-[5px] border-footerGray
+              className="group overflow-hidden relative border border-opacity-50 border-[5px] border-customGray-800
               hover:border-primaryPurple-500    /* parent */
               rounded p-4 transition-colors duration-300"
             >
@@ -224,7 +224,7 @@ const HomePageInfo = ({user}) => {
                 style={{ transform: "rotate(-35deg)" }}
               >
                 <ListIcon
-                  color="#2C2C2C"
+                  color="#5E5E5E"
                   width="140px"
                   height="140px"
                   viewBox="24"

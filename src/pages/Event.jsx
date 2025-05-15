@@ -52,7 +52,7 @@ const Event = () => {
       <Header showSearchBar={true} showNavButtons={true} showLoginButtons={true} />
 
       {/* Hero Background */}
-      <div className="relative w-full h-[700px] overflow-hidden z-0">
+      <div className="relative w-full md:h-[700px] h-[400px] overflow-hidden z-0">
         <div className="absolute top-0 left-0 w-full">
           {eventCovers.length > 0 && (
             <MasonryBoxArtGrid
@@ -84,7 +84,7 @@ const Event = () => {
       </div>
 
       {/* Genre Info */}
-      <div className="absolute top-0 mx-[15%] mt-56 flex flex-col justify-center">
+      <div className="absolute top-0 mx-[15%] md:mt-56 mt-24 flex flex-col justify-center">
         <div className="bg-customBlack w-fit p-8 rounded-lg drop-shadow-lg bg-opacity-70">
           {loading ? (
             <div className="animate-pulse space-y-4">
@@ -109,7 +109,7 @@ const Event = () => {
               </div>
 
               {event.event_networks?.length > 0 && (
-                <div className="flex items-center space-x-4 pt-2 justify-end">
+                <div className="flex items-center space-x-4 pt-4 justify-end">
                   {event.event_networks.map((network, idx) => {
                     const src = networkIcons[network.type] || LinkIconURL;
                     return (
@@ -123,7 +123,7 @@ const Event = () => {
                         <img
                           src={src}
                           alt={`${network.type} logo`}
-                          className="w-8 h-8 "
+                          className="md:w-8 md:h-8 w-6 h-6 "
                         />
                       </a>
                     );
@@ -138,7 +138,7 @@ const Event = () => {
 
       {/* Genre Summary (if exists) */}
       {event && event.description && (
-        <div className="mx-[15%] mt-8">
+        <div className="mx-[15%] md:mt-8 mt-16">
           <h1 className="text-xl font-semibold">
             About {event.name}
           </h1>

@@ -27,7 +27,6 @@ const GamePage = () => {
   const [heroes, setHeroes] = useState(null); // Store heroes
   const [loading, setLoading] = useState(true); // Tracks if data is being fetched
   const [showMore, setShowMore] = useState(false);
-  const navigate = useNavigate();
   const [trailer, setTrailer] = useState(null);
   const [logoError, setLogoError] = useState(false);
   const [developerError, setDeveloperError] = useState(false);

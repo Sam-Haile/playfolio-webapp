@@ -161,11 +161,19 @@ const SignIn = () => {
   };
 
   return (
-    <div className="max-w-screen h-screen grid grid-cols-2 overflow-hidden">
+    <div className="max-w-screen h-screen grid grid-cols-[60%_40%] overflow-hidden">
       {/* Left Side */}
       <div className="flex flex-col h-full">
+
+      <Header
+        showSearchBar={false}
+        showNavButtons={false}
+        showLoginButtons={false}
+        zIndex={1000}
+      />
+
         {/* Header Section */}
-        <div className="mx-[20%] h-[00px]">
+        {/* <div className="mx-[30%] h-[00px]">
           <div className="bg-customBlack text-white relative h-[75px] flex w-full">
             <div className="flex items-center">
               <a href="/">
@@ -185,11 +193,11 @@ const SignIn = () => {
               </nav>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Form Section */}
         <div className="flex-1 flex items-center justify-center overflow-hidden">
-          <div className="w-full max-w-lg mx-[20%]">
+          <div className="w-full max-w-lg">
             <form
               onSubmit={handleSubmit}
               className="sign-up-form flex flex-col justify-center"
