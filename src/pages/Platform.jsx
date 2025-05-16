@@ -4,9 +4,9 @@ import axios from "axios";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import HorizontalLine from "../components/HorizontalLine";
-import MasonryBoxArtGrid from "../components/MasonryBoxArtGrid"; // Assuming you have this already
-import ResultCard from "../components/ResultCard"; // Assuming this exists too
-import Pagination from "../components/Pagination"; // Assuming this exists too
+import MasonryBoxArtGrid from "../components/MasonryBoxArtGrid";
+import ResultCard from "../components/ResultCard";
+import Pagination from "../components/Pagination";
 import SkeletonLoading from "../components/SkeletonLoading";
 import newTabIcon from "../assets/icons/newTab.svg"; // Import the new tab icon
 
@@ -17,57 +17,70 @@ const Platform = () => {
     const [loading, setLoading] = useState(true);
     const [visualType, setVisualType] = useState("detailed");
     const [sortOption, setSortOption] = useState("popular");
-    const [rawGames, setRawGames]   = useState([]);              // list from API
+    const [rawGames, setRawGames] = useState([]);              // list from API
+const [columns, setColumns] = useState(window.innerWidth < 768 ? 3 : 7);
 
-    
+useEffect(() => {
+  const handleResize = () => {
+    setColumns(window.innerWidth < 768 ? 3 : 7);
+  };
+  window.addEventListener("resize", handleResize);
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
+
+
     // Array to hold the visual type options and corresponding icons
     const visualTypes = [
         { type: "detailed", icon: "/src/assets/icons/detailedView.svg" },
         { type: "compact", icon: "/src/assets/icons/compactView.svg" },
         { type: "list", icon: "/src/assets/icons/listView.svg" },
     ];
-    const columns = 7; // Adjust grid columns for MasonryBoxArtGrid
+
+    const columnClassMap = {
+  3: "grid-cols-3",
+  5: "grid-cols-5",
+  7: "grid-cols-7"
+};
 
     useEffect(() => {
         const fetchPlatformData = async () => {
-          try {
-            const [platformRes, gamesRes] = await Promise.all([
-              axios.post(`${import.meta.env.VITE_API_URL}/api/platform`, { id }),
-              axios.post(`${import.meta.env.VITE_API_URL}/api/platform/games`, {
-                platformId: id,
-                sortOption: "popular",          // ALWAYS let backend send its Bayesian list
-              }),
-            ]);
-      
-            setPlatformDetails(platformRes.data);
-            setRawGames(gamesRes.data);
-            setGames(gamesRes.data);      
-            console.log(gamesRes.data); 
-          } catch (err) {
-            console.error("Error fetching platform page data:", err);
-          } finally {
-            setLoading(false);
-          }
+            try {
+                const [platformRes, gamesRes] = await Promise.all([
+                    axios.post(`${import.meta.env.VITE_API_URL}/api/platform`, { id }),
+                    axios.post(`${import.meta.env.VITE_API_URL}/api/platform/games`, {
+                        platformId: id,
+                        sortOption: "popular",          // ALWAYS let backend send its Bayesian list
+                    }),
+                ]);
+
+                setPlatformDetails(platformRes.data);
+                setRawGames(gamesRes.data);
+                setGames(gamesRes.data);
+            } catch (err) {
+                console.error("Error fetching platform page data:", err);
+            } finally {
+                setLoading(false);
+            }
         };
-      
+
         fetchPlatformData();
-      }, [id]);
-      
-      const sortFns = React.useMemo(
+    }, [id]);
+
+    const sortFns = React.useMemo(
         () => ({
-          popular:      () => 0,   // already sorted by backend
-          rating:       (a, b) => (b.totalRating ?? 0)      - (a.totalRating ?? 0),
-          release_date: (a, b) => (b.releaseYear ?? 0) - (a.releaseYear ?? 0),
-          name:         (a, b) =>  a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
+            popular: () => 0,   // already sorted by backend
+            rating: (a, b) => (b.totalRating ?? 0) - (a.totalRating ?? 0),
+            release_date: (a, b) => (b.releaseYear ?? 0) - (a.releaseYear ?? 0),
+            name: (a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
         }),
         []
-      );
-      
-      useEffect(() => {
+    );
+
+    useEffect(() => {
         // just copy & sort in memory – never mutate state directly
         setGames([...rawGames].sort(sortFns[sortOption]));
-      }, [sortOption, rawGames, sortFns]);
-      
+    }, [sortOption, rawGames, sortFns]);
+
 
     const handleVisualTypeChange = (type) => {
         setVisualType(type);
@@ -84,9 +97,8 @@ const Platform = () => {
     return (
         <div className="h-[100%] relative">
             <Header showSearchBar={true} showNavButtons={true} showLoginButtons={true} />
-
             {/* Hero Background */}
-            <div className="relative w-full h-[700px] overflow-hidden z-0">
+            <div className="relative w-full md:h-[700px] h-[400px] overflow-hidden z-0">
                 <div className="absolute top-0 left-0 w-full">
                     <MasonryBoxArtGrid images={games} columns={columns} />
                 </div>
@@ -107,7 +119,7 @@ const Platform = () => {
             </div>
 
             {/* Platform Info */}
-            <div className="absolute top-0 mx-[15%] mt-56 flex flex-col justify-center">
+            <div className="absolute top-0 md:mx-[15%] mx-[10%] md:mt-56 mt-36 flex flex-col justify-center">
                 <div className="bg-customBlack w-fit p-8 rounded-lg drop-shadow-lg bg-opacity-90">
                     {loading ? (
                         <div className="animate-pulse space-y-4">
@@ -131,27 +143,27 @@ const Platform = () => {
 
             {/* Platform Summary (if exists) */}
             {platformDetails && platformDetails.summary && (
-                <div className="mx-[15%] mt-8">
-                    <h1 className="text-2xl font-semibold">
+                <div className="md:mx-[15%] mx-[5%] w-full md:mt-8">
+                    <h1 className="text-2xl w-[80%] font-semibold">
                         Top 100 {platformDetails.name} Games
                     </h1>
                 </div>
             )}
 
             {/* Sort and View Controls */}
-            <div className="mx-[15%] mt-12">
-                <div className="flex h-12 justify-between items-center">
+            <div className="md:mx-[15%] mx-[5%] mt-12">
+                <div className="flex flex-row justify-between gap-y-4">
                     <div className="flex items-center">
-                        <p className="self-center">Sort by: </p>
+                        <p className="md:block hidden self-center">Sort by: </p>
                         <select
                             onChange={(e) => setSortOption(e.target.value)}
-                            className="ml-2 px-2 h-8 bg-customBlack border text-white rounded"
+                            className="md:ml-2 px-2 h-8 bg-customBlack border text-white rounded"
                             value={sortOption}
                         >
-                             <option value="popular">Popularity</option>
-                             <option value="rating">Rating</option>
-                             <option value="release_date">Release Date</option>
-                             <option value="name">Name A → Z</option>
+                            <option value="popular">Popularity</option>
+                            <option value="rating">Rating</option>
+                            <option value="release_date">Release Date</option>
+                            <option value="name">Name A → Z</option>
                         </select>
                     </div>
 
@@ -161,8 +173,8 @@ const Platform = () => {
                                 key={type}
                                 onClick={() => handleVisualTypeChange(type)}
                                 className={`p-2 rounded ${visualType === type
-                                        ? "bg-primaryPurple-500"
-                                        : "bg-customBlack"
+                                    ? "bg-primaryPurple-500"
+                                    : "bg-customBlack"
                                     } border text-white hover:bg-primaryPurple-700 transition`}
                             >
                                 <img src={icon} alt={`${type} view`} className="w-[25px]" />
@@ -175,14 +187,14 @@ const Platform = () => {
             </div>
 
             {/* Games Grid */}
-            <div className="mx-[15%] mt-[30px]">
+            <div className="md:mx-[15%] mx-[5%] mt-[30px]">
                 <div className="flex flex-col w-full">
                     {visualType === "list" && (
                         <div>
-                            <div className="grid grid-cols-[35%_25%_25%_15%] items-center gap-4 w-full">
+                            <div className="grid md:grid-cols-[35%_25%_25%_15%] grid-cols-[40%_30%_30%] items-center gap-4 w-full">
                                 <div><p>Game</p></div>
                                 <div><p>Developer</p></div>
-                                <div><p>Genre</p></div>
+                                <div className="hidden md:block"><p>Genre</p></div>
                                 <div><p>Rating</p></div>
                             </div>
                             <HorizontalLine marginTop="mt-2" marginBottom="mb-2" width="full" />
@@ -203,7 +215,7 @@ const Platform = () => {
                                 <ResultCard
                                     key={game.id}
                                     game={game}
-                                    onClick={() => { }} 
+                                    onClick={() => { }}
                                     visualType={visualType}
                                 />
                             ))
@@ -214,7 +226,7 @@ const Platform = () => {
                 </div>
 
                 {/* Pagination */}
-                
+
             </div>
 
             <Footer />

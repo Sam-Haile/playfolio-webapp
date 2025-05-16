@@ -13,7 +13,6 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import DynamicLogo from "../components/DynamicLogo";
-import ReviewEntry from "../components/ReviewEntry";
 import ImageOverlay from "../components/ImageOverlay";
 import ReviewBox from "../components/ReviewBox";
 import GameReviews from "../components/GameReviews";
@@ -55,7 +54,6 @@ const GamePage = () => {
 
       // Update main game data
       setGameDetails(gameResponse.data);
-      console.log("Game Details:", gameResponse.data);
 
       setHeroes(gameResponse.data.heroes.url || null);
       setLogos(gameResponse.data.logos.url || null);
@@ -183,8 +181,6 @@ const GamePage = () => {
     return media;
   };
 
-  console.log(gameDetails?.screenshots);
-
   const {
     name,
     summary,
@@ -224,7 +220,7 @@ const GamePage = () => {
         zIndex={1000}
       />
 
-      <div className="bg-white h-[75vh] mt-8 ">
+      <div className="bg-white h-[75vh]">
         <div className="pt-18 bg-white h-[75vh] absolute top-0 w-full flex items-center justify-center overflow-hidden pointer-event:none">
           {heroes ? (
             <img
@@ -263,7 +259,7 @@ const GamePage = () => {
         </div>
 
         <div className="absolute inset-0 bg-customBlack bg-opacity-0 z-30">
-          <div className="h-auto mt-64 grid grid grid-cols-1 sm:grid-cols-[auto_50%] lg:grid-cols-[auto_35%_45%] mx-[15%]">
+          <div className="h-auto md:mt-64 mt-36 grid grid-cols-[auto_45%] lg:grid-cols-[auto_35%_45%] md:mx-[15%] mx-[5%]">
             <div className="relative self-end">
               <Tilt options={defaultOptions} className="inline-block relative">
                 {" "}
@@ -278,7 +274,7 @@ const GamePage = () => {
               </Tilt>
             </div>
             <div className="grid grid-rows-[auto] h-auto self-end pl-4">
-              <div className="flex flex-col items-start gap-2">
+              <div className="md:flex hidden flex-col items-start gap-2">
                 {/* Developer Logo */}
                 {developers[0].logo && !developerError ? (
                   <a
@@ -332,14 +328,40 @@ const GamePage = () => {
             </div>
           </div>
 
+
+          <div className="mt-2 md:hidden block mx-[5%]">
+            {/* Developer Logo */}
+            {/* Developer Names */}
+            {developers.length > 0 &&
+              developers.map((developer, index) => (
+                <a
+                  href={`/company/${developer.id}/${slugify(
+                    developer.name
+                  )}?tab=developed`}
+                  key={index}
+                  className="italic font-light text-sm hover:text-primaryPurple-500"
+                >
+                  {developer.name}
+                </a>
+              ))}
+
+            {/* Game Logo */}
+            <h3 className="mt-2 text-3xl font-normal italic lg:whitespace-nowrap  overflow-hidden text-ellipsis">
+              {name} ({releaseYear})
+            </h3>
+          </div>
+
           {/* Main Content */}
-          <div className="mx-[15%] grid grid-cols-[60%_40%]">
+          <div className="md:mx-[15%] mx-[5%] grid md:grid-cols-[60%_40%] grid-cols-[100%]">
             <div className="h-[auto]">
+
+              
               <HorizontalLine
-                marginTop="mt-14"
+                marginTop="md:mt-14 mt-4"
                 marginBottom="mb-4"
                 width="w-full"
               />
+              
 
               <div className="grid grid-cols-3 ">
                 <div className="w-[80%] flex-col self-center pr-2">
@@ -404,6 +426,7 @@ const GamePage = () => {
                 marginBottom="mb-4"
                 width="w-full"
               />
+
 
               <div className="grid grid-cols-[33%_33%_auto]">
                 <div className=" flex-col self-center pr-2">
@@ -478,7 +501,87 @@ const GamePage = () => {
                 width="w-full"
               />
 
+              
+              <div className="mt-8 block md:hidden">
+                <div className="bg-customBlack rounded h-[auto] mt-auto w-[100%] drop-shadow-xl">
+                  <div className="flex flex-col gap-2 p-4">
+                    <div className="text-sm font-bold uppercase ">Rating</div>
+                    {/* Display Numerical Rating (Converted to out of 5) */}
+                    <div className="text-4xl font-extrabold text-yellow-400">
+                      {gameDetails.rating
+                        ? (gameDetails.rating / 20).toFixed(1) + " / 5"
+                        : "Unrated"}
+                    </div>
+                    <div className="flex gap-1">
+                      {Array(5)
+                        .fill(0)
+                        .map((_, i) => (
+                          <svg
+                            key={i}
+                            className={`h-6 w-6 ${i < Math.round(gameDetails.rating / 20)
+                              ? "text-yellow-400"
+                              : "text-gray-300"
+                              } fill-current`}
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M12 2l2.7 8H22l-6.9 5 2.7 8L12 18l-6.9 5 2.7-8L2 10h7.3L12 2z" />
+                          </svg>
+                        ))}
+                    </div>
+
+                    <div className="text-xs text-gray-500 pt-1">
+                      {gameDetails.totalRatings
+                        ? `${gameDetails.totalRatings} Ratings`
+                        : "Be the first to rate!"}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-customBlack rounded h-auto w-[100%] mt-4 drop-shadow-xl">
+                  {/* YOUR OPTIONS (MARK AS PLAYING BACKLOG ETC.) */}
+                  <div className="flex flex-col w-full justify-center items-center p-2">
+                    {/* Options */}
+                    <div className="">
+                      <GameStatus
+                        gameId={String(gameDetails.id)}
+                        releaseDate={gameDetails.rawReleaseDate}
+                      />
+                    </div>
+
+                    <div className="px-2 w-full">
+                      <p className="text-sm font-semibold uppercase mt-4 pl-4 mb-2">
+                        Rate
+                      </p>
+                      <div className="lex justify-center items-center w-full">
+                        <StarRating
+                          gameId={String(gameDetails.id)}
+                          releaseDate={gameDetails.rawReleaseDate}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="px-2 w-full">
+                      <p className="text-sm font-semibold uppercase mt-4 pl-4 mb-2">
+                        Review
+                      </p>
+                      <ReviewBox
+                        gameDetails={gameDetails}
+                        releaseDate={gameDetails.rawReleaseDate}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div>
+                <HorizontalLine
+                  marginTop="mt-4"
+                  width="full"
+                  marginBottom="mb-4"
+                  className="md:hidden block"
+                />
+
                 <h3 className="font-bold pb-2">Synopsis</h3>
                 <p
                   ref={synopsisRef}
@@ -543,21 +646,23 @@ const GamePage = () => {
                     )}
                   </div>
                   {/* Thumbnails carousel */}
-                  <Slider {...sliderSettings} className="px-6">
+                  <div className="md:mx-[0%] mx-[5%]">
+                  <Slider {...sliderSettings} className="md:px-6">
                     {media.slice(0, 8).map((m, idx) => (
                       <div key={idx} className="px-1 cursor-pointer" onClick={() => { setMainMediaIndex(idx); setShowVideo(false); }}>
                         {m.type === "video" ? (
                           <img src={`https://img.youtube.com/vi/${m.data.video_id}/default.jpg`} alt={m.data.name} className={`rounded ${idx === mainMediaIndex ? "opacity-100" : "brightness-50 hover:brightness-100"}`} />
                         ) : (
-                          <img src={m.data} alt={`Screenshot ${idx + 1}`} className={`h-full rounded ${idx === mainMediaIndex ? "opacity-100" : "brightness-50 hover:brightness-100"}`} />
+                          <img src={m.data} alt={`Screenshot ${idx + 1}`} className={`outline-none focus:outline-none md:h-full md:h-12 h-8 w-20 rounded ${idx === mainMediaIndex ? "opacity-100" : "brightness-50 hover:brightness-100"}`} />
                         )}
                       </div>
                     ))}
                   </Slider>
+                    </div>
                 </div>
               )}
 
-              <div className="lg:block md:hidden sm:hidden ">
+              <div className="lg:block hidden ">
                 <h1 className="text-base font-semibold mt-4">Reviews</h1>
                 <HorizontalLine
                   marginTop="mt-0"
@@ -568,8 +673,9 @@ const GamePage = () => {
               </div>
             </div>
 
-            <div className="mt-14">
-              <div className="bg-customBlack rounded h-[auto] mt-auto w-[90%] ml-12  drop-shadow-xl">
+            {/* Right Column On Large Screens */}
+            <div className="mt-14 md:block hidden">
+              <div className="bg-customBlack rounded h-[auto] mt-auto w-[90%] md:ml-12 drop-shadow-xl">
                 <div className="flex flex-col gap-2 p-4">
                   <div className="text-sm font-bold uppercase ">Rating</div>
                   {/* Display Numerical Rating (Converted to out of 5) */}
@@ -585,8 +691,8 @@ const GamePage = () => {
                         <svg
                           key={i}
                           className={`h-6 w-6 ${i < Math.round(gameDetails.rating / 20)
-                              ? "text-yellow-400"
-                              : "text-gray-300"
+                            ? "text-yellow-400"
+                            : "text-gray-300"
                             } fill-current`}
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
@@ -641,7 +747,7 @@ const GamePage = () => {
             </div>
           </div>
 
-          <div className="mx-[15%] lg:hidden md:block sm:block">
+          <div className="md:mx-[15%] mx-[5%] lg:hidden md:block sm:block">
             <h1 className="text-base font-semibold ">Reviews</h1>
             <HorizontalLine marginTop="mt-0" width="full" marginBottom="mb-8" />
             <GameReviews gameId={String(gameDetails.id)} />

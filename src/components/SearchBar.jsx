@@ -105,7 +105,7 @@ const SearchBar = ({ width = "100%", margin = "0", padding = "0", className = ""
           onFocus={() => {
             if (searchTerm.trim() !== "") setShowSuggestions(true); // Show on focus if searchTerm exists
           }}
-          className={`w-full px-4 py-2 pr-10 bg-[#515151] text-white text-sm placeholder-[#DCDCDC] focus:outline-none ${
+          className={`w-full px-4 py-2 pr-10 bg-[#515151] text-white text-base placeholder-[#DCDCDC] focus:outline-none ${
             showSuggestions && suggestions.length > 0 ? "rounded-t-lg" : "rounded-lg"
           }`}
                 />
@@ -126,7 +126,7 @@ const SearchBar = ({ width = "100%", margin = "0", padding = "0", className = ""
             <div
               key={suggestion.id}
               onMouseDown={() => handleSuggestionClick(suggestion)}
-              className="px-4 py-2 text-sm cursor-pointer hover:bg-[#404040] text-white "
+              className="px-4 py-2 text-base cursor-pointer hover:bg-[#404040] text-white "
             >
               {suggestion.name}
             </div>

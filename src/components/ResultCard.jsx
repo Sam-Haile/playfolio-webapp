@@ -138,7 +138,7 @@ const ResultCard = ({ game, visualType }) => {
         );
       case "list":
         return (
-          <div className="grid grid-cols-[35%_25%_25%_15%] items-center gap-4 w-full text-white">
+          <div className="grid md:grid-cols-[35%_25%_25%_15%] grid-cols-[40%_30%_30%] items-center gap-4 w-full text-white">
             {/* Game Image */}
             <a
               href={`/game/${game.id}/${slugify(game.name)}`}
@@ -166,7 +166,6 @@ const ResultCard = ({ game, visualType }) => {
             </a>
 
             {/* Developers */}
-            <div>
               <p className="font-light mr-6 italic">
                 {Array.isArray(game.developers)
                   ? game.developers
@@ -174,10 +173,9 @@ const ResultCard = ({ game, visualType }) => {
                       .join(", ")
                   : game.developers || "Unknown Developer"}
               </p>
-            </div>
 
             {/* Genre */}
-            <div>
+            <div className="md:block hidden">
               <p className="pt-2 text-sm mr-6 text-gray-300">
                 {game.genres.join(", ")}
               </p>
@@ -219,8 +217,8 @@ const ResultCard = ({ game, visualType }) => {
         );
       default: // Detailed view
         return (
-          <div className="result-card h-[200px] w-auto m-4 text-white relative cursor-default	">
-            <div className="grid grid-cols-[auto_1fr]">
+          <div className="result-card h-[200px] w-auto md:m-4 my-2 text-white relative cursor-default	">
+            <div className="grid md:grid-cols-[auto_1fr] grid-cols-[150px_1fr]">
               <Tilt options={defaultOptions} style={{ width: "100%" }}>
                 <div onClick={handleClick}>
                   <GameCard
@@ -258,7 +256,7 @@ const ResultCard = ({ game, visualType }) => {
                     {game.genres.join(", ")}
                   </p>
 
-                  <p className="mt-2 font-extralight truncate-text pr-24">
+                  <p className="hidden md:block mt-2 font-extralight truncate-text pr-24">
                     {game.storyline ||
                       game.summary ||
                       "No storyline or summary available."}

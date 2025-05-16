@@ -11,7 +11,7 @@ import axios from "axios";
 import GameOfTheDay from "../components/GameOfTheDay";
 import { generateDiscoveryQueueForUser } from "../services/discoveryQueue";
 import HomePageInfo from "../components/HomePageHeader";
-
+import SearchBar from "../components/SearchBar";
 const HomePage = () => {
   const { user } = useAuth();
   const [recommendedGames, setRecommendedGames] = useState([]);
@@ -67,14 +67,18 @@ useEffect(() => {
       />
 
 
-      <div className="mx-[15%] md:pt-36 pt-12">
+      <div className="md:mx-[15%] mx-[5%] md:pt-36 pt-24">
 
         <HomePageInfo user={user}/>
+
+        <div className="my-2 md:hidden block">
+          <SearchBar className="z-50" width="100%" />
+        </div>
 
         <HorizontalLine
           width="full"
           marginBottom="0"
-          marginTop="lg:mt-12 mt-8"
+          marginTop="lg:mt-12 mt-4"
           zIndex="z-0"
         />
 

@@ -56,8 +56,8 @@ const Header = ({
   };
 
   return (
-    <header className="md:mt-4 mt-8 md:absolute sm:block top-0 left-0 w-full bg-opacity-90 z-[9999] ">
-      <div className="mx-[15%] text-white h-auto flex items-center justify-between">
+    <header className="md:mt-4 mt-8 absolute top-0 left-0 w-full z-[9999] ">
+      <div className="md:mx-[15%] mx-[5%] text-white h-auto flex items-center justify-between">
         <div className="flex items-center">
           <button onClick={handleLogoClick}>
             <img

@@ -143,7 +143,7 @@ return (
   <div className="flex justify-center px-4">
   <div
     className={`flex gap-2 relative cursor-pointer ${
-      isUnreleased ? "opacity-50 cursor-not-allowed " : ""
+    !user || isUnreleased ? "opacity-50 cursor-not-allowed pointer-events-none" : "cursor-pointer"
     }`}
     onMouseLeave={() => setHoverRating(0)}
   >

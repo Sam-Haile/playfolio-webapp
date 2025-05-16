@@ -43,14 +43,14 @@ const HomePage = () => {
           />
         </div>
 
-        <div className="mx-[15%]">
+        <div className="md:mx-[15%] mx-[5%]">
 
         {/* Main Content */}
         <main className="relative md:grid md:grid-cols-[40%_60%] sm:block">
-          <div className="py-[15%] md:py-[30%] md:mr-[10%] z-20">
+          <div className="py-[15%] md:py-[45%] md:mr-[10%] z-20">
             {/* Content Wrapper */}
             <div className="space-y-4 ">
-              <h1 className="font-bold text-4xl ">
+              <h1 className="font-bold text-4xl pt-16">
                 Collect, review, and catalog your favorite games
               </h1>
               <h2 className="font-light text-lg md:w-[75%] w-[100%]">
@@ -84,7 +84,7 @@ const HomePage = () => {
               className="absolute top-0 h-[50vh] w-full pointer-events-none z-10"
               style={{
                 background:
-                  "linear-gradient(to bottom, #121212 10%, transparent 75%)",
+                  "linear-gradient(to bottom, #121212 10%, transparent 90%)",
               }}
             ></div>
 
@@ -101,7 +101,7 @@ const HomePage = () => {
               className="absolute top-0 h-full w-[50vw] pointer-events-none z-10 right-0"
               style={{
                 background:
-                  "linear-gradient(to left, #121212 7%, transparent 45%)",
+                  "linear-gradient(to left, #121212 7%, transparent 30%)",
               }}
             ></div>
           </div>
@@ -111,12 +111,12 @@ const HomePage = () => {
 
         <div className="flex justify-center items-center md:w-[75%] w-[100%] mx-auto mt-6 mb-6">
           <div className="text-center">
-            <h1 className="font-bold md:text-base text-sm">
+            <h1 className="font-bold md:text-xl text-md">
               Write and share reviews. Compile your own lists. Share your life
               in games.
             </h1>
 
-            <h2 className="md:text-sm text-xs">
+            <h2 className="md:text-base text-sm">
               Below are some popular reviews and lists from this week.{" "}
               <a href={`/signup`} className="underline text-primaryPurple hover:font-semibold cursor-pointer">Sign up</a> to
               create your own!
@@ -129,11 +129,11 @@ const HomePage = () => {
           <TrendingGames slides={trendingGames} />
         </div>
 
-        <HorizontalLine marginTop="mt-4" className="!z-0" marginBottom="" width />
+        <HorizontalLine marginTop="mt-4" className="!z-0" marginBottom="mb-4" width />
 
         <div className="grid lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-1 h-auto ">
-          <div className="md:px-10 md:py-5 py-2 ">
-            <div className="border border-customGray-800 rounded-lg border-4 p-4">
+          <div className="md:px-14 md:py-5 py-2 ">
+            <div className="border border-customGray-800 rounded-lg border-2 p-4">
               <h1 className="text-2xl font-bold">Review</h1>
               <p className="font-extralight">
                 Rate and review games to share your thoughts with the community.
@@ -143,8 +143,8 @@ const HomePage = () => {
             </div>
           </div>
 
-          <div className="md:px-10 md:py-5 py-2">
-            <div className="border border-customGray-800 rounded-lg border-4 p-4">
+          <div className="md:px-14 md:py-5 py-2">
+            <div className="border border-customGray-800 rounded-lg border-2 p-4">
               <h1 className="text-2xl font-bold">Discover</h1>
               <p className="font-extralight">
                 Find new games through trending titles, personalized
@@ -154,8 +154,8 @@ const HomePage = () => {
             </div>
           </div>
 
-          <div className="md:px-10 md:py-5 py-2">
-            <div className="border border-customGray-800 rounded-lg border-4 p-4">
+          <div className="md:px-14 md:py-5 py-2">
+            <div className="border border-customGray-800 rounded-lg border-2 p-4">
               <h1 className="text-2xl font-bold">Backlog</h1>
               <p className="font-extralight">
                 Keep track of the games you plan to play. Organize your list,
@@ -165,8 +165,8 @@ const HomePage = () => {
             </div>
           </div>
 
-          <div className="md:px-10 md:py-5 py-2">
-            <div className="border border-customGray-800 rounded-lg border-4 p-4">
+          <div className="md:px-14 md:py-5 py-2">
+            <div className="border border-customGray-800 rounded-lg border-2 p-4">
               <h1 className="text-2xl font-bold">Catalog</h1>
               <p className="font-extralight">
                 Build your game collection by adding played, wishlisted, and
@@ -188,7 +188,7 @@ const HomePage = () => {
       </div>
 
       {/* Footer */}
-      <div className="relative z-20 mt-16">
+      <div className="relative z-20 ">
         <Footer />
       </div>
     </div>

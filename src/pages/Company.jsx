@@ -35,6 +35,16 @@ const Company = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPublished, setTotalPublished] = useState(0);
   const [totalDeveloped, setTotalDeveloped] = useState(0);
+  const [columns, setColumns] = useState(window.innerWidth < 768 ? 3 : 7);
+
+    
+    useEffect(() => {
+      const handleResize = () => {
+        setColumns(window.innerWidth < 768 ? 3 : 7);
+      };
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
   const windowWidth = useWindowWidth();
   const trimmedImages = useMemo(() => trimImages(headerGames), [headerGames]);
@@ -125,11 +135,11 @@ const Company = () => {
   };
 
   return (
-    <div className="h-full relative">
+    <div className="h-[100%] relative">
       <Header showSearchBar showNavButtons showLoginButtons />
 
       {/* background grid */}
-      <div className="relative w-full h-[700px] overflow-hidden z-0">
+      <div className="relative w-full md:h-[700px] h-[400px] overflow-hidden z-0">
         <div className="absolute top-0 left-0 w-full">
           <MasonryBoxArtGrid images={headerGames} columns={getColumns()} />
         </div>
@@ -149,7 +159,7 @@ const Company = () => {
       </div>
 
       {/* company info card */}
-      <div className="absolute top-0 mx-[15%] mt-56 flex flex-col justify-center">
+      <div className="absolute top-0 md:mx-[15%] mx-[10%] md:mt-56 mt-36 flex flex-col justify-center">
         <div className="bg-customBlack w-fit p-8 rounded-lg drop-shadow-lg bg-opacity-90">
           {loading && !companyDetails ? (
             <div className="animate-pulse space-y-4">
@@ -202,14 +212,14 @@ const Company = () => {
 
       {/* description */}
       {companyDetails?.description && (
-        <div className="mx-[15%] mt-6">
+        <div className="md:mx-[15%] mx-[5%] w-full md:mt-8 mt-24">
           <h1 className="text-xl font-semibold">About {companyDetails.name}</h1>
-          <p className="mr-[50%] mt-2">{companyDetails.description}</p>
+          <p className="ml:mr-[50%] mr-[10%] mt-2">{companyDetails.description}</p>
         </div>
       )}
 
       {/* tabs */}
-      <div className="mx-[15%] mt-12">
+      <div className="md:mx-[15%] mx-[5%] md:mt-12 mt-8">
         <div className="flex h-12">
           <button
             onClick={() => setActiveTab("developed")}
@@ -236,17 +246,17 @@ const Company = () => {
       </div>
 
       {/* sort + view toggles */}
-      <div className="mx-[15%] mt-8">
-        <div className="flex justify-between items-center mb-8">
+      <div className="md:mx-[15%] mx-[5%] mt-8">
+        <div className="flex justify-between items-center ">
           <div className="flex items-center">
-            <p>Sort by:</p>
+            <p className="md:block hidden self-center">Sort by: </p>
             <select
               value={sortOption}
               onChange={(e) => {
                 setSortOption(e.target.value);
                 setCurrentPage(1);
               }}
-              className="ml-2 px-2 h-8 bg-customBlack border text-white rounded"
+              className="md:ml-2 px-2 h-8 bg-customBlack border text-white rounded"
             >
               <option value="popular">Popularity</option>
               <option value="rating">Rating</option>
@@ -270,6 +280,8 @@ const Company = () => {
             ))}
           </div>
         </div>
+        <HorizontalLine width="w-full" marginTop="mt-2" marginBottom="0" className="mx-[15%]" />
+
 
         {loading ? null : (
           <>

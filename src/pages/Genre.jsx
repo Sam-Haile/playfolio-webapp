@@ -22,14 +22,24 @@ const Genre = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [heroGames, setHeroGames] = useState([]);
   const [totalGames, setTotalGames] = useState([]);
+  const [columns, setColumns] = useState(window.innerWidth < 768 ? 3 : 7);
   
+  
+  useEffect(() => {
+    const handleResize = () => {
+      setColumns(window.innerWidth < 768 ? 3 : 7);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   // Array to hold the visual type options and corresponding icons
   const visualTypes = [
     { type: "detailed", icon: "/src/assets/icons/detailedView.svg" },
     { type: "compact", icon: "/src/assets/icons/compactView.svg" },
     { type: "list", icon: "/src/assets/icons/listView.svg" },
   ];
-  const columns = 7; // Adjust grid columns for MasonryBoxArtGrid
+
 
   useEffect(() => {
     // runs only when the genre id changes
@@ -105,7 +115,7 @@ const Genre = () => {
       />
 
       {/* Hero Background */}
-      <div className="relative w-full h-[700px] overflow-hidden z-0">
+      <div className="relative w-full md:h-[700px] h-[400px] overflow-hidden z-0">
         <div className="absolute top-0 left-0 w-full">
           <MasonryBoxArtGrid images={heroGames} columns={columns} />
         </div>
@@ -127,7 +137,7 @@ const Genre = () => {
       </div>
 
       {/* Genre Info */}
-      <div className="absolute top-0 mx-[15%] mt-56 flex flex-col justify-center">
+      <div className="absolute top-0 md:mx-[15%] mx-[10%] md:mt-56 mt-36 flex flex-col justify-center">
         <div className="bg-customBlack w-fit p-8 rounded-lg drop-shadow-lg bg-opacity-90">
           {loading ? (
             <div className="animate-pulse space-y-4">
@@ -175,23 +185,23 @@ const Genre = () => {
 
       {/* Genre Summary (if exists) */}
       {genreDetails && genreDetails.summary && (
-        <div className="mx-[15%] mt-8">
+        <div className="md:mx-[15%] mx-[5%] w-full md:mt-8">
           <h1 className="text-xl font-semibold">About {genreDetails.name}</h1>
           <p className="mr-[5%] mt-2">{genreDetails.summary}</p>
         </div>
       )}
 
       {/* Sort and View Controls */}
-      <div className="mx-[15%] mt-12">
+      <div className="md:mx-[15%] mx-[5%] mt-12">
         <div className="flex h-12 justify-between items-center">
           <div className="flex items-center">
-            <p className="self-center">Sort by: </p>
+            <p className="md:block hidden self-center">Sort by: </p>
             <select
               onChange={(e) => {
                 setSortOption(e.target.value);
                 setCurrentPage(1);
               }}
-              className="ml-2 px-2 h-8 bg-customBlack border text-white rounded"
+              className="md:ml-2 px-2 h-8 bg-customBlack border text-white rounded"
               value={sortOption}
             >
               <option value="popular">Popularity</option>
@@ -218,27 +228,22 @@ const Genre = () => {
           </div>
         </div>
 
-        <HorizontalLine
-          width="w-full"
-          marginTop="mt-2"
-          marginBottom="0"
-          className="mx-[15%]"
-        />
+        <HorizontalLine width="w-full" marginTop="mt-2" marginBottom="0" className="mx-[15%]" />
       </div>
 
       {/* Games Grid */}
-      <div className="mx-[15%] mt-[30px]">
+      <div className="md:mx-[15%] mx-[5%] mt-[30px]">
         <div className="flex flex-col w-full">
           {visualType === "list" && (
             <div>
-              <div className="grid grid-cols-[35%_25%_25%_15%] items-center gap-4 w-full">
+              <div className="grid md:grid-cols-[35%_25%_25%_15%] grid-cols-[40%_30%_30%] items-center gap-4 w-full">
                 <div>
                   <p>Game</p>
                 </div>
                 <div>
                   <p>Developer</p>
                 </div>
-                <div>
+                <div className="hidden md:block">
                   <p>Genre</p>
                 </div>
                 <div>

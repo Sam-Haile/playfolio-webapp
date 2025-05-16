@@ -158,7 +158,7 @@ const ReviewBox = ({ gameDetails, releaseDate }) => {
               if (!isUnreleased) setIsEditing(true);
             }}
             disabled={isUnreleased}
-            className={`text-sm rounded px-4 py-2 transition-all ${isUnreleased
+            className={`md:mt-0 mt-2 md:mb-0 mb-2 text-sm rounded px-4 py-2 transition-all ${isUnreleased
                 ? "bg-gray-600 cursor-not-allowed opacity-60"
                 : "bg-primaryPurple-500 hover:bg-primaryPurple-600"
               }`}
