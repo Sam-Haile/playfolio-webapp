@@ -40,32 +40,40 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
             Previous
           </button>
       
-          <div className="flex px-4">
-            {paginationItems.map((item, idx) =>
-              item === "…" || item === "..." ? (
-                <span
-                  key={idx}
-                  className="pointer-events-none select-none px-2 py-1 flex justify-center items-center"
-                >
-                  …
-                </span>
-              ) : (
-                <button
-                  key={idx}
-                  onClick={() => onPageChange(item)}
-                  disabled={item === currentPage}
-                  className={`m-1 px-3 py-1 rounded ${
-                    item === currentPage
-                      ? "bg-primaryPurple-500 text-white"
-                      : "bg-gray-300 text-footerGray hover:bg-primaryPurple-700 hover:text-white"
-                  } disabled:pointer-events-none `}
-                >
-                  {item}
-                </button>
-              )
-            )}
-          </div>
-      
+{/* Full pagination only on md+ screens */}
+<div className="hidden md:flex px-4">
+  {paginationItems.map((item, idx) =>
+    item === "…" || item === "..." ? (
+      <span
+        key={idx}
+        className="pointer-events-none select-none px-2 py-1 flex justify-center items-center"
+      >
+        …
+      </span>
+    ) : (
+      <button
+        key={idx}
+        onClick={() => onPageChange(item)}
+        disabled={item === currentPage}
+        className={`m-1 px-3 py-1 rounded ${
+          item === currentPage
+            ? "bg-primaryPurple-500 text-white"
+            : "bg-gray-300 text-footerGray hover:bg-primaryPurple-700 hover:text-white"
+        } disabled:pointer-events-none `}
+      >
+        {item}
+      </button>
+    )
+  )}
+</div>
+
+      {/* Mobile pagination view */}
+<div className="flex md:hidden px-4 text-sm gap-2 items-center">
+  <span className="text-white">
+    Page {currentPage} of {totalPages}
+  </span>
+</div>
+
           <button
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages}

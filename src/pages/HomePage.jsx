@@ -31,7 +31,6 @@ useEffect(() => {
         { ids },
         { params: { slim: false } }
       );
-      console.log("Recommended Games", resp.data);
       setRecommendedGames(resp.data);
     })
     .catch(console.error);
@@ -67,7 +66,7 @@ useEffect(() => {
       />
 
 
-      <div className="md:mx-[15%] mx-[5%] md:pt-36 pt-24">
+      <div className="md:mx-[15%] mx-[5%] md:pt-36 pt-24 mb-20">
 
         <HomePageInfo user={user}/>
 
@@ -87,12 +86,6 @@ useEffect(() => {
           <TrendingGames slides={trendingGames} loading={isLoading}/>
         </div>
 
-        <HorizontalLine
-          width="full"
-          marginBottom="mb-4"
-          marginTop="mt-4"
-          zIndex="z-0"
-        />
 
         <GameOfTheDay />
 

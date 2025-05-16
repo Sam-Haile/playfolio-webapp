@@ -10,7 +10,7 @@ const ImageOverlay = ({ src, alt, onClose }) => {
       <img
         src={src}
         alt={alt}
-        className="z-[1001] md:max-w-[50%] max-w-[95%] max-h-[75%] object-contain border-4 border-customBlack rounded"
+        className="z-[1001] md:max-w-[70%] max-w-[95%] object-contain border-4 border-customBlack rounded"
         onClick={(e) => e.stopPropagation()}
       />
       <button

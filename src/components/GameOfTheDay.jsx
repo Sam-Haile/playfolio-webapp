@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 import React from "react";
 import { slugify } from "../services/slugify.js";
 import GameCard from "./GameCard.jsx";
-
+import HorizontalLine from "./HorizontalLine.jsx";
 // Helper functions
 function getStoredRandomGameId() {
   const stored = localStorage.getItem("dailyRandomGameId");
@@ -224,221 +224,237 @@ const GameOfTheDay = () => {
   //   );
   // }
 
-  if (loading || !gameOfDay) {
+  if (loading) {
     return (
       <div className="h-[18rem]"> </div>
     );
   }
 
+  if (!gameOfDay) {
+    return (
+      <div className="hidden"> </div>
+    );
+  }
+
 
   return (
-    <div className="relative pb-8">
-      {/* Gradient and background image */}
-      <div>
-        {gameOfDay?.heroes && (
+    <div>
+      <HorizontalLine
+        width="full"
+        marginBottom="mb-4"
+        marginTop="mt-4"
+        zIndex="z-0"
+      />
+      <div className="relative pb-8">
+
+        {/* Gradient and background image */}
+        <div>
+          {gameOfDay?.heroes && (
+            <div
+              className="absolute left-0 inset-0 bg-cover z-0 bg-center bg-no-repeat opacity-50"
+              style={{ backgroundImage: `url(${gameOfDay.heroes.url})` }}
+            />
+          )}
+          <h1 className="mb-4 relative text-2xl font-bold z-20">
+            Backlog Spotlight
+          </h1>
+
           <div
-            className="absolute left-0 inset-0 bg-cover z-0 bg-center bg-no-repeat opacity-50"
-            style={{ backgroundImage: `url(${gameOfDay.heroes.url})` }}
-          />
-        )}
-        <h1 className="mb-4 relative text-2xl font-bold z-20">
-          Backlog Spotlight
-        </h1>
-
-        <div
-          className="absolute top-0 h-full w-[103%] pointer-events-none z-10 right-0"
-          style={{
-            background: "linear-gradient(to left, #121212 2%, transparent 80%)",
-          }}
-        ></div>
-        <div
-          className="absolute top-0 -mt-[1px] h-full w-[101%] pointer-events-none z-10 left-50"
-          style={{
-            background:
-              "linear-gradient(to right,rgba(18, 18, 18) 5%, transparent 100%)",
-          }}
-        ></div>
-        <div
-          className="absolute top-0 h-[50vh] -mt-[1px] w-[101%] pointer-events-none z-10"
-          style={{
-            background:
-              "linear-gradient(to bottom, #121212 1%, transparent 50%)",
-          }}
-        ></div>
-        <div
-          className="absolute bottom-0 -mb-[1px] h-[50vh] w-[101%] pointer-events-none z-10"
-          style={{
-            background: "linear-gradient(to top,#121212 1%, transparent 50%)",
-          }}
-        ></div>
-      </div>
-
-      {/* Foreground */}
-      <div className="bg-cover bg-center bg-no-repeat relative z-10 flex overflow-y-hidden overflow-x-visible" style={{ height: "20rem" }}>
-        {/* Left: Image container that grows based on image aspect ratio */}
-        <div className="hidden md:block h-full flex-shrink-0">
-          <GameCard
-            src={gameOfDay?.coverUrl}
-            alt={`Cover image of ${gameOfDay?.name}`}
-            className="h-full object-contain rounded"
-            gameId={gameOfDay?.id}
-          />
+            className="absolute top-0 h-full w-[103%] pointer-events-none z-10 right-0"
+            style={{
+              background: "linear-gradient(to left, #121212 2%, transparent 80%)",
+            }}
+          ></div>
+          <div
+            className="absolute top-0 -mt-[1px] h-full w-[101%] pointer-events-none z-10 left-50"
+            style={{
+              background:
+                "linear-gradient(to right,rgba(18, 18, 18) 5%, transparent 100%)",
+            }}
+          ></div>
+          <div
+            className="absolute top-0 h-[50vh] -mt-[1px] w-[101%] pointer-events-none z-10"
+            style={{
+              background:
+                "linear-gradient(to bottom, #121212 1%, transparent 50%)",
+            }}
+          ></div>
+          <div
+            className="absolute bottom-0 -mb-[1px] h-[50vh] w-[101%] pointer-events-none z-10"
+            style={{
+              background: "linear-gradient(to top,#121212 1%, transparent 50%)",
+            }}
+          ></div>
         </div>
 
-        {/* Right: Text/content container that shrinks if needed */}
-        <div className="flex-shrink overflow-hidden md:px-4 relative">
-          <div>
+        {/* Foreground */}
+        <div className="bg-cover bg-center bg-no-repeat relative z-10 flex overflow-y-hidden overflow-x-visible" style={{ height: "20rem" }}>
+          {/* Left: Image container that grows based on image aspect ratio */}
+          <div className="hidden md:block h-full flex-shrink-0">
+            <GameCard
+              src={gameOfDay?.coverUrl}
+              alt={`Cover image of ${gameOfDay?.name}`}
+              className="h-full object-contain rounded"
+              gameId={gameOfDay?.id}
+            />
+          </div>
 
-            {/* Game Name + Release Year */}
-            <a className="mr-2 font-semibold text-2xl leading-tight hover:text-primaryPurple-500 cursor-pointer group"
-              href={`/game/${gameOfDay.id}/${slugify(gameOfDay.name)}`}>
-              {gameOfDay?.name}{" "}
-              <span className="italic font-normal text-gray-300 group-hover:text-primaryPurple-500">
-                ({gameOfDay?.releaseYear})
-              </span>
-            </a>
+          {/* Right: Text/content container that shrinks if needed */}
+          <div className="flex-shrink overflow-hidden md:px-4 relative">
+            <div>
 
-            {/* Developers */}
-<div>
-            {Array.isArray(gameOfDay?.developers) && gameOfDay?.developers.length > 0 ? (
-              gameOfDay.developers.map((developer, index) => (
-                <span key={developer.id}>
-                  <a
-                  href={`/company/${developer.id}/${slugify(developer.name)}`}
-                  className="italic font-light hover:font-semibold hover:text-primaryPurple-500 cursor-pointer inline"
-                  >
-                    {developer.name}
-                  </a>
-                  {index < developer.length - 1 && ", "}
+              {/* Game Name + Release Year */}
+              <a className="mr-2 font-semibold text-2xl leading-tight hover:text-primaryPurple-500 cursor-pointer group"
+                href={`/game/${gameOfDay.id}/${slugify(gameOfDay.name)}`}>
+                {gameOfDay?.name}{" "}
+                <span className="italic font-normal text-gray-300 group-hover:text-primaryPurple-500">
+                  ({gameOfDay?.releaseYear})
                 </span>
-              ))
-            ) : (
-              <span className="italic font-light">Unknown Developers</span>
-            )}
-</div>
+              </a>
 
-            {/* Rating + Genres */}
-<div className="flex flex-col md:flex-row md:items-center mt-2 gap-y-2">
-              <div className="flex items-center">
-                {Array(5)
-                  .fill(0)
-                  .map((_, i) => (
-                    <svg
-                      key={i}
-                      className={`h-5 w-5 ${i < Math.round(gameOfDay?.totalRating / 20)
-                        ? "text-yellow-400"
-                        : "text-gray-500"
-                        } fill-current`}
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M12 2l2.7 8H22l-6.9 5 2.7 8L12 18l-6.9 5 2.7-8L2 10h7.3L12 2z" />
-                    </svg>
-                  ))}
-                <span className="pt-[1px] text-sm italic text-gray-400">
-                  {gameOfDay?.totalRating
-                    ? `(${(gameOfDay.totalRating / 20).toFixed(1)})`
-                    : "No ratings available"}
-                </span>
-              </div>
-
-  <div className="md:pl-2">
-                {Array.isArray(gameOfDay?.genres) && gameOfDay.genres.length > 0 ? (
-                  gameOfDay.genres.map((genre, index) => (
-                    <span key={genre.id}>
+              {/* Developers */}
+              <div>
+                {Array.isArray(gameOfDay?.developers) && gameOfDay?.developers.length > 0 ? (
+                  gameOfDay.developers.map((developer, index) => (
+                    <span key={developer.id}>
                       <a
-                        href={`/genre/${genre.id}/${slugify(genre.name)}`}
-                        className="italic font-light hover:font-semibold hover:text-primaryPurple-500 cursor-pointer"
+                        href={`/company/${developer.id}/${slugify(developer.name)}`}
+                        className="italic font-light hover:font-semibold hover:text-primaryPurple-500 cursor-pointer inline"
                       >
-                        {genre.name}
+                        {developer.name}
                       </a>
-                      {index < gameOfDay.genres.length - 1 && ", "}
+                      {index < developer.length - 1 && ", "}
                     </span>
                   ))
                 ) : (
-                  <span className="italic font-light">Unknown Genres</span>
+                  <span className="italic font-light">Unknown Developers</span>
+                )}
+              </div>
+
+              {/* Rating + Genres */}
+              <div className="flex flex-col md:flex-row md:items-center mt-2 gap-y-2">
+                <div className="flex items-center">
+                  {Array(5)
+                    .fill(0)
+                    .map((_, i) => (
+                      <svg
+                        key={i}
+                        className={`h-5 w-5 ${i < Math.round(gameOfDay?.totalRating / 20)
+                          ? "text-yellow-400"
+                          : "text-gray-500"
+                          } fill-current`}
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 2l2.7 8H22l-6.9 5 2.7 8L12 18l-6.9 5 2.7-8L2 10h7.3L12 2z" />
+                      </svg>
+                    ))}
+                  <span className="pt-[1px] text-sm italic text-gray-400">
+                    {gameOfDay?.totalRating
+                      ? `(${(gameOfDay.totalRating / 20).toFixed(1)})`
+                      : "No ratings available"}
+                  </span>
+                </div>
+
+                <div className="md:pl-2">
+                  {Array.isArray(gameOfDay?.genres) && gameOfDay.genres.length > 0 ? (
+                    gameOfDay.genres.map((genre, index) => (
+                      <span key={genre.id}>
+                        <a
+                          href={`/genre/${genre.id}/${slugify(genre.name)}`}
+                          className="italic font-light hover:font-semibold hover:text-primaryPurple-500 cursor-pointer"
+                        >
+                          {genre.name}
+                        </a>
+                        {index < gameOfDay.genres.length - 1 && ", "}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="italic font-light">Unknown Genres</span>
+                  )}
+                </div>
+              </div>
+
+
+              {/* Summary */}
+              <p className="mt-4 text-med font-light text-gray-100 line-clamp-3">
+                {gameOfDay?.summary || "No summary available"}
+              </p>
+
+              {/* Platforms */}
+              <div className="mt-4 pt-2">
+                {Array.isArray(gameOfDay?.platforms) && gameOfDay?.platforms.length > 0 ? (
+                  gameOfDay.platforms.map((platform, index) => (
+                    <span key={platform.id}>
+                      <a
+                        href={`platform/${platform.id}/${slugify(platform.name)}`}
+                        onClick={() => handlePlatformClick(platform.id, platform.name)}
+                        className="italic font-light hover:font-semibold hover:text-primaryPurple-500 cursor-pointer"
+                      >
+                        {platform.name}
+                      </a>
+                      {index < gameOfDay.platforms.length - 1 && ", "}
+                    </span>
+                  ))
+                ) : (
+                  <span className="italic font-light">Unknown Developers</span>
                 )}
               </div>
             </div>
 
-
-            {/* Summary */}
-            <p className="mt-4 text-med font-light text-gray-100 line-clamp-3">
-              {gameOfDay?.summary || "No summary available"}
-            </p>
-
-            {/* Platforms */}
-            <div className="mt-4 pt-2">
-              {Array.isArray(gameOfDay?.platforms) && gameOfDay?.platforms.length > 0 ? (
-                gameOfDay.platforms.map((platform, index) => (
-                  <span key={platform.id}>
-                    <a
-                    href={`platform/${platform.id}/${slugify(platform.name)}`}
-                      onClick={() => handlePlatformClick(platform.id, platform.name)}
-                      className="italic font-light hover:font-semibold hover:text-primaryPurple-500 cursor-pointer"
-                    >
-                      {platform.name}
-                    </a>
-                    {index < gameOfDay.platforms.length - 1 && ", "}
-                  </span>
-                ))
-              ) : (
-                <span className="italic font-light">Unknown Developers</span>
-              )}
+            {/* Footer */}
+            <div className="text-xs text-gray-400 font-light absolute bottom-2 right-4 flex items-center space-x-2">
+              <span>Added: <span className="italic">{backlogDate?.toLocaleDateString()}</span></span>
+              <span className="cursor-pointer font-semibold text-primaryPurple-500 hover:font-semibold">
+                Remove Title
+              </span>
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="text-xs text-gray-400 font-light absolute bottom-2 right-4 flex items-center space-x-2">
-            <span>Added: <span className="italic">{backlogDate?.toLocaleDateString()}</span></span>
-            <span className="cursor-pointer font-semibold text-primaryPurple-500 hover:font-semibold">
-              Remove Title
-            </span>
-          </div>
-        </div>
 
-
-        <div className="flex-shrink-0 h-full hidden xl:block">
-          <img
-            src={gameOfDay?.screenshots?.[mainScreenshotIndex]}
-            alt="Game Screenshot"
-            className="relative h-[18rem] cursor-pointer rounded"
-            onClick={() =>
-              setOverlayOpen(true)}
-          />
-
-          {/* Conditionally render the overlay */}
-          {overlayOpen && (
-            <ImageOverlay
+          <div className="flex-shrink-0 h-full hidden xl:block">
+            <img
               src={gameOfDay?.screenshots?.[mainScreenshotIndex]}
-              alt={`Screenshot of ${name}`}
-              onClose={() => setOverlayOpen(false)}
+              alt="Game Screenshot"
+              className="relative h-[18rem] cursor-pointer rounded"
+              onClick={() =>
+                setOverlayOpen(true)}
             />
-          )}
-        </div>
 
-        {/* Thumbnails Container */}
-        <div className="h-20 relative hidden xl:block">
-          <div className="flex-shrink-0 h-auto flex flex-col gap-2 pl-2 overflow-y-auto">
-            {gameOfDay?.screenshots?.slice(0, 5).map((url, index) => (
-              <img
-                key={index}
-                src={url}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setMainScreenshotIndex(index)
-                }}
-                className={`w-[400px] object-contain rounded cursor-pointer transition-opacity duration-300 ${mainScreenshotIndex === index
-                  ? "brightness-100"
-                  : "brightness-50 hover:brightness-100"
-                  }`}
-                alt={`Screenshot ${index}`}
+            {/* Conditionally render the overlay */}
+            {overlayOpen && (
+              <ImageOverlay
+                src={gameOfDay?.screenshots?.[mainScreenshotIndex]}
+                alt={`Screenshot of ${name}`}
+                onClose={() => setOverlayOpen(false)}
               />
-            ))}
+            )}
+          </div>
+
+          {/* Thumbnails Container */}
+          <div className="h-20 relative hidden xl:block">
+            <div className="flex-shrink-0 h-auto flex flex-col gap-2 pl-2 overflow-y-auto">
+              {gameOfDay?.screenshots?.slice(0, 5).map((url, index) => (
+                <img
+                  key={index}
+                  src={url}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setMainScreenshotIndex(index)
+                  }}
+                  className={`w-[400px] object-contain rounded cursor-pointer transition-opacity duration-300 ${mainScreenshotIndex === index
+                    ? "brightness-100"
+                    : "brightness-50 hover:brightness-100"
+                    }`}
+                  alt={`Screenshot ${index}`}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>
     </div>
+
   );
 };
 

@@ -1,11 +1,12 @@
 import { doc, updateDoc, arrayUnion, arrayRemove, collection, getDocs, query, orderBy } from "firebase/firestore";
 import { useAuth } from "../useAuth";
 import ThumbsUpIcon from "../assets/icons/ThumbsUp";
-import CommentIcon from "../assets/icons/CommentIcon"; 
-import { useEffect, useState } from "react";
+import CommentIcon from "../assets/icons/CommentIcon";
+import { useEffect, useState, useRef } from "react";
 import { db } from "../firebaseConfig";
 import ReplyBox from "./ReplyBox";
 import ReplyEntry from "./ReplyEntry";
+import defaultPfp from "../assets/icons/pfpFallback.svg";
 
 const ReviewEntry = ({ pfp, reviewerName, rating, reviewText, gameId, reviewId, likes = [] }) => {
   const { user } = useAuth();
@@ -14,6 +15,17 @@ const ReviewEntry = ({ pfp, reviewerName, rating, reviewText, gameId, reviewId, 
   const [showReplyBox, setShowReplyBox] = useState(false);
   const [visibleRepliesCount, setVisibleRepliesCount] = useState(1);
   const [isExpanded, setIsExpanded] = useState(false);  // for read more
+  const [isClamped, setIsClamped] = useState(false);
+  const reviewTextRef = useRef(null);
+
+  useEffect(() => {
+    const el = reviewTextRef.current;
+    if (el) {
+      const isOverflowing = el.scrollHeight > el.clientHeight + 1;
+      setIsClamped(isOverflowing);
+    }
+  }, [reviewText]);
+
 
   useEffect(() => {
     fetchReplies();
@@ -27,16 +39,16 @@ const ReviewEntry = ({ pfp, reviewerName, rating, reviewText, gameId, reviewId, 
 
   const handleLike = async () => {
     if (!user) return;
-  
+
     const reviewRef = doc(db, "games", gameId, "reviews", reviewId);
-  
+
     try {
       await updateDoc(reviewRef, {
         likes: hasLiked
           ? arrayRemove(user.uid)
           : arrayUnion(user.uid),
       });
-  
+
       setHasLiked(!hasLiked);
     } catch (error) {
       console.error("Error updating likes on review:", error);
@@ -49,7 +61,7 @@ const ReviewEntry = ({ pfp, reviewerName, rating, reviewText, gameId, reviewId, 
     const snapshot = await getDocs(q);
     const allReplies = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     setReplies(allReplies);
-  };    
+  };
 
   const formatMentions = (text) => {
     if (!text) return null;
@@ -68,18 +80,18 @@ const ReviewEntry = ({ pfp, reviewerName, rating, reviewText, gameId, reviewId, 
 
   return (
     <div className="w-full grid grid-cols-[3rem_auto] h-auto mb-4">
-      {/* Profile Picture */}
       <div className="mt-1 w-12 h-12 rounded-full overflow-hidden flex justify-center items-center bg-gray-800">
-        {pfp ? (
-          <img
-            src={pfp}
-            alt="PFP"
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <span className="text-white text-xs">No PFP</span>
-        )}
+        <img
+          src={pfp || defaultPfp}
+          alt="PFP"
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            e.target.onerror = null; // Prevent infinite loops
+            e.target.src = defaultPfp;
+          }}
+        />
       </div>
+
 
       <div className=" pl-4">
         <div className="text-xs font-bold flex items-center">
@@ -112,13 +124,24 @@ const ReviewEntry = ({ pfp, reviewerName, rating, reviewText, gameId, reviewId, 
 
         </div>
         {/* Review text with clamp and toggle */}
-        <div className={`w-auto text-sm ${!isExpanded ? 'line-clamp-4' : ''}`}>{reviewText}</div>
-        <button
-          onClick={() => setIsExpanded(prev => !prev)}
-          className="text-xs text-primaryPurple-500 hover:font-semibold mt-1"
+        <div
+          ref={reviewTextRef}
+          className={`w-auto text-sm leading-snug ${!isExpanded ? 'line-clamp-4' : ''}`}
         >
-          {isExpanded ? 'Show less' : 'Read more'}
-        </button>
+          {reviewText}
+        </div>
+
+        {isClamped && (
+          <div className="mt-1">
+            <button
+              onClick={() => setIsExpanded(prev => !prev)}
+              className="text-xs text-primaryPurple-500 hover:font-semibold"
+            >
+              {isExpanded ? 'Show less' : 'Read more'}
+            </button>
+          </div>
+        )}
+
 
         <div className="flex flex-row gap-x-4 mt-1">
           {/* Buttons for likes, comments, etc. */}
@@ -140,7 +163,7 @@ const ReviewEntry = ({ pfp, reviewerName, rating, reviewText, gameId, reviewId, 
 
         </div>
         <div className="mt-4">
-        {replies.slice(0, visibleRepliesCount).map (reply => {
+          {replies.slice(0, visibleRepliesCount).map(reply => {
             if (reply.parentReplyId) {
               return (
                 <div key={reply.id} className="w-full grid grid-cols-[3rem_auto] h-auto mb-2">
@@ -155,25 +178,25 @@ const ReviewEntry = ({ pfp, reviewerName, rating, reviewText, gameId, reviewId, 
                     <p className="text-sm font-semibold">{reply.userDisplayName}</p>
                     <p >{formatMentions(reply.text)}</p>
                     <div className="flex flex-row gap-x-4 ">
-                    <div
+                      <div
                         className="flex items-center cursor-pointer group"
                         onClick={handleLike}
-                    >
+                      >
                         <ThumbsUpIcon className="w-4 h-4 text-white group-hover:text-primaryPurple-500 transition-colors duration-200" />
                         <p className="pl-1 text-sxstext-white group-hover:text-primaryPurple-500 transition-colors duration-200">
-                        {(likes?.length || 0) + (hasLiked && !likes?.includes(user?.uid) ? 1 : 0)}
+                          {(likes?.length || 0) + (hasLiked && !likes?.includes(user?.uid) ? 1 : 0)}
                         </p>
-                    </div>
+                      </div>
 
-                    <div
+                      <div
                         onClick={() => setShowReplyBox(prev => !prev)}
                         className="flex items-center cursor-pointer group"
-                    >
+                      >
                         <CommentIcon className="w-4 h-4 text-white group-hover:text-primaryPurple-500 transition-colors duration-200" />
                         <p className="pl-1 text-xs text-white group-hover:text-primaryPurple-500 transition-colors duration-100">
-                            Reply
+                          Reply
                         </p>
-                    </div>
+                      </div>
                     </div>
 
                   </div>
@@ -183,41 +206,41 @@ const ReviewEntry = ({ pfp, reviewerName, rating, reviewText, gameId, reviewId, 
 
             return (
               <ReplyEntry
-              key={reply.id}
-              gameId={gameId}
-              reviewId={reviewId}
-              reply={reply}
-              addReplyToList={(nestedReply) =>
-                setReplies((prev) => [...prev, nestedReply])
-              }
+                key={reply.id}
+                gameId={gameId}
+                reviewId={reviewId}
+                reply={reply}
+                addReplyToList={(nestedReply) =>
+                  setReplies((prev) => [...prev, nestedReply])
+                }
               />
             );
           })}
 
-{replies.length > visibleRepliesCount && (
-    <div className="pl-4 mt-2">
-      <button
-        onClick={() => setVisibleRepliesCount(prev => prev + 5)}
-        className="text-sm text-primaryPurple-500 hover:underline"
-      >
-        Show more replies
-      </button>
-    </div>
-  )}
+          {replies.length > visibleRepliesCount && (
+            <div className="pl-4 mt-2">
+              <button
+                onClick={() => setVisibleRepliesCount(prev => prev + 5)}
+                className="text-sm text-primaryPurple-500 hover:underline"
+              >
+                Show more replies
+              </button>
+            </div>
+          )}
 
-        {showReplyBox && (
-          <div className="mt-2 pl-4">
-            <ReplyBox
-              gameId={gameId}
-              reviewId={reviewId}
-              onReply={() => {setShowReplyBox(false)}}
-              onCancel={() => setShowReplyBox(false)}
-              addReplyToList={(reply) =>
-                setReplies((prev) => [...prev, reply])
-              }
+          {showReplyBox && (
+            <div className="mt-2 pl-4">
+              <ReplyBox
+                gameId={gameId}
+                reviewId={reviewId}
+                onReply={() => { setShowReplyBox(false) }}
+                onCancel={() => setShowReplyBox(false)}
+                addReplyToList={(reply) =>
+                  setReplies((prev) => [...prev, reply])
+                }
               />
-          </div>
-        )}
+            </div>
+          )}
         </div>
 
 

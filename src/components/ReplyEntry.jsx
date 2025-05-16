@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import { useAuth } from "../useAuth";
 import { db } from "../firebaseConfig";
 import ReplyBox from "./ReplyBox";
 import CommentIcon from "../assets/icons/CommentIcon";
 import ThumbsUpIcon from "../assets/icons/ThumbsUp";
+import defaultPfp from "../assets/icons/pfpFallback.svg";
 
 const ReplyEntry = ({ gameId, reviewId, reply, addReplyToList }) => {
     const { user } = useAuth();
@@ -12,6 +13,17 @@ const ReplyEntry = ({ gameId, reviewId, reply, addReplyToList }) => {
     const [hasLiked, setHasLiked] = useState(reply.likes?.includes(user?.uid));
     const [likesCount, setLikesCount] = useState(reply.likes?.length || 0);
     const [isExpanded, setIsExpanded] = useState(false);  // for read more
+    const [isClamped, setIsClamped] = useState(false); // for read more
+    const textRef = useRef(null);
+
+    useEffect(() => {
+        const el = textRef.current;
+        if (el) {
+            const isOverflowing = el.scrollHeight > el.clientHeight + 1; // +1 to buffer rounding
+            setIsClamped(isOverflowing);
+        }
+    }, [reply.text]);
+
 
     const handleLike = async () => {
         if (!user) return;
@@ -52,12 +64,17 @@ const ReplyEntry = ({ gameId, reviewId, reply, addReplyToList }) => {
 
             {/* Profile Picture */}
             <div className="mt-1 w-10 h-10 rounded-full overflow-hidden flex justify-center items-center bg-gray-800">
-                {reply.userPFP ? (
-                    <img src={reply.userPFP} alt="PFP" className="w-full h-full object-cover" />
-                ) : (
-                    <span className="text-white text-xs">No PFP</span>
-                )}
+                <img
+                    src={reply.userPFP || defaultPfp}
+                    alt="PFP"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                        e.target.onerror = null; // Prevent infinite loop
+                        e.target.src = defaultPfp;
+                    }}
+                />
             </div>
+
 
             <div className="pl-2">
                 <div className="text-xs font-bold flex leading-tight">{reply.userDisplayName}</div>
@@ -69,12 +86,18 @@ const ReplyEntry = ({ gameId, reviewId, reply, addReplyToList }) => {
                     )}
                     {formatMentions(reply.text)}
                 </div>
-                <button
-          onClick={() => setIsExpanded(prev => !prev)}
-          className="text-xs text-primaryPurple-500 hover:font-semibold mt-1"
-        >
-          {isExpanded ? 'Show less' : 'Read more'}
-        </button>
+                {isClamped && (
+                    <div className="mt-1">
+                        <button
+                            onClick={() => setIsExpanded(prev => !prev)}
+                            className="text-xs text-primaryPurple-500 hover:font-semibold"
+                        >
+                            {isExpanded ? 'Show less' : 'Read more'}
+                        </button>
+                    </div>
+                )}
+
+
 
                 {/* Like and Reply buttons */}
                 <div className="flex flex-row gap-x-4 pt-1 ">

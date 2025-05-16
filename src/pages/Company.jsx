@@ -127,6 +127,7 @@ const Company = () => {
   // pick number of columns for background grid
   const getColumns = () => {
     const count = trimmedImages.length;
+    if(windowWidth < 768 && count >= 15) return 3;
     if (count === 30) return 6;
     if (count === 15) return windowWidth < 768 ? 3 : 4;
     if (count === 10) return 2;
@@ -212,7 +213,7 @@ const Company = () => {
 
       {/* description */}
       {companyDetails?.description && (
-        <div className="md:mx-[15%] mx-[5%] w-full md:mt-8 mt-24">
+        <div className="md:mx-[15%] mx-[5%] w-full md:mt-8 mt-12">
           <h1 className="text-xl font-semibold">About {companyDetails.name}</h1>
           <p className="ml:mr-[50%] mr-[10%] mt-2">{companyDetails.description}</p>
         </div>
@@ -247,7 +248,7 @@ const Company = () => {
 
       {/* sort + view toggles */}
       <div className="md:mx-[15%] mx-[5%] mt-8">
-        <div className="flex justify-between items-center ">
+        <div className="flex justify-between items-center mb-8">
           <div className="flex items-center">
             <p className="md:block hidden self-center">Sort by: </p>
             <select
@@ -280,17 +281,16 @@ const Company = () => {
             ))}
           </div>
         </div>
-        <HorizontalLine width="w-full" marginTop="mt-2" marginBottom="0" className="mx-[15%]" />
 
 
         {loading ? null : (
           <>
             {visualType === "list" && (
               <div>
-                <div className="grid grid-cols-[35%_25%_25%_15%] gap-4">
+                <div className="grid md:grid-cols-[35%_25%_25%_15%] grid-cols-[40%_30%_30%] gap-4">
                   <p>Game</p>
                   <p>Developer</p>
-                  <p>Genre</p>
+                  <p className="hidden md:block">Genre</p>
                   <p>Rating</p>
                 </div>
                 <HorizontalLine

@@ -33,7 +33,6 @@ import {
     const todaySnap = await getDoc(todayRef);
     if (todaySnap.exists()) {
       const existing = todaySnap.data().games;
-      console.log("[DQ] Found existing queue:", existing);
       return existing;
     }
   

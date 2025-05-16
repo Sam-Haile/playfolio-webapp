@@ -16,7 +16,7 @@ import EditIconModal from "../components/EditIconModal";
 import axios from "axios";
 import RatingGraph from "../components/RatingGraph";
 import Collections from "./Collections";
-import bannerPlaceholder from "../assets/icons/pfp.svg";
+import bannerPlaceholder from "../assets/icons/pfpFallback.svg";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -207,17 +207,17 @@ const Profile = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col">
-      <div className="mx-[]">
+      <div>
         <Header showSearchBar showNavButtons showLoginButtons showProfileIcon />
 
         {/* Banner Container */}
-        <div className="relative bg-customBlack mx-[15%] h-[280px] mt-24 rounded-lg">
+        <div className="relative bg-customBlack md:mx-[15%] mx-[5%] h-[280px] mt-24 rounded-lg">
           {/* Banner Image */}
           <div className="group relative">
             {!loading ? (
               <img
                 src={
-                  userData.bannerImage || "./public/images/defaultBanner.png"
+                  userData.bannerImage || "/images/heroFallback2.png"
                 }
                 alt="Banner"
                 className="w-full h-[280px] object-cover rounded-lg "
@@ -234,7 +234,7 @@ const Profile = () => {
             >
               <img
                 onClick={() => setIsEditBannerOpen(true)}
-                src="./src/assets/icons/pencil.svg"
+                src="/icons/pencil.svg"
                 alt="Edit Icon"
                 className="hover:cursor-pointer w-4 absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:duration-300 duration-300"
               />
@@ -262,7 +262,7 @@ const Profile = () => {
 
               <img
                 onClick={() => setIsEditIconOpen(true)}
-                src="./src/assets/icons/pencil.svg"
+                src="/icons/pencil.svg"
                 alt="Edit Icon"
                 className="hover:cursor-pointer w-[50px] absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:duration-300"
               />
@@ -270,7 +270,7 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 mt-24 mx-[15%]">
+        <div className="grid grid-cols-2 mt-24 md:mx-[15%] mx-[5%]">
           {/* Left Collumn */}
           <div>
             <div>
@@ -284,7 +284,7 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className="mx-[15%]">
+        <div className="md:mx-[15%] mx-[5%]">
           <Collections showProfile={true} />
         </div>
 

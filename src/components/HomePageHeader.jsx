@@ -7,13 +7,39 @@ import ReviewIcon from "../components/ReviewIcon";
 import SearchBar from "../components/SearchBar";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebaseConfig";
 
 
 const HomePageInfo = ({ user }) => {
+    const [counts, setCounts] = useState({
+    Played: 0,
+    Backlog: 0,
+    Wishlist: 0,
+    Dropped: 0,
+    Reviews: 0,
+    Lists: 0,
+  });
+
+    useEffect(() => {
+    const fetchCounts = async () => {
+      if (!user?.uid) return;
+
+      const docRef = doc(db, "users", user.uid, "statusesCount", "counts");
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        setCounts((prev) => ({ ...prev, ...docSnap.data() }));
+      }
+    };
+
+    fetchCounts();
+  }, [user]);
+
   return (
     <div className="grid lg:grid-cols-[45%_55%] lg:grid-cols-[45%] lg:h-60 h-48 ">
       <div className="flex flex-col justify-center h-full w-full pr-4">
-        <h1 className="text-4xl font-bold">{`Hello ${user?.username}, Welcome Back!`}</h1>
+        <h1 className="text-4xl font-bold">{`Hello ${user?.username || "user"}, Welcome Back!`}</h1>
         <p className="font-light text-lg pt-2">
           Discover trending games, track your progress, <br /> and explore
           your collection
@@ -21,7 +47,7 @@ const HomePageInfo = ({ user }) => {
       </div>
 
       <div className="w-full h-auto hidden lg:block md:hidden sm:hidden grid cursor-default grid-cols-2">
-        <div className="h-1/2 grid grid-cols-3 pb-2 gap-x-4">
+        <div className="h-1/2 grid grid-cols-2 pb-2 gap-x-4">
           <a
             href={`/profile?section=games&type=played`}
             className="group overflow-hidden relative border border-opacity-50 border-[5px] border-customGray-800
@@ -29,7 +55,7 @@ const HomePageInfo = ({ user }) => {
               rounded p-4 transition-colors duration-300"
           >
             <div className="relative z-20">
-              <p className="text-3xl font-semibold text-white group-hover:text-primaryPurple-500 transition-text duration-300">258</p>
+              <p className="text-3xl font-semibold text-white group-hover:text-primaryPurple-500 transition-text duration-300">{counts.Played || 0}</p>
               <h2 className="text-xl text-white group-hover:text-primaryPurple-500 transition-text duration-300 group-hover:text-xl group-hover:font-semibold ">Played</h2>
             </div>
             <div
@@ -64,7 +90,7 @@ const HomePageInfo = ({ user }) => {
               rounded p-4 transition-colors duration-300"
           >
             <div className="relative z-20">
-              <p className="text-3xl font-semibold text-white group-hover:text-primaryPurple-500 transition-text duration-300">12</p>
+              <p className="text-3xl font-semibold text-white group-hover:text-primaryPurple-500 transition-text duration-300">{counts.Backlog || 0}</p>
               <h2 className="text-xl text-white group-hover:text-primaryPurple-500 transition-text duration-300 group-hover:text-xl group-hover:font-semibold">Backlogs</h2>
             </div>
             <div
@@ -93,13 +119,13 @@ const HomePageInfo = ({ user }) => {
 
           <a
             href={`/profile?section=reviews`}
-            className="group overflow-hidden relative border border-opacity-50 border-[5px] border-customGray-800
+            className="hidden group overflow-hidden relative border border-opacity-50 border-[5px] border-customGray-800
               hover:border-primaryPurple-500    /* parent */
               rounded p-4 transition-colors duration-300"
           >
             {" "}
             <div className="relative z-20">
-              <p className="text-3xl font-semibold text-white group-hover:text-primaryPurple-500 transition-text duration-300">23</p>
+              <p className="text-3xl font-semibold text-white group-hover:text-primaryPurple-500 transition-text duration-300">{counts.Reviews || 0}</p>
               <h2 className="text-xl text-white group-hover:text-primaryPurple-500 transition-text duration-300 group-hover:text-xl group-hover:font-semibold">Reviews</h2>
             </div>
             <div
@@ -127,7 +153,7 @@ const HomePageInfo = ({ user }) => {
           </a>
         </div>
 
-        <div className="h-1/2 gap-x-4 grid pt-2 grid-cols-3">
+        <div className="h-1/2 gap-x-4 grid pt-2 grid-cols-2">
           <a
             href={`/profile?section=games&type=wishlist`}
             className="group overflow-hidden relative border border-opacity-50 border-[5px] border-customGray-800
@@ -136,7 +162,7 @@ const HomePageInfo = ({ user }) => {
           >
             {" "}
             <div className="relative z-20">
-              <p className="text-3xl font-semibold text-white group-hover:text-primaryPurple-500 transition-text duration-300">35</p>
+              <p className="text-3xl font-semibold text-white group-hover:text-primaryPurple-500 transition-text duration-300">{counts.Wishlist || 0}</p>
               <h2 className="text-xl text-white group-hover:text-primaryPurple-500 transition-text duration-300 group-hover:text-xl group-hover:font-semibold">Wishlisted</h2>
             </div>
             <div
@@ -171,7 +197,7 @@ const HomePageInfo = ({ user }) => {
           >
             {" "}
             <div className="relative z-20 cursor-default">
-              <p className="text-3xl font-semibold text-white group-hover:text-primaryPurple-500 transition-text duration-300">8</p>
+              <p className="text-3xl font-semibold text-white group-hover:text-primaryPurple-500 transition-text duration-300">{counts.Dropped || 0}</p>
               <h2 className="text-xl text-white group-hover:text-primaryPurple-500 transition-text duration-300 group-hover:text-xl group-hover:font-semibold">Dropped</h2>
             </div>
             <div
@@ -200,13 +226,13 @@ const HomePageInfo = ({ user }) => {
 
           <a
             href={`/profile?section=lists`}
-            className="group overflow-hidden relative border border-opacity-50 border-[5px] border-customGray-800
+            className="hidden group overflow-hidden relative border border-opacity-50 border-[5px] border-customGray-800
               hover:border-primaryPurple-500    /* parent */
               rounded p-4 transition-colors duration-300"
           >
             {" "}
             <div className="relative z-20">
-              <p className="text-3xl font-semibold text-white group-hover:text-primaryPurple-500 transition-text duration-300">258</p>
+              <p className="text-3xl font-semibold text-white group-hover:text-primaryPurple-500 transition-text duration-300">{counts.Lists || 0}</p>
               <h2 className="text-xl text-white group-hover:text-primaryPurple-500 transition-text duration-300 group-hover:text-xl group-hover:font-semibold">Lists</h2>
             </div>
             <div

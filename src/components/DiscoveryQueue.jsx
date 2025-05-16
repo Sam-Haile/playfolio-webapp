@@ -81,7 +81,7 @@ function GameSlide({ game }) {
         </div>
         {/* Bottom Left Column */}
         <div className="bg-customGray-900/50 relative p-4 mt-2 rounded ">
-          <p className="text-sm pb-1 truncate w-[75%]">
+          <p className="text-sm pb-1 truncate lg:w-[80%] md:w-[55%]">
             {Array.isArray(game.genres) && game.genres.length > 0
               ? game.genres.map((genre, i) => (
                   <React.Fragment key={genre.id}>

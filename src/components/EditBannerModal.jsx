@@ -5,7 +5,7 @@ import HeroSearchBar from "./HeroSearchBar";
 import ComputerIcon from "../assets/icons/ComputerIcon";
 import PaletteIcon from "../assets/icons/PaletteIcon";
 import HorizontalLine from "../components/HorizontalLine";
-import bannerPlaceholder from "../assets/icons/pfp.svg";
+import bannerPlaceholder from "../assets/icons/pfpFallback.svg";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 /**
@@ -90,16 +90,16 @@ const EditBannerModal = ({ onClose, user, onBannerUpdate }) => {
   return (
     <div
       onClick={onClose}
-      className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-75 flex justify-center items-center z-50"
+      className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-75 flex justify-center items-center z-[9999]"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-[75%] h-[70%] bg-customBlack flex flex-col rounded-lg relative"
+        className="md:w-[75%] w-[90%] md:h-[70%] h-[80%] bg-customBlack flex flex-col rounded-lg relative"
       >
         {/* ---------- Header ---------- */}
         <div className="flex flex-cols mb-4 px-8 pt-4">
           <button onClick={onClose} className="flex items-center justify-center w-6">
-            <img src="./src/assets/icons/backArrow.svg" alt="Go back" />
+            <img src="/icons/backArrow.svg" alt="Go back" />
           </button>
           <h1 className="text-white text-base font-semibold flex w-full items-center justify-center">
             Change banner image
@@ -181,7 +181,7 @@ const EditBannerModal = ({ onClose, user, onBannerUpdate }) => {
               </div>
 
               {/* Pagination */}
-              <div className="pt-4 p-8">
+              <div className="pt-4 md:p-8 p-0">
                 <div className="flex justify-center mt-auto px-4">
                   <button
                     onClick={prevPage}

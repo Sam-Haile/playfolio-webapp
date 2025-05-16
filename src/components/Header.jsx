@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebaseConfig";
-import bannerPlaceholder from "../assets/icons/pfp.svg";
+import bannerPlaceholder from "../assets/icons/pfpFallback.svg";
 import SearchBar from "./SearchBar";
 import HorizontalLine from "../components/HorizontalLine";
 import { useAuth } from "../useAuth";

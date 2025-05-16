@@ -45,7 +45,6 @@ const screenshotCache = {};
 
 export async function fetchScreenshotsCached(gameId) {
   if (screenshotCache[gameId]) {
-    console.log(`Using cached screenshots for game ID: ${gameId}`);
     return screenshotCache[gameId];
   }
 

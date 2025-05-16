@@ -2,7 +2,7 @@ import { doc, getDoc, setDoc, serverTimestamp, collection } from "firebase/fires
 import { useAuth } from "../AuthContext";
 import { db } from "../firebaseConfig";
 import { useEffect, useState, useRef } from "react";
-import ProfileIcon from "../assets/icons/pfp.svg";
+import ProfileIcon from "../assets/icons/pfpFallback.svg";
 
 
 

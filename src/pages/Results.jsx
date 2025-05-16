@@ -5,6 +5,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import HorizontalLine from "../components/HorizontalLine";
 import ResultCard from "../components/ResultCard";
+import Pagination from "../components/Pagination";
 
 const Results = () => {
   const location = useLocation();
@@ -36,7 +37,6 @@ const Results = () => {
         searchTerm: term,
       });
       setResults(response.data);
-      console.log("Response data", response.data);
       setOriginalResults(response.data); // Save the original results
     } catch (err) {
       console.error("Error fetching search results:", err);
@@ -92,20 +92,19 @@ const Results = () => {
   };
 
   const visualTypes = [
-    { type: "detailed", icon: "./src/assets/icons/detailedView.svg" },
-    { type: "compact", icon: "./src/assets/icons/compactView.svg" },
-    { type: "list", icon: "./src/assets/icons/listView.svg" },
+    { type: "detailed", icon: "/icons/detailedView.svg" },
+    { type: "compact", icon: "/icons/compactView.svg" },
+    { type: "list", icon: "/icons/listView.svg" },
   ];
 
   const handleVisualTypeChange = (type) => {
-    console.log("Visual Type: ", visualType)
     setVisualType(type);
   };
 
   return (
     <div className="relative flex flex-col min-h-screen">
       <Header showSearchBar={true} showNavButtons={true} showLoginButtons={true} zIndex={20} />
-      <div className="flex-grow pt-10 relative max-w-screen min-h-[100%] mx-[15%]">
+      <div className="flex-grow pt-10 relative max-w-screen min-h-[100%] md:mx-[15%] mx-[5%]">
 
         <div className="flex flex-col  mt-24">
           <p className="px-0">Search Results for "{searchTerm}"</p>
@@ -121,7 +120,7 @@ const Results = () => {
         {/* Sorting and Visual Type Options */}
         <div className="mb-8 flex flex-row justify-between">
           <div className="flex items-center ">
-            <label htmlFor="sortOptions" className="text-white mr-4 flex font-bold">
+            <label htmlFor="sortOptions" className="md:flex hidden text-white mr-4 font-bold">
               Sort By:
             </label>
             <select
@@ -168,10 +167,10 @@ const Results = () => {
               {/* Add the HorizontalLine before the grid for list view */}
               {visualType === "list" && (
                 <div>
-                  <div className="grid grid-cols-[35%_25%_25%_15%] items-center gap-4 w-full">
+                  <div className="grid md:grid-cols-[35%_25%_25%_15%] grid-cols-[40%_30%_30%] items-center gap-4 w-full">
                     <div><p>Game</p></div>
                     <div><p>Developer</p></div>
-                    <div><p>Genre</p></div>
+                    <div className="hidden md:block"><p>Genre</p></div>
                     <div><p>Rating</p></div>
                   </div>
                   <HorizontalLine marginTop="mt-2" marginBottom="mb-2" width="full" />
@@ -182,7 +181,7 @@ const Results = () => {
                 ? "grid grid-flow-row grid-cols-1 w-full lg:grid-cols-2"
                 : visualType === "list"
                   ? "grid grid-cols-1 gap-4" // One row per game for list view
-                  : "grid grid-cols-7 gap-4 md:grid-cols-5 sm:grid-cols-3 xs:grid-cols-2"
+                  : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-4"
                 }`}>
 
                 {paginatedResults.map((game) => (
@@ -198,23 +197,14 @@ const Results = () => {
 
 
               {/* Pagination Controls */}
-              <div className="flex justify-center mt-8">
-                <button
-                  onClick={prevPage}
-                  disabled={currentPage === 1}
-                  className="px-4 py-2 mx-2 text-white bg-primaryPurple-700 rounded disabled:opacity-50"
-                >
-                  Previous
-                </button>
-                <span className="text-white mx-4 flex justify-center items-center">Page {currentPage} of {totalPages}</span>
-                <button
-                  onClick={nextPage}
-                  disabled={currentPage === totalPages}
-                  className="px-4 py-2 mx-2 text-white bg-primaryPurple-500 rounded disabled:opacity-50 "
-                >
-                  Next
-                </button>
+              <div className="mt-8">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={(page) => setCurrentPage(page)}
+                />
               </div>
+
             </>
           )}
         </div>

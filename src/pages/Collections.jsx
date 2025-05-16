@@ -214,7 +214,7 @@ const Collections = ({ user, showProfile = true }) => {
                   id="collectionType"
                   value={type}
                   onChange={handleTypeChange}
-                  className="px-2 py-1 bg-customBlack border border-b-0 text-white rounded-t"
+                  className="px-2 py-1 mt-2 bg-customBlack border md:border-b-0 text-white md:rounded-t rounded"
                 >
                   <option value="played">Played</option>
                   <option value="wishlist">Wishlist</option>
@@ -227,11 +227,11 @@ const Collections = ({ user, showProfile = true }) => {
         )}
       </div>
 
-      <div className="mt-8">
+      <div className="md:mt-8 mt-4">
         {section === "games" && (
           <>
             {loading || games.length > 0 ? (
-              <div className="grid xl:grid-cols-7 lg:grid-cols-5 md:grid-cols-5 grid-cols-4 gap-4">
+              <div className="grid xl:grid-cols-7 lg:grid-cols-5 md:grid-cols-5 grid-cols-3 md:gap-4 gap-2">
                 {loading
                   ? Array.from({ length: games.length || 8 }).map((_, index) => (
                       <Tilt key={index} options={{ scale: 1.1 }}>

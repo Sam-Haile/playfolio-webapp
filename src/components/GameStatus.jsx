@@ -80,7 +80,6 @@ const GameStatus = ({ gameId, releaseDate }) => {
               { merge: true }
             );
           }
-          console.log(`❌ Removed game status for ${gameId}`);
         } else {
           // Changing to a new status
           updates.status = status;

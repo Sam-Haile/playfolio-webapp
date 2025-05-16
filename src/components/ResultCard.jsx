@@ -142,14 +142,14 @@ const ResultCard = ({ game, visualType }) => {
             {/* Game Image */}
             <a
               href={`/game/${game.id}/${slugify(game.name)}`}
-              className="flex-shrink-0 flex flex-row"
+              className="flex flex-row justify-center items-center "
             >
               {icons.length > 0 ? (
                 <Tilt>
                   <img
                     src={icons[0].url} // Use only the first icon
                     alt={`${game.name} icon`}
-                    className="game-icon cursor-pointer"
+                    className="flex cursor-pointer aspect-square object-cover rounded"
                     style={{ width: "50px", height: "50px", margin: "5px" }}
                     onClick={handleClick}
                   />
@@ -158,7 +158,7 @@ const ResultCard = ({ game, visualType }) => {
                 <p className="w-[60px] m-[5px] h-[50px] bg-gray-300"></p>
               )}
               <p
-                className="font-bold flex items-center w-[100%] p-4 hover:text-primaryPurple-500 cursor-pointer"
+                className="font-bold flex items-center w-[100%] pl-4 hover:text-primaryPurple-500 cursor-pointer"
                 onClick={handleClick}
               >
                 {game.name}{" "}
@@ -252,11 +252,11 @@ const ResultCard = ({ game, visualType }) => {
                       : game.developers || "Unknown Developer"}
                   </p>
 
-                  <p className="pt-1 text-gray-300 text-sm">
+                  <p className="pt-1 text-gray-300 line-clamp-1 text-sm">
                     {game.genres.join(", ")}
                   </p>
 
-                  <p className="hidden md:block mt-2 font-extralight truncate-text pr-24">
+                  <p className="hidden md:block mt-2 font-extralight truncate-text overflow-hidden line-clamp-1 text-sm">
                     {game.storyline ||
                       game.summary ||
                       "No storyline or summary available."}

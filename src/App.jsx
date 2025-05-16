@@ -10,6 +10,10 @@ import Company from "./pages/Company";
 import Event from "./pages/Event";
 import Genre from "./pages/Genre";
 import Platform from "./pages/Platform";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 import ScrollToTop from "./services/ScrollToTop";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./pages/ProtectedRoute";
@@ -33,6 +37,10 @@ const App = () => {
           <Route path="/genre/:id/:slug?" element={<Genre />} />
           <Route path="/platform/:id/:slug?" element={<Platform />} />
           <Route path="signup" element={<SignIn />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
         </Routes>
       </Router>
     </AuthProvider>
