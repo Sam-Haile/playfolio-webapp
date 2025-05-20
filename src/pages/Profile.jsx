@@ -11,7 +11,7 @@ import { db } from "../firebaseConfig"; // Ensure Firestore is imported
 import { useAuth } from "../useAuth";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import EditBannerModal from "../components/EditBannerModal"; // <--- new separate file
+import EditBannerModal from "../components/EditBannerModal";
 import EditIconModal from "../components/EditIconModal";
 import axios from "axios";
 import RatingGraph from "../components/RatingGraph";
@@ -136,44 +136,6 @@ const Profile = () => {
     }
   }, [user]); // Runs when `user` changes
 
-  const fetchGameCovers = async (gamesList) => {
-    try {
-      const missingGames = gamesList.filter((game) => !preloadedGames[game.id]);
-
-      if (missingGames.length > 0) {
-        const response = await axios.post(
-          `${import.meta.env.VITE_API_URL}/api/gameDetails`,
-          {
-            ids: missingGames.map((game) => game.id),
-          }
-        );
-
-        const fetchedGames = response.data;
-        const newPreloadedGames = { ...preloadedGames };
-
-        fetchedGames.forEach((game) => {
-          newPreloadedGames[game.id] = {
-            name: game.name,
-            coverImage: game.coverImage,
-          };
-        });
-
-        setPreloadedGames((prev) => ({ ...prev, ...newPreloadedGames }));
-      }
-
-      return gamesList.map((game) => ({
-        ...game,
-        name: preloadedGames[game.id]?.name || "Unknowadklnn Game",
-        coverImage:
-          preloadedGames[game.id]?.coverImage ||
-          "../../images/coverFallback.png",
-      }));
-    } catch (error) {
-      console.error("Error fetching game covers:", error);
-      return gamesList;
-    }
-  };
-
   const useResponsiveSlice = () => {
     const [itemsToShow, setItemsToShow] = useState(
       window.innerWidth >= 1024 ? 4 : 3
@@ -211,7 +173,26 @@ const Profile = () => {
         <Header showSearchBar showNavButtons showLoginButtons showProfileIcon />
 
         {/* Banner Container */}
-        <div className="relative bg-customBlack md:mx-[15%] mx-[5%] h-[280px] mt-24 rounded-lg">
+        <div className="relative bg-customBlack rounded-lg">
+
+          <div className="">
+
+            <div
+              className="absolute top-0 -mt-[1px] h-[100%] w-full pointer-events-none z-10"
+              style={{
+                background:
+                  "linear-gradient(to bottom, #121212 15%, transparent 50%)",
+              }}
+            ></div>
+            <div
+              className="absolute bottom-0 -mb-[1px] h-[100%] w-full pointer-events-none z-10"
+              style={{
+                background:
+                  "linear-gradient(to top, #121212 0%, transparent 35%)",
+              }}
+            ></div>
+          </div>
+
           {/* Banner Image */}
           <div className="group relative">
             {!loading ? (
@@ -220,7 +201,7 @@ const Profile = () => {
                   userData.bannerImage || "/images/heroFallback2.png"
                 }
                 alt="Banner"
-                className="w-full h-[280px] object-cover rounded-lg "
+                className="w-full h-[500px] object-cover rounded-lg "
               />
             ) : (
               <div className="w-full h-[280px] bg-gray-700 animate-pulse rounded-lg"></div>
@@ -242,7 +223,7 @@ const Profile = () => {
           </div>
 
           {/* Profile Picture (PFP) */}
-          <div className="absolute bottom-0 left-[5%] transform translate-y-1/2">
+          <div className="absolute bottom-0 left-[15%] transform translate-y-1/2 z-40">
             <div className="group">
               <img
                 src={src}
