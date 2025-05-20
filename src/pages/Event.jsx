@@ -142,7 +142,7 @@ const Event = () => {
           <h1 className="text-xl font-semibold">
             About {event.name}
           </h1>
-          <p className="mr-[5%] mt-2">{event.description}</p>
+          <p className="mr-[40%]  mt-2">{event.description}</p>
         </div>
       )}
 

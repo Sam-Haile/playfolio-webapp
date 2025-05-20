@@ -101,3 +101,7 @@
 .sign-up-button:hover {
   background-color: #0056b3;
 } */
+
+.slick-track .slick-slide:focus {
+  outline: none;
+}

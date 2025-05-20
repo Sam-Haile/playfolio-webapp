@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { signUpUser, loginUser } from "../authService";
 import { useNavigate, useLocation } from "react-router-dom";
-import { collection, query, where, getDocs } from "firebase/firestore";
 import {
   getAuth,
   onAuthStateChanged,
   sendEmailVerification,
 } from "firebase/auth";
-import { db } from "../firebaseConfig";
-import Logo from "../assets/icons/logo.svg";
-import LogoIcon from "../assets/icons/logoicon.svg";
-import VerticalLine from "../assets/icons/verticalLine.svg";
-import Header from "../components/Header";
+
+
 const SignIn = () => {
   const auth = getAuth();
   const navigate = useNavigate();
@@ -160,6 +156,10 @@ const SignIn = () => {
     setError(errorMessage);
   };
 
+    const handleLogoClick = () => {
+    navigate(user ? "/home" : "/");
+  };
+
   return (
     <div className=" max-w-screen min-h-screen grid md:grid-cols-[60%_40%] mx-[5%] md:mx-[0] overflow-hidden">
       {/* Left Side */}
@@ -191,13 +191,15 @@ const SignIn = () => {
         {/* Form Section */}
         <div className="flex-1 flex flex-col items-center md:justify-center md:mt-0 mt-12 overflow-hidden">
 
-          <div className="md:mb-20 mb-12">
+          <div className="md:mb-20 mb-12 cursor-pointer">
+          <button onClick={handleLogoClick}>
             <img
               src={"/icons/logo.svg"}
               alt="Playfolio Logo"
               className="h-10 mr-4"
               onContextMenu={(e) => e.preventDefault()}
             />
+            </button>
           </div>
 
           <div className="w-full max-w-lg">

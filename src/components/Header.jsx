@@ -59,22 +59,22 @@ const Header = ({
     <header className="md:mt-4 mt-8 absolute top-0 left-0 w-full z-[9999] ">
       <div className="md:mx-[15%] mx-[5%] text-white h-auto flex items-center justify-between">
         <div className="flex items-center">
-          <button onClick={handleLogoClick}>
+          <a href={user ? "/home" : "/"}>
             <img
               src={"/icons/logoicon.svg"}
               alt="Playfolio Logo"
               className="h-10 mr-4"
               onContextMenu={(e) => e.preventDefault()}
             />
-          </button>
-          <button onClick={handleLogoClick} className="hidden md:block">
+          </a>
+          <a href={user ? "/home" : "/"} className="hidden md:block">
             <img
               src={"/icons/logo.svg"}
               alt="Playfolio"
               className="h-5 mr-4"
               onContextMenu={(e) => e.preventDefault()}
             />
-          </button>
+          </a>
           { user && (
             <div className="flex items-center">
               <img

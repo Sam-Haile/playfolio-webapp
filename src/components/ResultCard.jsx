@@ -80,6 +80,9 @@ const ResultCard = ({ game, visualType }) => {
     game.ratingCount || game.rating_count
   );
 
+
+  console.log(icons);
+
   const getCardLayout = () => {
     switch (visualType) {
       case "compact":
@@ -155,7 +158,13 @@ const ResultCard = ({ game, visualType }) => {
                   />
                 </Tilt>
               ) : (
-                <p className="w-[60px] m-[5px] h-[50px] bg-gray-300"></p>
+                <img
+                  src={"../images/iconFallback.png"}
+                  alt={`${game.name} icon`}
+                  className="flex cursor-pointer aspect-square object-cover rounded"
+                  style={{ width: "50px", height: "50px", margin: "5px" }}
+                  onClick={handleClick}
+                />
               )}
               <p
                 className="font-bold flex items-center w-[100%] pl-4 hover:text-primaryPurple-500 cursor-pointer"

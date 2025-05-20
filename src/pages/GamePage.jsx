@@ -204,7 +204,7 @@ const GamePage = () => {
     speed: 500,
     draggable: true,
     swipe: true,
-    arrows: true,
+    arrows: false,
     swipeToSlide: true,
   };
 
@@ -355,13 +355,13 @@ const GamePage = () => {
           <div className="md:mx-[15%] mx-[5%] grid md:grid-cols-[60%_40%] grid-cols-[100%]">
             <div className="h-[auto]">
 
-              
+
               <HorizontalLine
                 marginTop="md:mt-14 mt-4"
                 marginBottom="mb-4"
                 width="w-full"
               />
-              
+
 
               <div className="grid grid-cols-3 ">
                 <div className="w-[80%] flex-col self-center pr-2">
@@ -501,7 +501,7 @@ const GamePage = () => {
                 width="w-full"
               />
 
-              
+
               <div className="mt-8 block md:hidden">
                 <div className="bg-customBlack rounded h-[auto] mt-auto w-[100%] drop-shadow-xl">
                   <div className="flex flex-col gap-2 p-4">
@@ -646,19 +646,42 @@ const GamePage = () => {
                     )}
                   </div>
                   {/* Thumbnails carousel */}
-                  <div className="md:mx-[0%] mx-[5%]">
-                  <Slider {...sliderSettings} className="md:px-6">
-                    {media.slice(0, 8).map((m, idx) => (
-                      <div key={idx} className="px-1 cursor-pointer" onClick={() => { setMainMediaIndex(idx); setShowVideo(false); }}>
-                        {m.type === "video" ? (
-                          <img src={`https://img.youtube.com/vi/${m.data.video_id}/default.jpg`} alt={m.data.name} className={`rounded ${idx === mainMediaIndex ? "opacity-100" : "brightness-50 hover:brightness-100"}`} />
-                        ) : (
-                          <img src={m.data} alt={`Screenshot ${idx + 1}`} className={`outline-none focus:outline-none md:h-full md:h-12 h-8 w-20 rounded ${idx === mainMediaIndex ? "opacity-100" : "brightness-50 hover:brightness-100"}`} />
-                        )}
-                      </div>
-                    ))}
-                  </Slider>
-                    </div>
+                  <div className="">
+                    <Slider {...sliderSettings}>
+                      {media.slice(0, 8).map((m, idx) => (
+                        <div
+                          key={idx}
+                          onClick={() => {
+                            setMainMediaIndex(idx);
+                            setShowVideo(false);
+                          }}
+                          tabIndex={-1}                         // prevents the browser from making it focusable
+                          className="cursor-pointer outline-none focus:outline-none"
+                        >
+                          {m.type === "video" ? (
+                            <img
+                              src={`https://img.youtube.com/vi/${m.data.video_id}/default.jpg`}
+                              alt={m.data.name}
+                              className={`rounded ${idx === mainMediaIndex
+                                  ? "opacity-100 "
+                                  : "brightness-50 hover:brightness-100  object-contain overflow-hidden"
+                                }`}
+                            />
+                          ) : (
+                            <img
+                              src={m.data}
+                              alt={`Screenshot ${idx + 1}`}
+                              className={`pr-2 pt-2 outline-none focus:outline-none md:h-full ${idx === mainMediaIndex
+                                  ? "opacity-100"
+                                  : "brightness-50 hover:brightness-100"
+                                }`}
+                            />
+                          )}
+                        </div>
+                      ))}
+
+                    </Slider>
+                  </div>
                 </div>
               )}
 
