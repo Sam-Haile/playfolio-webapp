@@ -34,24 +34,30 @@ const HalfStar = ({ activeColor, neutralColor }) => (
 
 const saveRatingToFirestore = async (userId, gameId, ratingValue) => {
   const userGameRef = doc(db, "users", userId, "gameStatuses", gameId);
-  const countsRef = doc(db, "users", userId, "statusesCount", "counts");
+  const countsRef   = doc(db, "users", userId, "statusesCount", "counts");
+  const statsRef    = doc(db, "gameStats", gameId);
 
   try {
     await runTransaction(db, async (transaction) => {
-      const gameDoc = await transaction.get(userGameRef);
-      const oldData = gameDoc.exists() ? gameDoc.data() : {};
-      const oldStatus = oldData.status || "";
+       // 1) Read the existing user‐game doc (if any)
+      const gameSnap = await transaction.get(userGameRef);
+      const oldData  = gameSnap.exists() ? gameSnap.data() : {};
+      const oldRating = typeof oldData.rating === "number"
+        ? oldData.rating
+        : null;
+      const hadStatus = !!oldData.status;
 
-      // We'll merge rating plus any other changes
+   // 2) Write/merge the new rating+status
       const newData = {
-        rating: ratingValue,
+        rating:    ratingValue,
         updatedAt: serverTimestamp(),
+        // if they never had a status, mark as Played
+        ...(hadStatus ? {} : { status: "Played" })
       };
+      transaction.set(userGameRef, newData, { merge: true });
 
-      // If there was no status set, automatically mark it as "Played"
-      if (!oldStatus) {
-        newData.status = "Played";
-        // Also increment the "Played" count by 1
+      // 3) If first‐time play, bump their Played count
+      if (!hadStatus) {
         transaction.set(
           countsRef,
           { Played: increment(1) },
@@ -59,16 +65,34 @@ const saveRatingToFirestore = async (userId, gameId, ratingValue) => {
         );
       }
 
-      // If they already have a status, we leave it as is
-      // (only overwrite rating, unless you want to force "Played" anyway)
 
-      // Finally, set the merged data
-      transaction.set(userGameRef, newData, { merge: true });
+        // 4) Adjust your global aggregates
+      if (oldRating === null) {
+        // brand‐new rating: +1 count, +rating sum
+        transaction.set(
+          statsRef,
+          {
+            localReviewCount: increment(1),
+            localRatingSum:   increment(ratingValue)
+          },
+          { merge: true }
+        );
+      } else if (oldRating !== ratingValue) {
+        // update: only adjust the sum by the difference
+        const diff = ratingValue - oldRating;
+        transaction.set(
+          statsRef,
+          { localRatingSum: increment(diff) },
+          { merge: true }
+        );
+      }
+      // else oldRating === ratingValue → do nothing
     });
   } catch (error) {
     console.error("Error saving rating:", error);
   }
 };
+
 
 
 const StarRating = ({gameId, releaseDate}) => {

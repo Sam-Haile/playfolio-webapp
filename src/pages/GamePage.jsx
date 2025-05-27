@@ -18,6 +18,8 @@ import ReviewBox from "../components/ReviewBox";
 import GameReviews from "../components/GameReviews";
 import { slugify } from "../services/slugify.js";
 import { getEmbedUrl } from "../services/getEmbedUrl.js";
+import RatingCountDisplay from "../components/RatingCountDisplay.jsx";
+import CombinedStarRating from "../components/CombinedStarRating.jsx";
 
 const GamePage = () => {
   const { id } = useParams(); // Get the game ID from the URL
@@ -55,9 +57,13 @@ const GamePage = () => {
       // Update main game data
       setGameDetails(gameResponse.data);
 
-      setHeroes(gameResponse.data.heroes.url || null);
-      setLogos(gameResponse.data.logos.url || null);
-      setTrailer(gameResponse.data.video || null);
+      setHeroes(gameResponse.data.heroes && gameResponse.data.heroes.url ?
+        gameResponse.data.heroes.url : "/images/heroFallback2.png");
+
+      setLogos(gameResponse.data.logos && gameResponse.data.logos.url ?
+        gameResponse.data.logos.url : "/images/iconFallback.png");
+
+      setTrailer(gameResponse.data.video || "");
 
     } catch (err) {
       console.error("Error fetching game data:", err);
@@ -211,6 +217,7 @@ const GamePage = () => {
   const hasAgeRating = ageRatings.some((r) => r.category === 1);
   const media = buildMediaArray();
 
+
   return (
     <div className="h-[100%]">
       <Header
@@ -234,9 +241,15 @@ const GamePage = () => {
               src={gameDetails.screenshots[0]} // Use the first screenshot as a fallback
               alt={`${name} Screenshot`}
               className="w-full h-full object-cover" // Adjust height for proportional scaling
+              draggable="false"
             />
           ) : (
-            <p>No heroes or screenshots available.</p>
+            <img
+              src={"/images/heroFallback2.png"}
+              alt={gameDetails.name}
+              className="w-full h-full object-cover"
+              draggable="false"
+            />
           )}
         </div>
 
@@ -314,7 +327,7 @@ const GamePage = () => {
                   <DynamicLogo
                     url={logos}
                     draggable="false"
-                    gameName={name}
+                    gameName={"name"}
                     maxSize={"w-96"}
                     minSize={"w-60"}
                     onError={() => setLogoError(true)}
@@ -663,8 +676,8 @@ const GamePage = () => {
                               src={`https://img.youtube.com/vi/${m.data.video_id}/default.jpg`}
                               alt={m.data.name}
                               className={`rounded ${idx === mainMediaIndex
-                                  ? "opacity-100 "
-                                  : "brightness-50 hover:brightness-100  object-contain overflow-hidden"
+                                ? "opacity-100 "
+                                : "brightness-50 hover:brightness-100  object-contain overflow-hidden"
                                 }`}
                             />
                           ) : (
@@ -672,8 +685,8 @@ const GamePage = () => {
                               src={m.data}
                               alt={`Screenshot ${idx + 1}`}
                               className={`pr-2 pt-2 outline-none focus:outline-none md:h-full ${idx === mainMediaIndex
-                                  ? "opacity-100"
-                                  : "brightness-50 hover:brightness-100"
+                                ? "opacity-100"
+                                : "brightness-50 hover:brightness-100"
                                 }`}
                             />
                           )}
@@ -702,34 +715,16 @@ const GamePage = () => {
                 <div className="flex flex-col gap-2 p-4">
                   <div className="text-sm font-bold uppercase ">Rating</div>
                   {/* Display Numerical Rating (Converted to out of 5) */}
-                  <div className="text-4xl font-extrabold text-yellow-400">
-                    {gameDetails.rating
-                      ? (gameDetails.rating / 20).toFixed(1) + " / 5"
-                      : "Unrated"}
-                  </div>
-                  <div className="flex gap-1">
-                    {Array(5)
-                      .fill(0)
-                      .map((_, i) => (
-                        <svg
-                          key={i}
-                          className={`h-6 w-6 ${i < Math.round(gameDetails.rating / 20)
-                            ? "text-yellow-400"
-                            : "text-gray-300"
-                            } fill-current`}
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M12 2l2.7 8H22l-6.9 5 2.7 8L12 18l-6.9 5 2.7-8L2 10h7.3L12 2z" />
-                        </svg>
-                      ))}
-                  </div>
+                  <CombinedStarRating
+                    gameId={String(gameDetails.id)}
+                    igdbRating={gameDetails.rating}
+                    igdbCount={gameDetails.totalRatings}
+                  />
 
-                  <div className="text-xs text-gray-500 pt-1">
-                    {gameDetails.totalRatings
-                      ? `${gameDetails.totalRatings} Ratings`
-                      : "Be the first to rate!"}
-                  </div>
+                  <RatingCountDisplay
+                    gameId={String(gameDetails.id)}
+                    gameDetails={gameDetails}
+                  />
                 </div>
               </div>
 

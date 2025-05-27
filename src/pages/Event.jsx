@@ -109,7 +109,7 @@ const Event = () => {
               </div>
 
               {event.event_networks?.length > 0 && (
-                <div className="flex items-center space-x-4 pt-4 justify-end">
+                <div className="flex items-center space-x-4 pt-4 justify-end pointer-event:none">
                   {event.event_networks.map((network, idx) => {
                     const src = networkIcons[network.type] || LinkIconURL;
                     return (
@@ -124,6 +124,7 @@ const Event = () => {
                           src={src}
                           alt={`${network.type} logo`}
                           className="md:w-8 md:h-8 w-6 h-6 "
+                          draggable = "false"
                         />
                       </a>
                     );

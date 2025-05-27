@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebaseConfig";
-import bannerPlaceholder from "../assets/icons/pfpFallback.svg";
+import bannerPfp from "../assets/icons/pfpFallback.svg";
 import SearchBar from "./SearchBar";
 import HorizontalLine from "../components/HorizontalLine";
 import { useAuth } from "../useAuth";
@@ -16,7 +16,7 @@ const Header = ({
   const { user, loading } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const [src, setSrc] = useState(bannerPlaceholder);
+  const [src, setSrc] = useState(bannerPfp);
 
   useEffect(() => {
     if (user?.profileIcon) {
@@ -143,7 +143,7 @@ const Header = ({
                   onError={(e) => {
                     // only run once
                     e.currentTarget.onerror = null;
-                    setSrc(bannerPlaceholder);
+                    setSrc(bannerPfp);
                   }}
                 />
                 <p className="ml-2 flex-grow text-right">{user.username}</p>

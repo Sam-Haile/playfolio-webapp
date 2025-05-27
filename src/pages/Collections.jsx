@@ -6,17 +6,72 @@ import {
   getDocs,
   getDoc,
   doc,
+  query,
+  where,
 } from "firebase/firestore";
-import HorizontalLine from "../components/HorizontalLine";
 import GameCard from "../components/GameCard";
 import axios from "axios";
 import { Tilt } from "react-tilt";
 import { useLocation, useNavigate } from "react-router-dom";
 
 // Placeholder components for future Reviews and Lists sections
-const ReviewsSection = ({ userId }) => (
-  <div className="text-white text-center mt-10">Reviews feature coming soon.</div>
+const ReviewsSection = ({ userId }) => {
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const fetchReviews = async () => {
+      try {
+        const q = query(
+          collection(db, "users", userId, "gameStatuses"),
+          where("review", "!=", "")
+        );
+        const snapshot = await getDocs(q);
+        const reviewsList = snapshot.docs.map(doc => doc.data());
+        setReviews(reviewsList);
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, [userId]);
+
+  if (loading) {
+    return <div className="text-white text-center mt-10">Loading reviews...</div>;
+  }
+
+  if (reviews.length === 0) {
+    return <div className="text-white text-center mt-10">No reviews yet.</div>;
+  }
+return (
+  <div className="mt-10 px-4">
+    <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+      {reviews.map((review, idx) => (
+        <div
+          key={idx}
+          className="break-inside-avoid bg-customGray-800 p-4 rounded-xl text-left shadow mb-4"
+        >
+          <div className="text-yellow-400 font-bold mb-1">
+            Rating: {review.rating} / 5
+          </div>
+          <p className="text-white mb-2">{review.review}</p>
+          <div className="text-sm text-gray-400">Game ID: {review.gameId}</div>
+          <div className="text-sm text-gray-500">
+            Reviewed on: {review.updatedAt?.toDate().toLocaleDateString()}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
 );
+};
+
+
 
 const ListsSection = ({ userId }) => (
   <div className="text-white text-center mt-10">Lists feature coming soon.</div>

@@ -188,9 +188,18 @@ const Profile = () => {
               className="absolute bottom-0 -mb-[1px] h-[100%] w-full pointer-events-none z-10"
               style={{
                 background:
-                  "linear-gradient(to top, #121212 0%, transparent 35%)",
+                  "linear-gradient(to top, #121212 0%, transparent 15%)",
               }}
             ></div>
+{/* 
+            <div
+              className="absolute top-0 -mt-[2px] h-[100%] w-full pointer-events-none z-10"
+              style={{
+                background:
+                  "linear-gradient(-5deg, #121212 30%, transparent 25%)",
+              }}
+            ></div> */}
+            
           </div>
 
           {/* Banner Image */}
