@@ -63,7 +63,7 @@ const ReviewsSection = ({ userId }) => {
   }
 
   return (
-    <div className="mt-10">
+    <div className="mt-10 relative">
       <ResponsiveMasonry
         columnsCountBreakPoints={{ 350: 1, 750: 2, 1024: 3 }}
         gutterBreakpoints={{ 350: "12px", 750: "16px", 1024: "24px" }}
@@ -74,22 +74,48 @@ const ReviewsSection = ({ userId }) => {
               key={idx}
               className="w-[900px] bg-customGray-900 rounded text-left shadow"
             >
-              <img className="rounded" src={review.gameSnapshot?.heroImage || "/images/heroFallback.png"} />
+              <div className="relative w-full border border-4 border-customGray-900 rounded-t">
+                {/* Hero image as background */}
+                <div className="w-full h-full bg-black absolute opacity-60" />
+                <img
+                  className="w-full h-[10rem] object-cover"
+                  src={review.gameSnapshot?.heroImage || "/images/heroFallback.png"}
+                  alt="Hero Image"
+                />
 
-              <div className="p-4">
-                <div className="text-yellow-400 font-bold mb-1 ">
+                {/* Logo image positioned on top, constrained by container size */}
+                {review.gameSnapshot?.logo ? (
+                  <img
+                    className="absolute top-0 ml-2 object-contain max-h-full max-w-full h-full px-4 py-6"
+                    style={{ maxHeight: "100%", maxWidth: "100%" }}
+                    src={review.gameSnapshot?.logo || "/images/logoFallback.png"}
+                    alt="Game Logo"
+                  />
+                ) : (
+                  // Center the game name both vertically and horizontally over the hero image
+                  <div className="absolute px-2 inset-0 flex items-center justify-center pointer-events-none">
+                    <p className="text-2xl font-bold text-white pl-2 drop-shadow-lg">
+                      {review.gameSnapshot?.name}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+
+              <div className="px-4 pb-4 pt-2">
+                <div className="text-yellow-400 font-bold text-sm mb-1 ">
                   {review.rating ? `Rating: ${review.rating} / 5` : `Rating: Unrated`}
                 </div>
 
                 <p className="text-white mb-2 font-light">{review.review}</p>
 
-                <div className="w-full flex place-content-between items-center">
-                  <div className="text-sm text-gray-500 italic">
+                <div className="text-sm w-full flex place-content-between items-center">
+                  <div className="text-gray-500 italic">
                     Reviewed on: {review.createdAt?.toDate().toLocaleDateString()}
                   </div>
 
-                  <div className="flex items-center gap-1 text-sm text-gray-300">
-                    <ThumbsUpIcon className="w-4 h-4" disableHover/>
+                  <div className="flex items-center gap-1 text-gray-300">
+                    <ThumbsUpIcon className="w-4 h-4" disableHover />
                     <span>{review.likes ? Object.values(review.likes).filter(Boolean).length : 0}</span>
                   </div>
                 </div>
