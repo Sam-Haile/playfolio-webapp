@@ -16,6 +16,8 @@ const ReviewBox = ({ gameDetails, releaseDate }) => {
   const textareaRef = useRef(null);
   const { user } = useAuth();
 
+  console.log("Game Details on reviw box:", gameDetails);
+
   useEffect(() => {
     if (isEditing && textareaRef.current) {
       const textarea = textareaRef.current;
@@ -55,6 +57,12 @@ const ReviewBox = ({ gameDetails, releaseDate }) => {
       const gameId = String(gameDetails.id);
       const userGameRef = doc(db, "users", user.uid, "gameStatuses", gameId);
 
+      const gameSnapshot = {
+        name:gameDetails.name,
+        heroImage: gameDetails.heroes.url || null,
+        logo: gameDetails.logos.url || null,
+      }
+
       // 1) Save to personal gameStatuses
       await setDoc(
         userGameRef,
@@ -62,6 +70,7 @@ const ReviewBox = ({ gameDetails, releaseDate }) => {
           gameId,
           review: review,
           updatedAt: serverTimestamp(),
+          gameSnapshot,
         },
         { merge: true }
       );
@@ -76,6 +85,7 @@ const ReviewBox = ({ gameDetails, releaseDate }) => {
         userPFP: user.profileIcon || ProfileIcon,
         review: review,
         createdAt: serverTimestamp(),
+        gameSnapshot,
       };
 
       if (ratingValue !== null && ratingValue !== undefined) {
@@ -95,7 +105,7 @@ const ReviewBox = ({ gameDetails, releaseDate }) => {
   };
 
   return (
-    <div className="w-full px-4">
+    <div className="w-full px-4 mb-4">
 
       {isEditing ? (
         <>

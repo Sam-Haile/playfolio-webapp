@@ -13,6 +13,9 @@ import GameCard from "../components/GameCard";
 import axios from "axios";
 import { Tilt } from "react-tilt";
 import { useLocation, useNavigate } from "react-router-dom";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import ThumbsUpIcon from "../assets/icons/ThumbsUp";
+import CommentIcon from "../assets/icons/CommentIcon";
 
 // Placeholder components for future Reviews and Lists sections
 const ReviewsSection = ({ userId }) => {
@@ -24,13 +27,23 @@ const ReviewsSection = ({ userId }) => {
 
     const fetchReviews = async () => {
       try {
-        const q = query(
-          collection(db, "users", userId, "gameStatuses"),
-          where("review", "!=", "")
+        const statusSnap = await getDocs(
+          query(
+            collection(db, "users", userId, "gameStatuses"),
+            where("review", "!=", "")
+          )
         );
-        const snapshot = await getDocs(q);
-        const reviewsList = snapshot.docs.map(doc => doc.data());
-        setReviews(reviewsList);
+
+        const reviewedGameIds = statusSnap.docs.map((doc) => doc.id);
+
+        const reviewPromises = reviewedGameIds.map(async (gameId) => {
+          const reviewRef = doc(db, "games", gameId, "reviews", userId);
+          const snap = await getDoc(reviewRef);
+          return snap.exists() ? { ...snap.data(), gameId } : null;
+        });
+
+        const allReviews = (await Promise.all(reviewPromises)).filter(Boolean);
+        setReviews(allReviews);
       } catch (error) {
         console.error("Error fetching reviews:", error);
       } finally {
@@ -48,27 +61,45 @@ const ReviewsSection = ({ userId }) => {
   if (reviews.length === 0) {
     return <div className="text-white text-center mt-10">No reviews yet.</div>;
   }
-return (
-  <div className="mt-10 px-4">
-    <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
-      {reviews.map((review, idx) => (
-        <div
-          key={idx}
-          className="break-inside-avoid bg-customGray-800 p-4 rounded-xl text-left shadow mb-4"
-        >
-          <div className="text-yellow-400 font-bold mb-1">
-            Rating: {review.rating} / 5
-          </div>
-          <p className="text-white mb-2">{review.review}</p>
-          <div className="text-sm text-gray-400">Game ID: {review.gameId}</div>
-          <div className="text-sm text-gray-500">
-            Reviewed on: {review.updatedAt?.toDate().toLocaleDateString()}
-          </div>
-        </div>
-      ))}
+
+  return (
+    <div className="mt-10">
+      <ResponsiveMasonry
+        columnsCountBreakPoints={{ 350: 1, 750: 2, 1024: 3 }}
+        gutterBreakpoints={{ 350: "12px", 750: "16px", 1024: "24px" }}
+      >
+        <Masonry>
+          {reviews.map((review, idx) => (
+            <div
+              key={idx}
+              className="w-[900px] bg-customGray-900 rounded text-left shadow"
+            >
+              <img className="rounded" src={review.gameSnapshot?.heroImage || "/images/heroFallback.png"} />
+
+              <div className="p-4">
+                <div className="text-yellow-400 font-bold mb-1 ">
+                  {review.rating ? `Rating: ${review.rating} / 5` : `Rating: Unrated`}
+                </div>
+
+                <p className="text-white mb-2 font-light">{review.review}</p>
+
+                <div className="w-full flex place-content-between items-center">
+                  <div className="text-sm text-gray-500 italic">
+                    Reviewed on: {review.createdAt?.toDate().toLocaleDateString()}
+                  </div>
+
+                  <div className="flex items-center gap-1 text-sm text-gray-300">
+                    <ThumbsUpIcon className="w-4 h-4" disableHover/>
+                    <span>{review.likes ? Object.values(review.likes).filter(Boolean).length : 0}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </Masonry>
+      </ResponsiveMasonry>
     </div>
-  </div>
-);
+  );
 };
 
 
@@ -99,7 +130,7 @@ const Collections = ({ user, showProfile = true }) => {
     window.scrollBy(0, -1);
   }, [type, section]);
 
-  
+
   useEffect(() => {
     if (!activeUser) return;
     const fetchUserData = async () => {
@@ -122,7 +153,7 @@ const Collections = ({ user, showProfile = true }) => {
     setSection(newSection);
     setType(newType);
   }, [location.search]);
-  
+
 
   const fetchGameCovers = async (gamesList) => {
     try {
@@ -216,7 +247,7 @@ const Collections = ({ user, showProfile = true }) => {
     setType(newType);
     navigate(`?section=${section}&type=${newType}`, { replace: true });
   };
-  
+
 
   return (
     <div className="min-h-screen">
@@ -230,11 +261,10 @@ const Collections = ({ user, showProfile = true }) => {
                 setSection(item);
                 navigate(`?section=${item}&type=${type}`, { replace: true });
               }}
-              className={`text-sm font-semibold px-4 py-2 ${
-                section === item
-                  ? "bg-primaryPurple-500 text-white rounded-t"
-                  : "hover:bg-primaryPurple-800 text-white rounded-t"
-              }`}
+              className={`text-sm font-semibold px-4 py-2 ${section === item
+                ? "bg-primaryPurple-500 text-white rounded-t"
+                : "hover:bg-primaryPurple-800 text-white rounded-t"
+                }`}
             >
               {item.charAt(0).toUpperCase() + item.slice(1)}
             </button>
@@ -253,10 +283,9 @@ const Collections = ({ user, showProfile = true }) => {
                     navigate(`?section=${section}&type=${category}`, { replace: true });
                   }}
                   className={`text-sm font-semibold px-4 py-2 h-10 w-auto
-                    ${
-                      type === category
-                        ? "bg-primaryPurple-500 text-white cursor-default"
-                        : "hover:bg-primaryPurple-800"
+                    ${type === category
+                      ? "bg-primaryPurple-500 text-white cursor-default"
+                      : "hover:bg-primaryPurple-800"
                     }`}
                 >
                   {category.charAt(0).toUpperCase() + category.slice(1)}
@@ -289,20 +318,20 @@ const Collections = ({ user, showProfile = true }) => {
               <div className="grid xl:grid-cols-7 lg:grid-cols-5 md:grid-cols-5 grid-cols-3 md:gap-4 gap-2">
                 {loading
                   ? Array.from({ length: games.length || 8 }).map((_, index) => (
-                      <Tilt key={index} options={{ scale: 1.1 }}>
-                        <GameCard isLoading={true} />
-                      </Tilt>
-                    ))
+                    <Tilt key={index} options={{ scale: 1.1 }}>
+                      <GameCard isLoading={true} />
+                    </Tilt>
+                  ))
                   : games.map((game) => (
-                      <Tilt key={game.id} options={{ scale: 1.1 }}>
-                        <GameCard
-                          gameId={game.id}
-                          src={game.coverImage}
-                          alt="../images/coverFallback.png"
-                          isLoading={!game.coverImage}
-                        />
-                      </Tilt>
-                    ))}
+                    <Tilt key={game.id} options={{ scale: 1.1 }}>
+                      <GameCard
+                        gameId={game.id}
+                        src={game.coverImage}
+                        alt="../images/coverFallback.png"
+                        isLoading={!game.coverImage}
+                      />
+                    </Tilt>
+                  ))}
               </div>
             ) : (
               <div className="w-full h-64 border-2 border-dashed border-darkGray text-center text-sm text-muted-foreground rounded">
